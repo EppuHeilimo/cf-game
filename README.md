@@ -1,7 +1,7 @@
 # Challenge Factory 2016 - Games
 
-This is a base repository for CF16 game/games!
+Tämä on repositorio CF2016 pelinkehittäjille.
 
-## Ideas
-
-asdasd
+- Mitä tehdään?
+- Millä välineillä tehdään?
+- Kuka tekee mitä?
