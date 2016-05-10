@@ -1,7 +1,5 @@
-# Challenge Factory 2016 - Games
+# Challenge Factory 2016 - Pelit
 
 Tämä on repositorio CF2016 pelinkehittäjille.
 
-- Mitä tehdään?
-- Millä välineillä tehdään?
-- Kuka tekee mitä?
+[Mene tästä suoraan wikiin!]()
