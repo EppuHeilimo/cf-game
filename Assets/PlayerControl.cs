@@ -30,6 +30,7 @@ public class PlayerControl : MonoBehaviour {
             {
                 NavMeshAgent agent = GetComponent<NavMeshAgent>();
                 agent.destination = new Vector3(hit.point.x, 0, hit.point.z);
+
             }
         }
         var d = Input.GetAxis("Mouse ScrollWheel");
