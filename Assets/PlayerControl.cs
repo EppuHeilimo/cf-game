@@ -3,30 +3,43 @@ using System.Collections;
 
 public class PlayerControl : MonoBehaviour {
 
-    float speed = 20.1f;
+    private Vector3 defaultPos;
 
-	// Use this for initialization
-	void Start () {
-	
+    // Use this for initialization
+    void Start () {
+        defaultPos = transform.position;
 	}
 	
 	// Update is called once per frame
 	void Update () {
-	    if(Input.GetKeyDown(KeyCode.W))
+        if ((Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began) || (Input.GetMouseButtonDown(0)))
         {
-            transform.position = new Vector3(transform.position.x + speed * Time.deltaTime, transform.position.y, transform.position.z + speed * Time.deltaTime);
+            RaycastHit hit;
+            //Create a Ray on the tapped / clicked position
+            Ray ray;
+            //for unity editor
+#if UNITY_EDITOR
+            ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            //for touch device
+#elif (UNITY_ANDROID || UNITY_IPHONE || UNITY_WP8)
+            ray = Camera.main.ScreenPointToRay(Input.GetTouch(0).position);
+#endif
+
+            //check if the ray hits any collider
+            if (Physics.Raycast(ray, out hit))
+            {
+                NavMeshAgent agent = GetComponent<NavMeshAgent>();
+                agent.destination = new Vector3(hit.point.x, 0, hit.point.z);
+            }
         }
-        if (Input.GetKeyDown(KeyCode.S))
+        var d = Input.GetAxis("Mouse ScrollWheel");
+        if (d > 0f)
         {
-            transform.position = new Vector3(transform.position.x - speed * Time.deltaTime, transform.position.y, transform.position.z - speed * Time.deltaTime);
+            GameObject.Find("Main Camera").GetComponent<Camera>().orthographicSize++;
         }
-        if (Input.GetKeyDown(KeyCode.A))
+        else if (d < 0f)
         {
-            transform.position = new Vector3(transform.position.x - speed * Time.deltaTime, transform.position.y, transform.position.z + speed * Time.deltaTime);
-        }
-        if (Input.GetKeyDown(KeyCode.D))
-        {
-            transform.position = new Vector3(transform.position.x + speed * Time.deltaTime, transform.position.y, transform.position.z - speed * Time.deltaTime);
+            GameObject.Find("Main Camera").GetComponent<Camera>().orthographicSize--;
         }
     }
 }

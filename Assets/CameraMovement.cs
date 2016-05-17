@@ -14,9 +14,9 @@ public class CameraMovement : MonoBehaviour {
         Transform playerTransform = GameObject.Find("Player").transform;
         Vector3 playerPos = playerTransform.position;
         Vector3 camPos = transform.position;
-        if(playerPos.x != camPos.x || playerPos.z != camPos.z)
+        if (playerPos.x != camPos.x || playerPos.z != camPos.z)
         {
             transform.position = new Vector3(playerPos.x + defaultPosition.x, camPos.y, playerPos.z + defaultPosition.z);
         }
-	}
+    }
 }
