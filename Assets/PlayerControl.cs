@@ -3,12 +3,10 @@ using System.Collections;
 
 public class PlayerControl : MonoBehaviour {
 
-    private Vector3 defaultPos;
-
     // Use this for initialization
     void Start () {
-        defaultPos = transform.position;
-	}
+        NavMeshAgent agent = GetComponent<NavMeshAgent>();
+    }
 	
 	// Update is called once per frame
 	void Update () {
@@ -17,20 +15,28 @@ public class PlayerControl : MonoBehaviour {
             RaycastHit hit;
             //Create a Ray on the tapped / clicked position
             Ray ray;
+            //Layer mask
+            int layerMask = 1 << 8;
+
             //for unity editor
-#if UNITY_EDITOR
+            #if UNITY_EDITOR
             ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            if(Input.GetKeyDown(KeyCode.A))
+            {
+                Debug.DrawRay(ray.origin, ray.direction, Color.red, 10.0f);
+            }
+            
             //for touch device
-#elif (UNITY_ANDROID || UNITY_IPHONE || UNITY_WP8)
+            #elif (UNITY_ANDROID || UNITY_IPHONE || UNITY_WP8)
             ray = Camera.main.ScreenPointToRay(Input.GetTouch(0).position);
-#endif
+            #endif
 
             //check if the ray hits any collider
-            if (Physics.Raycast(ray, out hit))
+            if (Physics.Raycast(ray, out hit, 10000, layerMask))
             {
                 NavMeshAgent agent = GetComponent<NavMeshAgent>();
-                agent.destination = new Vector3(hit.point.x, 0, hit.point.z);
 
+                agent.destination = new Vector3(hit.point.x, 0, hit.point.z);
             }
         }
         var d = Input.GetAxis("Mouse ScrollWheel");
