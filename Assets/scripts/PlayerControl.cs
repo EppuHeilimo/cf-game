@@ -1,17 +1,36 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class PlayerControl : MonoBehaviour {
-
+    NavMeshAgent agent;
+    public GameObject moveindicator;
+    GameObject indicator;
     // Use this for initialization
     void Start () {
-        NavMeshAgent agent = GetComponent<NavMeshAgent>();
+        agent = GetComponent<NavMeshAgent>();
+        
     }
 	
 	// Update is called once per frame
 	void Update () {
+        if (!agent.pathPending)
+        {
+            if (agent.remainingDistance <= agent.stoppingDistance)
+            {
+                if (!agent.hasPath || agent.velocity.sqrMagnitude == 0f)
+                {
+                    disableMoveIndicator();
+                }
+            }
+        }
+
         if ((Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began) || (Input.GetMouseButtonDown(0)))
         {
+
+
+            
+            
             RaycastHit hit;
             //Create a Ray on the tapped / clicked position
 
@@ -35,9 +54,9 @@ public class PlayerControl : MonoBehaviour {
             //check if the ray hits any collider
             if (Physics.Raycast(ray, out hit, 10000.0f, layerMask))
             {
-                NavMeshAgent agent = GetComponent<NavMeshAgent>();
-
-                agent.destination = new Vector3(hit.point.x, 0, hit.point.z);
+                Vector3 pos = new Vector3(hit.point.x, 0, hit.point.z);
+                enableMoveIndicator(pos);
+                agent.destination = pos;
             }
         }
         var d = Input.GetAxis("Mouse ScrollWheel");
@@ -49,5 +68,23 @@ public class PlayerControl : MonoBehaviour {
         {
             GameObject.Find("Main Camera").GetComponent<Camera>().orthographicSize--;
         }
+    }
+
+    void disableMoveIndicator()
+    {
+        
+        if(indicator != null)
+        {
+            Destroy(indicator);
+        }
+        
+    }
+
+    void enableMoveIndicator(Vector3 pos)
+    {
+        if(indicator != null)
+           Destroy(indicator);
+        pos = new Vector3(pos.x, pos.y + 4.2f, pos.z);
+        indicator = (GameObject)Instantiate(moveindicator, pos, new Quaternion(-90, 0, 0, 0));
     }
 }
