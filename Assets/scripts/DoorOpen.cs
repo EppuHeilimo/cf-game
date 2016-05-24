@@ -20,7 +20,7 @@ public class DoorOpen : MonoBehaviour {
     {
         if(!isOpen)
         {
-            Debug.Log("door open");
+            //Debug.Log("door open");
             Vector3 pivot = new Vector3(defaultPos.x + 16, defaultPos.y, defaultPos.z + 16);
             transform.parent.FindChild("default").transform.RotateAround(pivot, new Vector3(0, 1, 0), 90);
             isOpen = true;
@@ -37,7 +37,7 @@ public class DoorOpen : MonoBehaviour {
     {
         if(isOpen)
         {
-            Debug.Log("door close");
+            //Debug.Log("door close");
             Vector3 pivot = new Vector3(defaultPos.x + 16, defaultPos.y, defaultPos.z + 16);
             transform.parent.FindChild("default").transform.RotateAround(pivot, new Vector3(0, 1, 0), -90);
             isOpen = false;

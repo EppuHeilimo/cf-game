@@ -27,14 +27,14 @@ public class NPCManager : MonoBehaviour
     string[] namePool = { "Aleksi", "Pekka", "Matti", "Kalle", "Jorma" };
     string[] hetuPool = { "111", "222", "333", "444", "555" };
     
-    const int MAX_NPCS = 200; // change total amount of NPCs according to difficulty level later
+    const int MAX_NPCS = 10; // change total amount of NPCs according to difficulty level later
 
     // Use this for initialization
     void Start()
     {
         npcList = new List<GameObject>();
-        spawnPoint = new Vector3(-8, 0, 8);
-        spawnTime = Random.Range(0, 20); // spawn new NPC somewhere between 0 and 20 seconds
+        spawnPoint = new Vector3(-265, 0, 125);
+        spawnTime = 5; //Random.Range(0, 20); // spawn new NPC somewhere between 0 and 20 seconds
     }
 
     // Update is called once per frame
@@ -49,18 +49,10 @@ public class NPCManager : MonoBehaviour
             if (timeSinceLastSpawn > spawnTime)
             {
                 timeSinceLastSpawn = 0;
-                spawnTime = Random.Range(0, 1);
+                spawnTime = 5; //Random.Range(0, 1);
                 spawnNPC();
             }
         }
-
-        /*
-        // update NPC AI
-        foreach (GameObject npc in npcList)
-        {
-            npc.GetComponent<NPC>().UpdateAI();
-        }
-        */
     }
 
     void spawnNPC()
