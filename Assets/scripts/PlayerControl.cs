@@ -14,10 +14,11 @@ public class PlayerControl : MonoBehaviour {
         {
             RaycastHit hit;
             //Create a Ray on the tapped / clicked position
-            Ray ray;
+
             //Layer mask
             int layerMask = 1 << 8;
 
+            Ray ray = new Ray();
             //for unity editor
             #if UNITY_EDITOR
             ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -32,7 +33,7 @@ public class PlayerControl : MonoBehaviour {
             #endif
 
             //check if the ray hits any collider
-            if (Physics.Raycast(ray, out hit, 10000, layerMask))
+            if (Physics.Raycast(ray, out hit, 10000.0f, layerMask))
             {
                 NavMeshAgent agent = GetComponent<NavMeshAgent>();
 

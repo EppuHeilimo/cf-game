@@ -5,6 +5,9 @@ public class DoorOpen : MonoBehaviour {
     Quaternion defaultRot;
     Vector3 defaultPos;
     bool isOpen = false;
+    bool objectAtDoor = false;
+    int triggerObjectsInArea = 0;
+
 	// Use this for initialization
 	void Start () {
         defaultRot = transform.parent.FindChild("default").transform.rotation;
@@ -13,29 +16,33 @@ public class DoorOpen : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-	    
+
 	}
 
     void OnTriggerEnter(Collider other)
     {
-        if(!isOpen)
+        
+        triggerObjectsInArea++;
+        if (!isOpen)
         {
             Debug.Log("door open");
             Vector3 pivot = new Vector3(defaultPos.x + 16, defaultPos.y, defaultPos.z + 16);
             transform.parent.FindChild("default").transform.RotateAround(pivot, new Vector3(0, 1, 0), 90);
             isOpen = true;
+            
         }
 
     }
 
-    void onTriggerStay(Collider collider)
-    {
-        isOpen = true;
-    }
 
     void OnTriggerExit(Collider collider)
     {
-        if(isOpen)
+        triggerObjectsInArea--;
+        if(triggerObjectsInArea < 0)
+        {
+            triggerObjectsInArea = 0;
+        }
+        if(isOpen && triggerObjectsInArea == 0)
         {
             Debug.Log("door close");
             Vector3 pivot = new Vector3(defaultPos.x + 16, defaultPos.y, defaultPos.z + 16);

@@ -27,7 +27,7 @@ public class NPCManager : MonoBehaviour
     string[] namePool = { "Aleksi", "Pekka", "Matti", "Kalle", "Jorma" };
     string[] hetuPool = { "111", "222", "333", "444", "555" };
     
-    const int MAX_NPCS = 200; // change total amount of NPCs according to difficulty level later
+    const int MAX_NPCS = 3; // change total amount of NPCs according to difficulty level later
 
     // Use this for initialization
     void Start()
