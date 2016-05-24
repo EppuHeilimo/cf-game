@@ -25,7 +25,6 @@ public class NPC : MonoBehaviour
     {
         if (Mathf.Approximately(transform.position.x, receptionEntryPos.x) && Mathf.Approximately(transform.position.z, receptionEntryPos.z) && !atReception)
         {
-            //print(this.nimi + "perillä respassa");
             atReception = true;
         }
 
@@ -34,7 +33,6 @@ public class NPC : MonoBehaviour
             atQue = true;
             atReception = false;
             float quePosX = receptionManager.addToQue();
-            //print("posX: " + quePosX);
             Vector3 quePosVec = new Vector3(quePosX, 0, 130);
             moveTo(quePosVec); 
         }

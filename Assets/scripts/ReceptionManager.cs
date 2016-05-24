@@ -27,7 +27,6 @@ public class ReceptionManager : MonoBehaviour {
 
     public float addToQue()
     {
-        print("CALLED!");
         for (int i = 0; i < MAX_QUE; i++)
         {
             if (!queArr[i])
