@@ -31,9 +31,9 @@ GameObject:
   - 54: {fileID: 5498252}
   - 114: {fileID: 11442692}
   - 195: {fileID: 19562912}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: NPC
-  m_TagString: Untagged
+  m_TagString: NPC
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -134,8 +134,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 260cd2f0b05f77b44aca93b6d341e76f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  nimi: 
-  hetu: 
+  myName: 
+  myId: 
 --- !u!114 &11480114
 MonoBehaviour:
   m_ObjectHideFlags: 1

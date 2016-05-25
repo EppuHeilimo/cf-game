@@ -3,8 +3,8 @@ using System.Collections;
 
 public class NPC : MonoBehaviour
 {
-    public string nimi;
-    public string hetu;
+    public string myName;
+    public string myId;
     bool atReception;
     bool atQue;
     NavMeshAgent agent;
@@ -39,17 +39,17 @@ public class NPC : MonoBehaviour
 
         if (atQue)
         {
-            //print(this.nimi + " jonossa");
+            //print(this.myName + " jonossa");
         }
     }
 
-    public void Init(string nimi, string hetu)
+    public void Init(string myName, string myId)
     {
-        this.nimi = nimi;
-        this.hetu = hetu;
+        this.myName = myName;
+        this.myId = myId;
         //print("Uusi potilas spawnattu!");
-        //print("Nimi: " + this.nimi);
-        //print("ID: " + this.hetu);
+        //print("myName: " + this.myName);
+        //print("myId: " + this.myId);
     }
 
     public void moveTo(Vector3 dest)

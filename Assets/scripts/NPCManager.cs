@@ -25,7 +25,7 @@ public class NPCManager : MonoBehaviour
 
     // hard-coded pools for names and IDs, probably changed later
     string[] namePool = { "Aleksi", "Pekka", "Matti", "Kalle", "Jorma" };
-    string[] hetuPool = { "111", "222", "333", "444", "555" };
+    string[] idPool = { "111", "222", "333", "444", "555" };
     
     const int MAX_NPCS = 10; // change total amount of NPCs according to difficulty level later
 
@@ -57,13 +57,13 @@ public class NPCManager : MonoBehaviour
 
     void spawnNPC()
     {
-        int nimiIndex = Random.Range(0, namePool.Length);
-        int hetuIndex = Random.Range(0, hetuPool.Length);
-        string nimi = namePool[nimiIndex];
-        string hetu = hetuPool[hetuIndex];
+        int nameIndex = Random.Range(0, namePool.Length);
+        int idIndex = Random.Range(0, idPool.Length);
+        string myName = namePool[nameIndex];
+        string myId = idPool[idIndex];
 
         GameObject newNpc = Instantiate(npcPrefab, spawnPoint, Quaternion.identity) as GameObject; // the method that copies the prefab object
-        newNpc.GetComponent<NPC>().Init(nimi, hetu); // initialize the npc
+        newNpc.GetComponent<NPC>().Init(myName, myId); // initialize the npc
         npcList.Add(newNpc);
     }
 }

@@ -18,9 +18,9 @@ public class TextBoxManager : MonoBehaviour {
     {
     }
 
-    public void EnableTextBox(string nimi, string hetu)
+    public void EnableTextBox(string myName, string myId)
     {
-        dialog.text = "Hello, my name is " + nimi + " and ID: " + hetu;
+        dialog.text = "Hello, my name is " + myName + " and ID: " + myId;
     }
 
     public void DisableTextBox()
