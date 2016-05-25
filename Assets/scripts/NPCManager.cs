@@ -28,7 +28,7 @@ public class NPCManager : MonoBehaviour
     // hard-coded pool for names, probably changed later
     string[] namePool = { "Aleksi", "Pekka", "Matti", "Kalle", "Jorma" };
     
-    const int MAX_NPCS = 10; // change total amount of NPCs according to difficulty level later
+    const int MAX_NPCS = 5; // ** MUST BE SAME AS MAX_QUE IN QUE MANAGER! **
 
     List<string> usedIds; // IDs already used
 
@@ -79,6 +79,8 @@ public class NPCManager : MonoBehaviour
             ch = Convert.ToChar(Convert.ToInt32(Math.Floor(26 * random.NextDouble() + 65)));
             builder.Append(ch);
         }
+
+        // check if the ID was used already, if so, generate a new one
         if (!usedIds.Contains(builder.ToString()))
         {
             usedIds.Add(builder.ToString());
