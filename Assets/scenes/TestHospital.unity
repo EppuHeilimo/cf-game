@@ -4451,6 +4451,10 @@ Prefab:
       propertyPath: moveindicator
       value: 
       objectReference: {fileID: 183940, guid: 68a1ba89257646347bdd031ab61e5020, type: 2}
+    - target: {fileID: 183996, guid: f7d9c2b096469994f844d711a1501ebb, type: 2}
+      propertyPath: m_TagString
+      value: Player
+      objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 0}
   m_ParentPrefab: {fileID: 100100000, guid: f7d9c2b096469994f844d711a1501ebb, type: 2}
