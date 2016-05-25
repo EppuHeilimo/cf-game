@@ -26,7 +26,8 @@ public class TextBoxManager : MonoBehaviour {
 
     public void DisableTextBox()
     {
-        dialog.text = null;
+        if(dialogZonesTriggered == 0)
+            dialog.text = null;
     }
 
     public void playerArrivedToDialogZone()

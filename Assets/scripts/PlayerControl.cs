@@ -64,12 +64,14 @@ public class PlayerControl : MonoBehaviour {
 
                 if (hit.transform.gameObject.tag == "NPC")
                 {
+                    if(target != null)
+                    {
+                        target.GetComponent<Renderer>().material.shader = Shader.Find("Diffuse");
+                    }
                     target = hit.transform.gameObject;
+                    target.GetComponent<Renderer>().material.shader = Shader.Find("Self-Illumin/Outlined Diffuse");
                     Debug.Log(target.GetComponent<NPC>().myName + " " + target.GetComponent<NPC>().myId);
                 }
-
-
-
 
             }
         }
