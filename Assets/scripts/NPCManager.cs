@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text;
+using System;
 
 public class NPCManager : MonoBehaviour
 {
@@ -23,18 +25,20 @@ public class NPCManager : MonoBehaviour
     // interval between spawning new NPCs
     float spawnTime;
 
-    // hard-coded pools for names and IDs, probably changed later
+    // hard-coded pool for names, probably changed later
     string[] namePool = { "Aleksi", "Pekka", "Matti", "Kalle", "Jorma" };
-    string[] idPool = { "111", "222", "333", "444", "555" };
     
     const int MAX_NPCS = 10; // change total amount of NPCs according to difficulty level later
+
+    List<string> usedIds; // IDs already used
 
     // Use this for initialization
     void Start()
     {
         npcList = new List<GameObject>();
         spawnPoint = new Vector3(-265, 0, 125);
-        spawnTime = 5; //Random.Range(0, 20); // spawn new NPC somewhere between 0 and 20 seconds
+        spawnTime = 5; //Random.Range(5, 20); // spawn new NPC somewhere between 5 and 20 seconds
+        usedIds = new List<string>();
     }
 
     // Update is called once per frame
@@ -49,7 +53,7 @@ public class NPCManager : MonoBehaviour
             if (timeSinceLastSpawn > spawnTime)
             {
                 timeSinceLastSpawn = 0;
-                spawnTime = 5; //Random.Range(0, 1);
+                spawnTime = 5; //Random.Range(5, 20); // spawn new NPC somewhere between 5 and 20 seconds
                 spawnNPC();
             }
         }
@@ -57,13 +61,30 @@ public class NPCManager : MonoBehaviour
 
     void spawnNPC()
     {
-        int nameIndex = Random.Range(0, namePool.Length);
-        int idIndex = Random.Range(0, idPool.Length);
+        int nameIndex = UnityEngine.Random.Range(0, namePool.Length);
         string myName = namePool[nameIndex];
-        string myId = idPool[idIndex];
-
+        string myId = RandomString(4);
         GameObject newNpc = Instantiate(npcPrefab, spawnPoint, Quaternion.identity) as GameObject; // the method that copies the prefab object
         newNpc.GetComponent<NPC>().Init(myName, myId); // initialize the npc
         npcList.Add(newNpc);
+    }
+
+    private string RandomString(int size)
+    {
+        StringBuilder builder = new StringBuilder();
+        System.Random random = new System.Random();
+        char ch;
+        for (int i = 0; i < size; i++)
+        {
+            ch = Convert.ToChar(Convert.ToInt32(Math.Floor(26 * random.NextDouble() + 65)));
+            builder.Append(ch);
+        }
+        if (!usedIds.Contains(builder.ToString()))
+        {
+            usedIds.Add(builder.ToString());
+            return builder.ToString();
+        }
+        else
+            return RandomString(3);
     }
 }
