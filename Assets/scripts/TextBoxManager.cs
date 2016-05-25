@@ -6,6 +6,7 @@ public class TextBoxManager : MonoBehaviour {
 
     [SerializeField]
     Text dialog;
+    int dialogZonesTriggered = 0;
 
     // Use this for initialization
     void Start()
@@ -26,5 +27,15 @@ public class TextBoxManager : MonoBehaviour {
     public void DisableTextBox()
     {
         dialog.text = null;
+    }
+
+    public void playerArrivedToDialogZone()
+    {
+        dialogZonesTriggered++;
+    }
+    public void playerLeftDialogZone()
+    {
+        if (dialogZonesTriggered > 0)
+            dialogZonesTriggered--;
     }
 }

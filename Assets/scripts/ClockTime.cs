@@ -6,7 +6,7 @@ public class ClockTime : MonoBehaviour {
     float currentTime = 0.0f;
     //conversion ratio from real second to game time minute
     //change this to change game time speed
-    float secToGameMin = 0.2f;
+    float secToGameMin = 2f;
 
     //start day
     int day = 1;
@@ -44,8 +44,6 @@ public class ClockTime : MonoBehaviour {
     {
         float minutesfloat = currentTime / secToGameMin;
         int minutesfloored = Mathf.FloorToInt(minutesfloat);
-        string hour;
-        string minutes;
         string ret;
 
         int hours = 0;
