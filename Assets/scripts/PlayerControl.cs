@@ -7,30 +7,40 @@ public class PlayerControl : MonoBehaviour {
     GameObject target;
     public GameObject moveindicator;
     GameObject indicator;
-    bool isWalking = true;
+    bool isWalking = false;
     // Use this for initialization
     void Start () {
         agent = GetComponent<NavMeshAgent>();
-        
     }
 	
 	// Update is called once per frame
 	void Update () {
 
         transform.FindChild("Iiro").GetComponent<Animator>().SetBool("IsWalking", isWalking);
-        
+
+
+        if(agent.velocity.magnitude < 30.0f)
+        {
+            isWalking = false;
+        }else
+        {
+            isWalking = true;
+        }
+           
+
         if (!agent.pathPending)
         {
             if (agent.remainingDistance <= agent.stoppingDistance)
             {
                 if (!agent.hasPath || agent.velocity.sqrMagnitude == 0f)
                 {
+                    
                     disableMoveIndicator();
                 }
             }
         }
-        
 
+        
 
         if ((Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began) || (Input.GetMouseButtonDown(0)))
         {
@@ -62,7 +72,8 @@ public class PlayerControl : MonoBehaviour {
                 {
                     Vector3 pos = new Vector3(hit.point.x, 0, hit.point.z);
                     enableMoveIndicator(pos);
-                    agent.destination = pos;
+                    agent.SetDestination(pos);
+                    isWalking = true;
                 }
 
 
@@ -109,7 +120,7 @@ public class PlayerControl : MonoBehaviour {
     {
         if(indicator != null)
            Destroy(indicator);
-        pos = new Vector3(pos.x, pos.y + 4.2f, pos.z);
-        indicator = (GameObject)Instantiate(moveindicator, pos, new Quaternion(-90, 0, 0, 0));
+        pos = new Vector3(pos.x, pos.y + 8.5f, pos.z);
+        indicator = (GameObject)Instantiate(moveindicator, pos, new Quaternion(0, 0, 0, 0));
     }
 }
