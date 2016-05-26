@@ -11,7 +11,7 @@ public class CameraMovement : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        Transform playerTransform = GameObject.Find("Player 1").transform;
+        Transform playerTransform = GameObject.Find("Player").transform;
         Vector3 playerPos = playerTransform.position;
         Vector3 camPos = transform.position;
         if (playerPos.x != camPos.x || playerPos.z != camPos.z)

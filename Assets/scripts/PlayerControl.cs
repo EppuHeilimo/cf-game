@@ -7,7 +7,7 @@ public class PlayerControl : MonoBehaviour {
     GameObject target;
     public GameObject moveindicator;
     GameObject indicator;
-    bool isWalking = false;
+    bool isWalking = true;
     // Use this for initialization
     void Start () {
         agent = GetComponent<NavMeshAgent>();
