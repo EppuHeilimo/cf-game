@@ -7,6 +7,7 @@ public class PlayerControl : MonoBehaviour {
     GameObject target;
     public GameObject moveindicator;
     GameObject indicator;
+    bool isWalking = false;
     // Use this for initialization
     void Start () {
         agent = GetComponent<NavMeshAgent>();
@@ -15,6 +16,9 @@ public class PlayerControl : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+
+        transform.FindChild("Iiro").GetComponent<Animator>().SetBool("IsWalking", isWalking);
+        
         if (!agent.pathPending)
         {
             if (agent.remainingDistance <= agent.stoppingDistance)
