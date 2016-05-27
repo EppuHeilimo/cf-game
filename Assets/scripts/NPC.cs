@@ -23,7 +23,9 @@ public class NPC : MonoBehaviour
     bool gotMed;
     float deathTimer; // time without medicine
     float medTimer; // time with medicine
+    float hpTimer;
     const int LOSE_HP_TIME = 2; // lose one hitpoint every X seconds 
+    const int GET_HP_TIME = 2; // get one hitpoint every X seconds 
     const float MED_DURATION = 10;
 
     /* position stuff */
@@ -147,6 +149,12 @@ public class NPC : MonoBehaviour
                 gotMed = false;
                 print("medicine duration over!");
             }
+            hpTimer += Time.deltaTime;
+            if (hpTimer >= GET_HP_TIME)
+            {
+                hpTimer = 0;
+                myHp++;
+            }
         }
         else
         {
@@ -167,7 +175,7 @@ public class NPC : MonoBehaviour
     public void giveMed()
     {
         // TODO: check if given medicine is correct
-        print("medicine kicked in!");
+        print("medicine given!");
         gotMed = true;
     }
 }
