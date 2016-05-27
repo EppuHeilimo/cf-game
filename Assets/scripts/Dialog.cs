@@ -5,22 +5,17 @@ public class Dialog : MonoBehaviour {
 
     TextBoxManager textBoxManager;
     GameObject parent;
-    bool playerInZone;
-    int layerMask;
+
 
     void Start()
     {
         textBoxManager = FindObjectOfType<TextBoxManager>();
         parent = transform.parent.gameObject;
-        layerMask = 9;
     }
 
     void Update()
     {
 
-
-
-   
     }
 
     void OnTriggerEnter(Collider other)

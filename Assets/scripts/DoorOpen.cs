@@ -5,7 +5,6 @@ public class DoorOpen : MonoBehaviour {
     Quaternion defaultRot;
     Vector3 defaultPos;
     bool isOpen = false;
-    bool objectAtDoor = false;
     int triggerObjectsInArea = 0;
 
 	// Use this for initialization

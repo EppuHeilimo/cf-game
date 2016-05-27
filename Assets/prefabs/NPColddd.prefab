@@ -635,7 +635,7 @@ GameObject:
   - 65: {fileID: 6514840}
   - 114: {fileID: 11449968}
   m_Layer: 9
-  m_Name: NPC
+  m_Name: NPColddd
   m_TagString: NPC
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
