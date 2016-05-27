@@ -11,6 +11,7 @@ public class ClockTime : MonoBehaviour {
     //start day
     int day = 1;
 
+    
     float dayLengthInRealHours = 8;
 
     float dayLength;
