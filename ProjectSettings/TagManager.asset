@@ -7,6 +7,9 @@ TagManager:
   - btnGiveMed
   - Item Database
   - NPC
+  - New Tag
+  - NPC
+  - Bed
   layers:
   - Default
   - TransparentFX
@@ -19,6 +22,7 @@ TagManager:
   - Floor
   - NPC
   - 
+  - TargetableObject
   - 
   - 
   - 
