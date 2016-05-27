@@ -85,7 +85,7 @@ public class PlayerControl : MonoBehaviour {
                     }
                     target = hit.transform.gameObject;
                     target.GetComponent<Renderer>().material.shader = Shader.Find("Self-Illumin/Outlined Diffuse");
-                    Debug.Log(target.GetComponent<NPC>().myName + " " + target.GetComponent<NPC>().myId);
+                    //Debug.Log(target.GetComponent<NPC>().myName + " " + target.GetComponent<NPC>().myId);
                 }
 
             }

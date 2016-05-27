@@ -31,7 +31,7 @@ public class Dialog : MonoBehaviour {
             target = other.GetComponent<PlayerControl>().getTarget();
             if (target == transform.parent.gameObject)
             {
-                textBoxManager.EnableTextBox(parent.GetComponent<NPC>().myName, parent.GetComponent<NPC>().myId);
+                textBoxManager.EnableTextBox(parent.GetComponent<NPC>().myName, parent.GetComponent<NPC>().myId, parent.GetComponent<NPC>().myHp, parent.GetComponent<NPC>().myHappiness);
             }
         }
 
@@ -54,7 +54,7 @@ public class Dialog : MonoBehaviour {
             target = other.GetComponent<PlayerControl>().getTarget();
             if (target == transform.parent.gameObject)
             {
-                textBoxManager.EnableTextBox(parent.GetComponent<NPC>().myName, parent.GetComponent<NPC>().myId);
+                textBoxManager.EnableTextBox(parent.GetComponent<NPC>().myName, parent.GetComponent<NPC>().myId, parent.GetComponent<NPC>().myHp, parent.GetComponent<NPC>().myHappiness);
             }
         }
     }
