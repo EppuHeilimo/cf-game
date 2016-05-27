@@ -232,7 +232,7 @@ GameObject:
   - 65: {fileID: 6587400}
   - 114: {fileID: 11460548}
   m_Layer: 9
-  m_Name: NPColddd 1
+  m_Name: NPC
   m_TagString: NPC
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
