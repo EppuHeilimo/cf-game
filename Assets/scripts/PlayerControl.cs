@@ -8,6 +8,7 @@ public class PlayerControl : MonoBehaviour {
     public GameObject moveindicator;
     GameObject indicator;
     bool isWalking = false;
+    List<GameObject> children = new List<GameObject>();
     // Use this for initialization
     void Start () {
         agent = GetComponent<NavMeshAgent>();
@@ -15,26 +16,12 @@ public class PlayerControl : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-
-        transform.FindChild("Iiro").GetComponent<Animator>().SetBool("IsWalking", isWalking);
-
-
-        if(agent.velocity.magnitude < 30.0f)
-        {
-            isWalking = false;
-        }else
-        {
-            isWalking = true;
-        }
-           
-
         if (!agent.pathPending)
         {
             if (agent.remainingDistance <= agent.stoppingDistance)
             {
                 if (!agent.hasPath || agent.velocity.sqrMagnitude == 0f)
                 {
-                    
                     disableMoveIndicator();
                 }
             }
@@ -73,18 +60,17 @@ public class PlayerControl : MonoBehaviour {
                     Vector3 pos = new Vector3(hit.point.x, 0, hit.point.z);
                     enableMoveIndicator(pos);
                     agent.SetDestination(pos);
-                    isWalking = true;
                 }
-
 
                 if (hit.transform.gameObject.tag == "NPC")
                 {
+
                     if(target != null)
                     {
-                        target.GetComponent<Renderer>().material.shader = Shader.Find("Diffuse");
+                        outlineGameObject(target.transform, Shader.Find("Diffuse"));
                     }
                     target = hit.transform.gameObject;
-                    target.GetComponent<Renderer>().material.shader = Shader.Find("Self-Illumin/Outlined Diffuse");
+                    outlineGameObject(target.transform, Shader.Find("Outlined/Silhouette Only"));
                     Debug.Log(target.GetComponent<NPC>().myName + " " + target.GetComponent<NPC>().myId);
                 }
 
@@ -122,5 +108,15 @@ public class PlayerControl : MonoBehaviour {
            Destroy(indicator);
         pos = new Vector3(pos.x, pos.y + 8.5f, pos.z);
         indicator = (GameObject)Instantiate(moveindicator, pos, new Quaternion(0, 0, 0, 0));
+    }
+
+    void outlineGameObject(Transform gameobject, Shader shader)
+    {
+        foreach(Transform child in gameobject)
+        {
+            outlineGameObject(child, shader);
+            if(child.GetComponent<Renderer>() != null)
+                child.GetComponent<Renderer>().material.shader = shader;
+        }
     }
 }
