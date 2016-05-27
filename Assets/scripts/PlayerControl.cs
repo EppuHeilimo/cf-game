@@ -70,7 +70,7 @@ public class PlayerControl : MonoBehaviour {
                         outlineGameObject(target.transform, Shader.Find("Diffuse"));
                     }
                     target = hit.transform.gameObject;
-                    outlineGameObject(target.transform, Shader.Find("Outlined/Silhouette Only"));
+                    outlineGameObject(target.transform, Shader.Find("Outlined/Silhouetted Diffuse"));
                     //Debug.Log(target.GetComponent<NPC>().myName + " " + target.GetComponent<NPC>().myId);
                     //target.GetComponent<Renderer>().material.shader = Shader.Find("Self-Illumin/Outlined Diffuse");
                 }
