@@ -7,7 +7,7 @@ public class PlayerControl : MonoBehaviour {
     GameObject target;
     public GameObject moveindicator;
     GameObject indicator;
-    bool isWalking = false;
+
     List<GameObject> children = new List<GameObject>();
     // Use this for initialization
     void Start () {
@@ -117,7 +117,13 @@ public class PlayerControl : MonoBehaviour {
         {
             outlineGameObject(child, shader);
             if(child.GetComponent<Renderer>() != null)
+            {
                 child.GetComponent<Renderer>().material.shader = shader;
+                child.GetComponent<Renderer>().material.SetFloat("_Outline", 0.023f);
+                child.GetComponent<Renderer>().material.SetColor("_OutlineColor", new Color(1.0f, 0.0f, 0.0f));
+            }
+                
+
         }
     }
 }
