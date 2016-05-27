@@ -5,12 +5,13 @@ public class Dialog : MonoBehaviour {
 
     TextBoxManager textBoxManager;
     GameObject parent;
-
+    public bool playerInZone = false;
 
     void Start()
     {
         textBoxManager = FindObjectOfType<TextBoxManager>();
         parent = transform.parent.gameObject;
+        parent.GetComponent<NPC>().initChild();
     }
 
     void Update()
@@ -27,6 +28,7 @@ public class Dialog : MonoBehaviour {
             if (target == transform.parent.gameObject)
             {
                 textBoxManager.EnableTextBox(parent.GetComponent<NPC>().myName, parent.GetComponent<NPC>().myId, parent.GetComponent<NPC>().myHp, parent.GetComponent<NPC>().myHappiness);
+                playerInZone = true;
             }
         }
 
@@ -50,12 +52,18 @@ public class Dialog : MonoBehaviour {
             if (target == transform.parent.gameObject)
             {
                 textBoxManager.EnableTextBox(parent.GetComponent<NPC>().myName, parent.GetComponent<NPC>().myId, parent.GetComponent<NPC>().myHp, parent.GetComponent<NPC>().myHappiness);
+                playerInZone = true;
+            }
+            else
+            {
+                playerInZone = false;
             }
         }
     }
 
     void OnTriggerExit(Collider other)
     {
+        
         GameObject target;
         if (other.tag == "Player")
         {
@@ -63,14 +71,9 @@ public class Dialog : MonoBehaviour {
             if (target == transform.parent.gameObject)
             {
                 textBoxManager.DisableTextBox();
+                playerInZone = false;
             }
         }
-        /*
-        if (other.name == "Player")
-        {
-            playerInZone = false;
-            //textBoxManager.DisableTextBox();
-        }
-        */
+
     }
 }

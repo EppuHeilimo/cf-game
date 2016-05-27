@@ -27,8 +27,11 @@ public class PlayerControl : MonoBehaviour {
             }
         }
 
-        
+        handleInput();
+    }
 
+    void handleInput()
+    {
         if ((Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began) || (Input.GetMouseButtonDown(0)))
         {
 
@@ -36,36 +39,38 @@ public class PlayerControl : MonoBehaviour {
             //Create a Ray on the tapped / clicked position
 
             //Layer mask
-            int layerMask = 1 << 8 | 9;
+            LayerMask layerMask = (1 << 8) | (1 << 9) | (1 << 10);
 
             Ray ray = new Ray();
+            ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             //for unity editor
             #if UNITY_EDITOR
-            ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            if(Input.GetKeyDown(KeyCode.A))
+
+            if (Input.GetKeyDown(KeyCode.A))
             {
                 Debug.DrawRay(ray.origin, ray.direction, Color.red, 10.0f);
             }
-            
+
             //for touch device
             #elif (UNITY_ANDROID || UNITY_IPHONE || UNITY_WP8)
-            ray = Camera.main.ScreenPointToRay(Input.GetTouch(0).position);
+                ray = Camera.main.ScreenPointToRay(Input.GetTouch(0).position);
             #endif
 
             //check if the ray hits any collider
             if (Physics.Raycast(ray, out hit, 10000.0f, layerMask))
             {
-                if (hit.transform.tag != "NPC" || target == hit.transform.gameObject)
+
+
+                if (hit.transform.tag != "Bed" || hit.transform.tag != "NPC" || target == hit.transform.gameObject)
                 {
                     Vector3 pos = new Vector3(hit.point.x, 0, hit.point.z);
                     enableMoveIndicator(pos);
                     agent.SetDestination(pos);
                 }
 
-                if (hit.transform.gameObject.tag == "NPC")
+                if (hit.transform.gameObject.tag == "NPC" || hit.transform.gameObject.tag == "Bed")
                 {
-
-                    if(target != null)
+                    if (target != null)
                     {
                         outlineGameObject(target.transform, Shader.Find("Diffuse"));
                     }

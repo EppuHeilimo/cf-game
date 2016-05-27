@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class NPC : MonoBehaviour
 {
@@ -9,7 +10,8 @@ public class NPC : MonoBehaviour
         STATE_ARRIVED,
         STATE_QUE,
         STATE_IDLE,
-        STATE_DEAD
+        STATE_DEAD,
+        STATE_PAUSE //Pause everything and continue last task
     }
 
     /* basic stuff */
@@ -17,7 +19,14 @@ public class NPC : MonoBehaviour
     public string myId;
     public int myHp = 50;
     public int myHappiness = 50;
+    public NPCState prevState;
     public NPCState myState;
+    public Dictionary<int, Queue<NPCState>> stateQueue;
+    private Quaternion currentRotation;
+    //how far from destination player can be to start the task
+    private float minDistanceToDestination = 10.0f;
+    private bool taskCompleted = true;
+    GameObject dialogZone;
 
     /* medicine stuff */
     bool gotMed;
@@ -39,20 +48,35 @@ public class NPC : MonoBehaviour
     float timer; // time NPC has been in the current state
     const float RECEPTION_WAITING_TIME = 2f;
     const float QUE_WAITING_TIME = 10f;
+    const float IDE_IN_THIS_PLACE_TIME = 2f;
     const int WALK_RADIUS = 500;
+    
+
 
     // Use this for initialization
     void Start()
     {
+        stateQueue = new Dictionary<int, Queue<NPCState>>();
         agent = GetComponent<NavMeshAgent>();
         queManager = GameObject.Find("QueManager").GetComponent<QueManager>();
-        myState = NPCState.STATE_ARRIVED;
         dest = Vector3.zero;
+        stateQueue.Add(1, new Queue<NPCState>());
+        stateQueue.Add(2, new Queue<NPCState>());
+        stateQueue.Add(3, new Queue<NPCState>());
+        addStateToQueue(2, NPCState.STATE_ARRIVED);
     }
 
     // Update is called once per frame
     void Update()
     {
+        if(dialogZone.GetComponent<Dialog>().playerInZone)
+        {
+            myState = NPCState.STATE_PAUSE;
+        }
+
+        if(taskCompleted)
+            setMyStateFromQueue();
+
         switch (myState)
         {
             case NPCState.STATE_ARRIVED:
@@ -64,15 +88,16 @@ public class NPC : MonoBehaviour
                 }
                 
                 // NPC has arrived at reception
-                if (Mathf.Approximately(transform.position.x, dest.x) && Mathf.Approximately(transform.position.z, dest.z))
+                if (arrivedToDestination())
                 {
                     // chill for a while at reception and then move to doctor's queue
                     timer += Time.deltaTime;
                     if (timer > RECEPTION_WAITING_TIME)
-                    { 
-                        myState = NPCState.STATE_QUE;
+                    {
+                        addStateToQueue(2, NPCState.STATE_QUE);
                         timer = 0;
                         dest = Vector3.zero;
+                        taskCompleted = true;
                     }
                 }
                 break;
@@ -88,22 +113,25 @@ public class NPC : MonoBehaviour
                 }
 
                 // NPC has arrived at the queue position
-                if (Mathf.Approximately(transform.position.x, dest.x) && Mathf.Approximately(transform.position.z, dest.z))
+                if (arrivedToDestination()) //Mathf.Approximately(transform.position.x, dest.x) && Mathf.Approximately(transform.position.z, dest.z)
                 {
                     // wait for a while at queue and then go idle
                     timer += Time.deltaTime;
                     if (timer > QUE_WAITING_TIME)
                     {
-                        myState = NPCState.STATE_IDLE;
                         giveMed();
                         timer = 0;
                         dest = Vector3.zero;
+                        taskCompleted = true;
                     }
                 }
                 break;
 
             case NPCState.STATE_IDLE:
                 checkMed();
+                //check if there's something else to do
+                setMyStateFromQueue();
+
                 if (dest == Vector3.zero)
                 {
                     // move to idle at random position
@@ -114,6 +142,17 @@ public class NPC : MonoBehaviour
                     Vector3 finalPosition = hit.position;
                     dest = new Vector3(finalPosition.x, 0, finalPosition.z);
                     moveTo(dest);
+                    timer += Time.deltaTime;
+                    if (timer > IDE_IN_THIS_PLACE_TIME)
+                    {
+                        timer = 0;
+                        randomDirection = Random.insideUnitSphere * WALK_RADIUS;
+                        randomDirection += transform.position;
+                        NavMesh.SamplePosition(randomDirection, out hit, WALK_RADIUS, 1);
+                        finalPosition = hit.position;
+                        dest = new Vector3(finalPosition.x, 0, finalPosition.z);
+                        moveTo(dest);
+                    }
                     
                 }
                 break;
@@ -121,11 +160,85 @@ public class NPC : MonoBehaviour
                 print(myName + " lähti teho-osastolle...");
                 Destroy(gameObject);
                 break;
+            case NPCState.STATE_PAUSE:
+                agent.Stop();
+                RotateTowards(GameObject.FindGameObjectWithTag("Player").transform);
+                //transform.LookAt();
+                if (!dialogZone.GetComponent<Dialog>().playerInZone)
+                {
+                    myState = prevState;
+                    agent.Resume();
+                }
+                break;
+                
+        }
+    }
+
+    private void RotateTowards(Transform target)
+    {
+        Vector3 direction = (target.position - transform.position).normalized;
+        Quaternion lookRotation = Quaternion.LookRotation(direction);
+        transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * 10.0f);
+    }
+
+    private bool arrivedToDestination()
+    {
+        float dist = Vector3.Distance(dest, transform.position);
+        if (dist < minDistanceToDestination)
+            return true;
+        else
+            return false;
+    }
+
+    public void addStateToQueue(int priority, NPCState state)
+    {
+        Queue<NPCState> queue = new Queue<NPCState>();
+        stateQueue.TryGetValue(priority, out queue);
+        queue.Enqueue(state);
+    }
+
+    public void setMyStateFromQueue()
+    {
+        taskCompleted = false;
+        Queue<NPCState> queue = new Queue<NPCState>();
+
+        //Dequeue a task from priority 3 queue if it has a task and the current task is less important
+        stateQueue.TryGetValue(3, out queue);
+        if (queue.Count > 0)
+        {
+            prevState = myState;
+            myState = queue.Dequeue();
+        }
+        else
+        {
+            //Dequeue a task from priority 2 queue if it has a task and the current task is less important
+            stateQueue.TryGetValue(2, out queue);
+            if(queue.Count > 0)
+            {
+                prevState = myState;
+                myState = queue.Dequeue();
+            }
+            else
+            {
+                //Dequeue a task from priority 2 queue if it has a task and the current task is less important
+                stateQueue.TryGetValue(1, out queue);
+                if(queue.Count > 0)
+                {
+                    prevState = myState;
+                    myState = queue.Dequeue();
+                }
+                else
+                {
+                    prevState = myState;
+                    myState = NPCState.STATE_IDLE;
+                }
+            }
         }
     }
 
     public void Init(string myName, string myId)
     {
+        
         this.myName = myName;
         this.myId = myId;
         //print("Uusi potilas spawnattu!");
@@ -167,7 +280,7 @@ public class NPC : MonoBehaviour
             }
             if (myHp <= 0)
             {
-                myState = NPCState.STATE_DEAD;
+                addStateToQueue(3, NPCState.STATE_DEAD);
             }
         }
     }
@@ -177,5 +290,9 @@ public class NPC : MonoBehaviour
         // TODO: check if given medicine is correct
         print("medicine given!");
         gotMed = true;
+    }
+    public void initChild()
+    {
+        dialogZone = transform.FindChild("ContactZone").transform.gameObject;
     }
 }
