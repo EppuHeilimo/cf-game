@@ -5,7 +5,8 @@ public class IiroAnimBehavior : MonoBehaviour {
 
     // Use this for initialization
     NavMeshAgent agent;
-    bool isWalking = false;
+    public bool isWalking = false;
+    public bool goToSleep = false;
     void Start () {
         agent = GetComponent<NavMeshAgent>();
 	}   
@@ -13,6 +14,7 @@ public class IiroAnimBehavior : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
         transform.FindChild("Iiro").GetComponent<Animator>().SetBool("IsWalking", isWalking);
+        transform.FindChild("Iiro").GetComponent<Animator>().SetBool("sleep", goToSleep);
         if (agent.velocity.magnitude < 30.0f)
         {
             isWalking = false;

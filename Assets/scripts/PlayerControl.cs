@@ -61,7 +61,7 @@ public class PlayerControl : MonoBehaviour {
             {
 
 
-                if (hit.transform.tag != "Bed" || hit.transform.tag != "NPC" || target == hit.transform.gameObject)
+                if (hit.transform.tag != "Bed" && hit.transform.tag != "NPC" || target == hit.transform.gameObject)
                 {
                     Vector3 pos = new Vector3(hit.point.x, 0, hit.point.z);
                     enableMoveIndicator(pos);
@@ -76,8 +76,6 @@ public class PlayerControl : MonoBehaviour {
                     }
                     target = hit.transform.gameObject;
                     outlineGameObject(target.transform, Shader.Find("Outlined/Silhouetted Diffuse"));
-                    //Debug.Log(target.GetComponent<NPC>().myName + " " + target.GetComponent<NPC>().myId);
-                    //target.GetComponent<Renderer>().material.shader = Shader.Find("Self-Illumin/Outlined Diffuse");
                 }
 
             }

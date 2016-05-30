@@ -6,6 +6,7 @@ public class Dialog : MonoBehaviour {
     TextBoxManager textBoxManager;
     GameObject parent;
     public bool playerInZone = false;
+    public bool npcInZone = false;
 
     void Start()
     {
@@ -31,14 +32,20 @@ public class Dialog : MonoBehaviour {
                 playerInZone = true;
             }
         }
-
-            
-        /*
-        if (other.name == "Player")
+        if(other.tag == "NPC")
         {
-            playerInZone = true;      
+            target = other.GetComponent<NPC>().getTarget();
+            if(target == transform.parent.gameObject)
+            {
+                if(target.GetComponent<NPC>().isIdle())
+                {
+                    parent.GetComponent<NPC>().setTarget(other.gameObject);
+                    npcInZone = true;
+                }
+                    
+            }
         }
-        */
+
     }
 
     void OnTriggerStay(Collider other)
@@ -72,6 +79,15 @@ public class Dialog : MonoBehaviour {
             {
                 textBoxManager.DisableTextBox();
                 playerInZone = false;
+            }
+        }
+
+        if (other.tag == "NPC")
+        {
+            target = other.GetComponent<NPC>().getTarget();
+            if (target == transform.parent.gameObject)
+            {
+                npcInZone = false;
             }
         }
 

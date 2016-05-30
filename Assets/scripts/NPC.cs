@@ -7,11 +7,13 @@ public class NPC : MonoBehaviour
     /* states */
     public enum NPCState
     {
-        STATE_ARRIVED,
+        STATE_ARRIVED = 0,
         STATE_QUE,
         STATE_IDLE,
         STATE_DEAD,
-        STATE_PAUSE //Pause everything and continue last task
+        STATE_TALK_TO_OTHER_NPC, //Pause everything and continue last task
+        STATE_TALK_TO_PLAYER,
+        STATE_SLEEP
     }
 
     /* basic stuff */
@@ -22,11 +24,14 @@ public class NPC : MonoBehaviour
     public NPCState prevState;
     public NPCState myState;
     public Dictionary<int, Queue<NPCState>> stateQueue;
-    private Quaternion currentRotation;
+    public GameObject myBed;
     //how far from destination player can be to start the task
-    private float minDistanceToDestination = 10.0f;
+    private float minDistanceToDestination = 30.0f;
     private bool taskCompleted = true;
     GameObject dialogZone;
+    GameObject target;
+    private bool talking = false;
+    private bool sleeping = false;
 
     /* medicine stuff */
     bool gotMed;
@@ -41,6 +46,7 @@ public class NPC : MonoBehaviour
     Vector3 dest; // current destination position
     NavMeshAgent agent;
     QueManager queManager;
+    NPCManager npcManager;
     Vector3 receptionPos = new Vector3(-155, 0, -23); // position of reception
     const float QUE_POS_Y = 130; // y-position of queue
 
@@ -48,8 +54,10 @@ public class NPC : MonoBehaviour
     float timer; // time NPC has been in the current state
     const float RECEPTION_WAITING_TIME = 2f;
     const float QUE_WAITING_TIME = 10f;
-    const float IDE_IN_THIS_PLACE_TIME = 2f;
+    const float IDLE_IN_THIS_PLACE_TIME = 2f;
+    const float MAX_TIME_TALK_TO_OTHER = 5f;
     const int WALK_RADIUS = 500;
+    const float SLEEP_TIME = 10f;
     
 
 
@@ -59,6 +67,7 @@ public class NPC : MonoBehaviour
         stateQueue = new Dictionary<int, Queue<NPCState>>();
         agent = GetComponent<NavMeshAgent>();
         queManager = GameObject.Find("QueManager").GetComponent<QueManager>();
+        npcManager = GameObject.Find("NPCManager").GetComponent<NPCManager>();
         dest = Vector3.zero;
         stateQueue.Add(1, new Queue<NPCState>());
         stateQueue.Add(2, new Queue<NPCState>());
@@ -71,7 +80,7 @@ public class NPC : MonoBehaviour
     {
         if(dialogZone.GetComponent<Dialog>().playerInZone)
         {
-            myState = NPCState.STATE_PAUSE;
+            myState = NPCState.STATE_TALK_TO_PLAYER;
         }
 
         if(taskCompleted)
@@ -79,6 +88,48 @@ public class NPC : MonoBehaviour
 
         switch (myState)
         {
+            case NPCState.STATE_SLEEP:
+                checkMed();
+                if(myBed == null)
+                {
+                    myBed = npcManager.bookBed(gameObject);
+                    if(myBed == null)
+                    {
+                        myState = NPCState.STATE_IDLE;
+                    }
+                }
+                if(dest == Vector3.zero && myBed != null)
+                {
+                    if(Mathf.Approximately(myBed.transform.rotation.y, 0.0f))
+                        dest = new Vector3( myBed.transform.position.x, transform.position.y, myBed.transform.position.z + 24.0f );
+                    else if (Mathf.Approximately(myBed.transform.rotation.y, 90.0f))
+                        dest = new Vector3(myBed.transform.position.x - 16, transform.position.y, myBed.transform.position.z);
+                    else if (myBed.transform.rotation.y == 180.0f)
+                        dest = new Vector3(myBed.transform.position.x, transform.position.y, myBed.transform.position.z - 16);
+                    else if (myBed.transform.rotation.y == 270.0f)
+                        dest = new Vector3(myBed.transform.position.x + 16, transform.position.y, myBed.transform.position.z);
+                    print(dest);
+                    moveTo(dest);
+                }
+                if( myBed != null && arrivedToDestination(1.0f) && !sleeping)
+                {
+                    agent.Stop();
+                    RotateAwayFrom(myBed.transform);
+                    GetComponent<IiroAnimBehavior>().goToSleep = true;
+                    
+                }
+                if(sleeping)
+                {
+                    timer += Time.deltaTime;
+                    if(timer > SLEEP_TIME)
+                    {
+                        GetComponent<IiroAnimBehavior>().goToSleep = false;
+                        sleeping = false;
+                        taskCompleted = true;
+                        dest = Vector3.zero;
+                    }
+                }
+                break;
             case NPCState.STATE_ARRIVED:
                 // move to reception when NPC first arrives
                 if (dest == Vector3.zero)
@@ -88,7 +139,7 @@ public class NPC : MonoBehaviour
                 }
                 
                 // NPC has arrived at reception
-                if (arrivedToDestination())
+                if (arrivedToDestination(30))
                 {
                     // chill for a while at reception and then move to doctor's queue
                     timer += Time.deltaTime;
@@ -113,7 +164,7 @@ public class NPC : MonoBehaviour
                 }
 
                 // NPC has arrived at the queue position
-                if (arrivedToDestination()) //Mathf.Approximately(transform.position.x, dest.x) && Mathf.Approximately(transform.position.z, dest.z)
+                if (arrivedToDestination(30)) 
                 {
                     // wait for a while at queue and then go idle
                     timer += Time.deltaTime;
@@ -131,47 +182,147 @@ public class NPC : MonoBehaviour
                 checkMed();
                 //check if there's something else to do
                 setMyStateFromQueue();
-
-                if (dest == Vector3.zero)
+                timer += Time.deltaTime;
+                if (target != null && talking)
                 {
-                    // move to idle at random position
-                    Vector3 randomDirection = Random.insideUnitSphere * WALK_RADIUS;
-                    randomDirection += transform.position;
-                    NavMeshHit hit;
-                    NavMesh.SamplePosition(randomDirection, out hit, WALK_RADIUS, 1);
-                    Vector3 finalPosition = hit.position;
-                    dest = new Vector3(finalPosition.x, 0, finalPosition.z);
-                    moveTo(dest);
-                    timer += Time.deltaTime;
-                    if (timer > IDE_IN_THIS_PLACE_TIME)
+                    agent.Stop();
+                    RotateTowards(target.transform);
+                }
+                else 
+                {
+                    if (arrivedToDestination(30))
                     {
-                        timer = 0;
-                        randomDirection = Random.insideUnitSphere * WALK_RADIUS;
+                        // move to idle at random position
+                        Vector3 randomDirection = Random.insideUnitSphere * WALK_RADIUS;
                         randomDirection += transform.position;
+                        NavMeshHit hit;
                         NavMesh.SamplePosition(randomDirection, out hit, WALK_RADIUS, 1);
-                        finalPosition = hit.position;
+                        Vector3 finalPosition = hit.position;
                         dest = new Vector3(finalPosition.x, 0, finalPosition.z);
                         moveTo(dest);
                     }
-                    
+                    else if (timer > IDLE_IN_THIS_PLACE_TIME)
+                    {
+                        timer = 0;
+                        Vector3 randomDirection = Random.insideUnitSphere * WALK_RADIUS;
+                        randomDirection += transform.position;
+                        NavMeshHit hit;
+                        NavMesh.SamplePosition(randomDirection, out hit, WALK_RADIUS, 1);
+                        Vector3 finalPosition = hit.position;
+                        dest = new Vector3(finalPosition.x, 0, finalPosition.z);
+                        moveTo(dest);
+                        if (Random.Range(0f, 1f) > 0.9f)
+                        {
+                            if (!talking)
+                                addStateToQueue(2, NPCState.STATE_TALK_TO_OTHER_NPC);
+                        }
+                        if (Random.Range(0f, 1f) > 0.9f)
+                        {
+                             addStateToQueue(2, NPCState.STATE_SLEEP);
+                        }
+                    }
+
                 }
                 break;
             case NPCState.STATE_DEAD:
                 print(myName + " lähti teho-osastolle...");
                 Destroy(gameObject);
-                break;
-            case NPCState.STATE_PAUSE:
+                break;            
+            case NPCState.STATE_TALK_TO_PLAYER:
+                checkMed();
                 agent.Stop();
                 RotateTowards(GameObject.FindGameObjectWithTag("Player").transform);
-                //transform.LookAt();
                 if (!dialogZone.GetComponent<Dialog>().playerInZone)
                 {
                     myState = prevState;
                     agent.Resume();
                 }
                 break;
-                
+            case NPCState.STATE_TALK_TO_OTHER_NPC:
+                checkMed();
+                //check that the target is actually capable of talking
+                if (target == null || target.tag != "NPC" || !target.GetComponent<NPC>().isIdle() && !target.GetComponent<NPC>().talking)
+                    findOtherIdleNPC();
+                //check if at target & set destination
+                if(walkToTarget())
+                {
+                    //set both npc's to talking
+                    target.GetComponent<NPC>().talking = true;
+                    talking = true;
+
+                    //stop moving
+                    agent.Stop();
+
+                    //rotate to look the target
+                    RotateTowards(target.transform);
+                    timer += Time.deltaTime;
+                    if(timer > MAX_TIME_TALK_TO_OTHER)
+                    {
+                        timer = 0;
+                        taskCompleted = true;
+                        talking = false;
+                        target.GetComponent<NPC>().talking = false;
+                        target.GetComponent<NPC>().agent.Resume();
+                        agent.Resume();
+
+                    }
+                }
+                break;
+
+
         }
+    }
+
+    public void setTarget(GameObject target)
+    {
+        this.target = target;
+    }
+
+    public GameObject getTarget()
+    {
+        return target;
+    }
+
+    //returns true if npc is already at target, sets the agent destination
+    private bool walkToTarget()
+    {
+
+        if(Vector3.Distance(transform.position, target.transform.position) < 30.0f)
+        {
+            return true;
+        }
+        else
+        {
+            agent.SetDestination(target.transform.position);
+            return false;
+        }
+    }
+    private void findOtherIdleNPC()
+    {
+        GameObject[] npcs = GameObject.FindGameObjectsWithTag("NPC");
+        
+        foreach(GameObject npc in npcs)
+        {
+            //Check that the npc is not self and is idle
+            if(npc.gameObject != gameObject && npc.GetComponent<NPC>().isIdle())
+            {
+                target = npc.transform.gameObject;
+            }
+        }
+        //target is still null if there is no other idle npcs, so go back to idle
+        if(target == null || !target.GetComponent<NPC>().isIdle())
+        {
+            myState = NPCState.STATE_IDLE;
+        }
+    }
+
+    public bool isIdle()
+    {
+        if (myState == NPCState.STATE_IDLE || myState == NPCState.STATE_TALK_TO_OTHER_NPC )
+        {
+            return true;
+        }
+        else return false;
     }
 
     private void RotateTowards(Transform target)
@@ -181,10 +332,20 @@ public class NPC : MonoBehaviour
         transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * 10.0f);
     }
 
-    private bool arrivedToDestination()
+    private void RotateAwayFrom(Transform target)
+    {
+        
+        Vector3 direction = (target.position - transform.position).normalized;
+        Quaternion lookRotation = Quaternion.LookRotation(-direction);
+        transform.rotation = Quaternion.RotateTowards(transform.rotation, lookRotation, 5.0f);
+
+            
+    }
+
+    private bool arrivedToDestination(float accuracy)
     {
         float dist = Vector3.Distance(dest, transform.position);
-        if (dist < minDistanceToDestination)
+        if (dist < accuracy)
             return true;
         else
             return false;
@@ -199,6 +360,7 @@ public class NPC : MonoBehaviour
 
     public void setMyStateFromQueue()
     {
+        
         taskCompleted = false;
         Queue<NPCState> queue = new Queue<NPCState>();
 
@@ -208,6 +370,7 @@ public class NPC : MonoBehaviour
         {
             prevState = myState;
             myState = queue.Dequeue();
+            dest = Vector3.zero;
         }
         else
         {
@@ -217,6 +380,7 @@ public class NPC : MonoBehaviour
             {
                 prevState = myState;
                 myState = queue.Dequeue();
+                dest = Vector3.zero;
             }
             else
             {
@@ -226,11 +390,13 @@ public class NPC : MonoBehaviour
                 {
                     prevState = myState;
                     myState = queue.Dequeue();
+                    dest = Vector3.zero;
                 }
                 else
                 {
                     prevState = myState;
                     myState = NPCState.STATE_IDLE;
+                    dest = Vector3.zero;
                 }
             }
         }
@@ -260,7 +426,7 @@ public class NPC : MonoBehaviour
             {
                 medTimer = 0;
                 gotMed = false;
-                print("medicine duration over!");
+                //print("medicine duration over!");
             }
             hpTimer += Time.deltaTime;
             if (hpTimer >= GET_HP_TIME)
@@ -274,7 +440,7 @@ public class NPC : MonoBehaviour
             deathTimer += Time.deltaTime;
             if (deathTimer >= LOSE_HP_TIME)
             {
-                print("lost hp, give me new medicine!");
+                //print("lost hp, give me new medicine!");
                 myHp--;
                 deathTimer = 0;
             }
@@ -288,7 +454,7 @@ public class NPC : MonoBehaviour
     public void giveMed()
     {
         // TODO: check if given medicine is correct
-        print("medicine given!");
+        //print("medicine given!");
         gotMed = true;
     }
     public void initChild()

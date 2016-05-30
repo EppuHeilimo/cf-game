@@ -31,6 +31,7 @@ public class NPCManager : MonoBehaviour
     const int MAX_NPCS = 5; // ** MUST BE SAME AS MAX_QUE IN QUE MANAGER! **
 
     List<string> usedIds; // IDs already used
+    Dictionary<GameObject, GameObject> beds = new Dictionary<GameObject, GameObject>();
 
     // Use this for initialization
     void Start()
@@ -39,6 +40,29 @@ public class NPCManager : MonoBehaviour
         spawnPoint = new Vector3(-265, 0, 125);
         spawnTime = 5; //Random.Range(5, 20); // spawn new NPC somewhere between 5 and 20 seconds
         usedIds = new List<string>();
+        GameObject[] bedstemp = GameObject.FindGameObjectsWithTag("Bed");
+        foreach(GameObject bed in bedstemp)
+        {
+            beds.Add(bed, null);
+        }
+    }
+
+    public GameObject bookBed(GameObject npc)
+    {
+        foreach(KeyValuePair<GameObject, GameObject> bed in beds)
+        {
+            if(bed.Value == null)
+            {
+                beds[bed.Key] = npc;
+                return bed.Key;
+            }
+        }
+        return null;
+    }
+
+    public void unbookBed(GameObject bed)
+    {
+        beds[bed] = null;
     }
 
     // Update is called once per frame
