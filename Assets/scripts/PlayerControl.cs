@@ -60,23 +60,26 @@ public class PlayerControl : MonoBehaviour {
             if (Physics.Raycast(ray, out hit, 10000.0f, layerMask))
             {
 
-
-                if (hit.transform.tag != "Bed" && hit.transform.tag != "NPC" || target == hit.transform.gameObject)
+                if (!UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject())
                 {
-                    Vector3 pos = new Vector3(hit.point.x, 0, hit.point.z);
-                    enableMoveIndicator(pos);
-                    agent.SetDestination(pos);
-                }
-
-                if (hit.transform.gameObject.tag == "NPC" || hit.transform.gameObject.tag == "Bed")
-                {
-                    if (target != null)
+                    if (hit.transform.tag != "Bed" && hit.transform.tag != "NPC" || target == hit.transform.gameObject)
                     {
-                        outlineGameObject(target.transform, Shader.Find("Diffuse"));
+                        Vector3 pos = new Vector3(hit.point.x, 0, hit.point.z);
+                        enableMoveIndicator(pos);
+                        agent.SetDestination(pos);
                     }
-                    target = hit.transform.gameObject;
-                    outlineGameObject(target.transform, Shader.Find("Outlined/Silhouetted Diffuse"));
+
+                    if (hit.transform.gameObject.tag == "NPC" || hit.transform.gameObject.tag == "Bed")
+                    {
+                        if (target != null)
+                        {
+                            outlineGameObject(target.transform, Shader.Find("Diffuse"));
+                        }
+                        target = hit.transform.gameObject;
+                        outlineGameObject(target.transform, Shader.Find("Outlined/Silhouetted Diffuse"));
+                    }
                 }
+
 
             }
         }
