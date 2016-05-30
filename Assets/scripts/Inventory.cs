@@ -1,158 +1,129 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
 
 public class Inventory : MonoBehaviour {
-
-    public int slotsX, slotsY;
-    public GUISkin skin;
-    public List<Item> inventory = new List<Item>();
-    public List<Item> slots = new List<Item>();
-    bool showInventory;
+    GameObject inventoryPanel;
+    GameObject slotPanel;
     ItemDatabase database;
-    bool showTooltip;
-    string tooltip;
+    public GameObject inventorySlot;
+    public GameObject inventoryItem;
 
-    bool draggingItem;
-    Item draggedItem;
-    int prevIndex;
+    int slotAmount;
+    public List<Item> items = new List<Item>();
+    public List<GameObject> slots = new List<GameObject>();
 
-	// Use this for initialization
-	void Start () {
-        for (int i = 0; i < (slotsX * slotsY); i++)
+    void Start()
+    {
+        database = GetComponent<ItemDatabase>();
+        slotAmount = 16;
+        inventoryPanel = GameObject.Find("Inventory Panel");
+        slotPanel = inventoryPanel.transform.FindChild("Slot Panel").gameObject;
+        // create 20 empty slots and items
+        for (int i = 0; i < slotAmount; i++)
         {
-            slots.Add(new Item());
-            inventory.Add(new Item());
+            items.Add(new Item());
+            slots.Add(Instantiate(inventorySlot));
+            slots[i].GetComponent<Slot>().id = i;
+            slots[i].transform.SetParent(slotPanel.transform);
         }
-        database = GameObject.FindGameObjectWithTag("Item Database").GetComponent<ItemDatabase>();
+
+        AddItem(0);
         AddItem(1);
-        AddItem(0);
-        AddItem(0);
-        RemoveItem(0);
+        AddItem(1);
+        AddItem(1);
+        AddItem(1);
     }
 
-    void Update()
+    public void AddItem(int id)
     {
-        if (Input.GetButtonDown("Inventory"))
+        Item itemToAdd = database.FetchItemByID(id);
+        // stack item if it's already in inventory
+        if (CheckIfItemIsInInventory(itemToAdd))
         {
-            showInventory = !showInventory;
-        }
-    }
-	
-    void OnGUI()
-    {
-        tooltip = "";
-        GUI.skin = skin;
-        if (showInventory)
-        {
-            DrawInventory();
-            if (showTooltip)
-                GUI.Box(new Rect(Event.current.mousePosition.x + 15f, Event.current.mousePosition.y, 200, 200), tooltip, skin.GetStyle("Tooltip"));
-        }   
-        if (draggingItem)
-        {
-            GUI.DrawTexture(new Rect(Event.current.mousePosition.x, Event.current.mousePosition.y, 50, 50), draggedItem.itemIcon);
-        }   
-    }
-
-    void DrawInventory()
-    {
-        Event e = Event.current;
-        int i = 0;
-        for (int y = 0; y < slotsY; y++)
-        {
-            for (int x = 0; x < slotsX; x++)   
+            for (int i = 0; i < items.Count; i++)
             {
-                Rect slotRect = new Rect(x * 60, y * 60, 50, 50);
-                GUI.Box(slotRect, "", skin.GetStyle("Slot"));
-                slots[i] = inventory[i];
-                if (slots[i].itemName != null)
+                if (items[i].ID == id)
                 {
-                    GUI.DrawTexture(slotRect, slots[i].itemIcon);
-                    if (slotRect.Contains(e.mousePosition))
-                    {
-                        tooltip = CreateTooltip(slots[i]);
-                        showTooltip = true;
-                        if (e.button == 0 && e.type == EventType.mouseDrag && !draggingItem) // TODO: touch screen support
-                        {
-                            draggingItem = true;
-                            prevIndex = i;
-                            draggedItem = slots[i];
-                            inventory[i] = new Item();
-                        }
-                        if (e.type == EventType.mouseUp && draggingItem)
-                        {
-                            inventory[prevIndex] = inventory[i];
-                            inventory[i] = draggedItem;
-                            draggingItem = false;
-                            draggedItem = null;
-                        }
-                    }
+                    ItemData data = slots[i].transform.GetChild(0).GetComponent<ItemData>();
+                    data.amount++;
+                    data.transform.GetChild(0).GetComponent<Text>().text = data.amount.ToString();
+                    print("asd");
+                    break;
                 }
-                else
+            }
+        }
+        else
+        { 
+            for (int i = 0; i < items.Count; i++)
+            {
+                // ID -1 = empty slot
+                if (items[i].ID == -1)
                 {
-                    if (slotRect.Contains(e.mousePosition))
-                    {
-                        if (e.type == EventType.mouseUp && draggingItem)
-                        {
-                            inventory[i] = draggedItem;
-                            draggingItem = false;
-                            draggedItem = null;
-                        }
-                    }
+                    print("ddd");
+                    items[i] = itemToAdd;
+                    GameObject itemObj = Instantiate(inventoryItem);
+                    itemObj.GetComponent<ItemData>().item = itemToAdd;
+                    itemObj.GetComponent<ItemData>().amount = 1;
+                    itemObj.GetComponent<ItemData>().slot = i;
+                    // make the object child of the corresponding slot
+                    itemObj.transform.SetParent(slots[i].transform);
+                    itemObj.transform.position = Vector2.zero;
+                    itemObj.GetComponent<Image>().sprite = itemToAdd.Sprite;
+                    itemObj.name = itemToAdd.Title;
+                    break;
                 }
-                if (tooltip == "")
-                {
-                    showTooltip = false;
-                }
-                i++;
             }
         }
     }
 
-    string CreateTooltip(Item item)
+    bool CheckIfItemIsInInventory(Item item)
     {
-        tooltip = "<color=#ffffff>" + item.itemName + "</color>\n\n" + item.itemDesc;
-        return tooltip;
-    }
-
-    void AddItem(int id)
-    {
-        for (int i = 0; i < inventory.Count; i++)
+        for (int i = 0; i < items.Count; i++)
         {
-            if (inventory[i].itemName == null)
-            {
-                for (int j = 0; j < database.items.Count; j++)
-                {
-                    if (database.items[j].itemID == id)
-                    {
-                        inventory[i] = database.items[j];
-                    }
-                }
-                break;
-            }
-        }
-    }
-
-    void RemoveItem(int id)
-    {
-        for (int i = 0; i < inventory.Count; i++)
-        {
-            if (inventory[i].itemID == id)
-            {
-                inventory[i] = new Item();
-                break;
-            }
-        }
-    }
-
-    bool InventoryContains(int id)
-    {
-        foreach (Item item in inventory)
-        {
-            if (item.itemID == id) return true;
+            if (items[i].ID == item.ID)
+                return true;
         }
         return false;
     }
 
+    public void RemoveItem(int id)
+    {
+        Item itemToRemove = database.FetchItemByID(id);
+        if (CheckIfItemIsInInventory(itemToRemove))
+        {
+            for (int i = 0; i < items.Count; i++)
+            {
+                if (items[i].ID == id)
+                {
+                    ItemData data = slots[i].transform.GetChild(0).GetComponent<ItemData>();
+                    data.amount--;
+                    if (data.amount == 0)
+                    {
+                        items[i] = new Item();
+                        Transform t = slots[i].transform.GetChild(0);
+                        Destroy(t.gameObject);
+                        print("yks");
+                        break;
+                    }
+                    else
+                    {
+                        if (data.amount == 1)
+                        {
+                            data.transform.GetComponentInChildren<Text>().text = "";
+                            print("kaks");
+                            break;
+                        }
+                        else
+                        {
+                            data.transform.GetComponentInChildren<Text>().text = data.amount.ToString();
+                            print("kol");
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+    }
 }

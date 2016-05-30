@@ -1,0 +1,14 @@
+[
+	{
+		"id": 0,
+		"title": "Burana",
+		"desc": "Särkylääke",
+		"substance": "ibuprofeiini"
+	},
+	{
+		"id": 1,
+		"title": "Kokaiini",
+		"desc": "Auttaa vaivaan kuin vaivaan",
+		"substance": "coke"
+	}
+]
