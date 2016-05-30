@@ -5,6 +5,8 @@ TagManager:
   serializedVersion: 2
   tags:
   - btnGiveMed
+  - Item Database
+  - NPC
   - New Tag
   - NPC
   - Bed
@@ -19,6 +21,7 @@ TagManager:
   - 
   - Floor
   - NPC
+  - 
   - TargetableObject
   - 
   - 
