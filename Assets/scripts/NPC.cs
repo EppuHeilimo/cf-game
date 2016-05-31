@@ -246,7 +246,6 @@ public class NPC : MonoBehaviour
                     timer += Time.deltaTime;
                     if (timer > QUE_WAITING_TIME)
                     {
-                        giveMed();
                         diagnosed = true;
                         giveMed(CORRECT_MED);
                         timer = 0;
@@ -536,21 +535,25 @@ public class NPC : MonoBehaviour
 
     public bool giveMed(string med)
     {
-        // TODO: check if given medicine is correct
-        gotMed = true;
-        if (med == CORRECT_MED)
-        {
-            gotMed = true;
-            print("Correct medicine!");
-            return true;
-        }           
-        else
-        {
-            gotMed = false;
-            myHp = myHp - 20;
-            print("Wrong medicine! " + myName + " lost 20HP!");
-            return true;
+        if (diagnosed) //TODO: check if player is near enough the NPC to give medicine
+        { 
+            if (med == CORRECT_MED)
+            {
+                gotMed = true;
+                medTimer = 0;
+                print("Correct medicine!");
+                return true;
+            }           
+            else
+            {
+                gotMed = false;
+                deathTimer = 0;
+                myHp = myHp - 20;
+                print("Wrong medicine! " + myName + " lost 20HP!");
+                return true;
+            }
         }
+        return false;
     }
 
     public void initChild()
