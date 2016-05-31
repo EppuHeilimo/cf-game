@@ -42,13 +42,14 @@ public class NPC : MonoBehaviour
     public float oldy = 0.0f;
 
     /* medicine stuff */
-    bool gotMed;
+    public bool gotMed;
     float deathTimer; // time without medicine
     float medTimer; // time with medicine
     float hpTimer;
     const int LOSE_HP_TIME = 10; // lose one hitpoint every X seconds 
     const int GET_HP_TIME = 10; // get one hitpoint every X seconds 
     const float MED_DURATION = 10;
+    const string CORRECT_MED = "Burana";
 
     /* position stuff */
     Vector3 dest; // current destination position
@@ -247,6 +248,7 @@ public class NPC : MonoBehaviour
                     {
                         giveMed();
                         diagnosed = true;
+                        giveMed(CORRECT_MED);
                         timer = 0;
                         dest = Vector3.zero;
                         taskCompleted = true;
@@ -532,10 +534,20 @@ public class NPC : MonoBehaviour
         }
     }
 
-    public void giveMed()
+    public void giveMed(string med)
     {
         // TODO: check if given medicine is correct
         gotMed = true;
+        if (med == CORRECT_MED)
+        {
+            gotMed = true;
+            print("correct medicine!");
+        }           
+        else
+        {
+            gotMed = false;
+            print("wrong medicine!");
+        }            
     }
     public void initChild()
     {

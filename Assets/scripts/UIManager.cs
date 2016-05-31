@@ -16,10 +16,11 @@ public class UIManager : MonoBehaviour {
 	
 	}
 
-    public void btnGiveMedPressed()
+    public void giveMed(string med)
     {
         target = player.GetComponent<PlayerControl>().getTarget();
-        if (target.tag == "NPC")
-            target.GetComponent<NPC>().giveMed();
+        if (target == null) return;
+        else if (target.tag == "NPC")
+            target.GetComponent<NPC>().giveMed(med);
     }
 }

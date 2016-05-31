@@ -5,16 +5,17 @@ using System;
 
 public class ItemData : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerDownHandler, IPointerEnterHandler, IPointerExitHandler {
     public Item item;
-    public int amount;
     public int slot;
 
     Inventory inv;
     Tooltip tooltip;
     Vector2 offset;
+    UIManager uiManager;
 
     void Start()
     {
         inv = GameObject.Find("Inventory").GetComponent<Inventory>();
+        uiManager = GameObject.Find("UIManager").GetComponent<UIManager>();
         tooltip = inv.GetComponent<Tooltip>();
     }
 
@@ -46,9 +47,19 @@ public class ItemData : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
     {
         if (item != null)
         {
-            offset = eventData.position - new Vector2(this.transform.position.x, this.transform.position.y);
-            this.transform.position = eventData.position - offset;
+            // give medicine to NPC with right click
+            if (eventData.pointerId == -2)
+            {
+                uiManager.giveMed(item.Title);
+            }
+            else
+            { 
+                offset = eventData.position - new Vector2(this.transform.position.x, this.transform.position.y);
+                this.transform.position = eventData.position - offset;
+            }
         }
+
+
     }
 
     public void OnPointerEnter(PointerEventData eventData)
