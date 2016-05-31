@@ -13,7 +13,8 @@ public class NPC : MonoBehaviour
         STATE_DEAD,
         STATE_TALK_TO_OTHER_NPC, //Pause everything and continue last task
         STATE_TALK_TO_PLAYER,
-        STATE_SLEEP
+        STATE_SLEEP,
+        STATE_SLEEP_ON_FLOOR
     }
 
     /* basic stuff */
@@ -21,6 +22,11 @@ public class NPC : MonoBehaviour
     public string myId;
     public int myHp = 50;
     public int myHappiness = 50;
+    //has the npc visited the doctor
+    public bool diagnosed = false;
+    //how tired the npc is
+    public float fatique = 0;
+    public float fatiquetimer = 0;
     public NPCState prevState;
     public NPCState myState;
     public Dictionary<int, Queue<NPCState>> stateQueue;
@@ -30,16 +36,18 @@ public class NPC : MonoBehaviour
     private bool taskCompleted = true;
     GameObject dialogZone;
     GameObject target;
-    private bool talking = false;
+    public bool talking = false;
     private bool sleeping = false;
+    private bool cantFindBed = false;
+    public float oldy = 0.0f;
 
     /* medicine stuff */
     public bool gotMed;
     float deathTimer; // time without medicine
     float medTimer; // time with medicine
     float hpTimer;
-    const int LOSE_HP_TIME = 2; // lose one hitpoint every X seconds 
-    const int GET_HP_TIME = 2; // get one hitpoint every X seconds 
+    const int LOSE_HP_TIME = 10; // lose one hitpoint every X seconds 
+    const int GET_HP_TIME = 10; // get one hitpoint every X seconds 
     const float MED_DURATION = 10;
     const string CORRECT_MED = "Burana";
 
@@ -84,19 +92,81 @@ public class NPC : MonoBehaviour
             myState = NPCState.STATE_TALK_TO_PLAYER;
         }
 
-        if(taskCompleted)
+        //check status only if has visited the doctor
+        if(diagnosed)
+        {
+            checkMed();
+
+            //Increase fatigue every x seconds if state is not sleep
+            if(!sleeping)
+            {
+                fatiquetimer += Time.deltaTime;
+                if (fatiquetimer > 5.0f)
+                {
+                    fatique += 3f;
+                    fatiquetimer = 0;
+                }
+                //if fatigue is too high, sleep immidiately
+                if (fatique > 30.0f && cantFindBed)
+                {
+                    /*
+                    taskCompleted = true;
+                    addStateToQueue(3, NPCState.STATE_SLEEP_ON_FLOOR);
+                    oldy = transform.rotation.y;
+                    */
+                    myHappiness -= 10;
+                    fatique = 0;
+                }
+                if (fatique > 10.0f && !cantFindBed)
+                {
+                    addStateToQueue(2, NPCState.STATE_SLEEP);
+                }
+                
+            }
+
+        }
+            
+        if (taskCompleted)
             setMyStateFromQueue();
 
         switch (myState)
         {
+            case NPCState.STATE_SLEEP_ON_FLOOR:
+
+                transform.rotation = Quaternion.Euler(90, transform.eulerAngles.y, transform.eulerAngles.z);
+                if (!sleeping)
+                {
+                    agent.updateRotation = false;
+                    agent.Stop();
+                    sleeping = true;
+                }
+                if (sleeping)
+                {
+                    timer += Time.deltaTime;
+                    if(timer > 10.0f)
+                    {
+                        timer = 0;
+                        addStateToQueue(2, NPCState.STATE_IDLE);
+                        dest = Vector3.zero;
+                        cantFindBed = false;
+                        sleeping = false;
+                        myHp -= 10;
+                        fatique = 0;
+                        taskCompleted = true;
+                        agent.updateRotation = true;
+                        agent.Resume();
+                    }
+                }
+
+                break;
             case NPCState.STATE_SLEEP:
-                checkMed();
                 if(myBed == null)
                 {
                     myBed = npcManager.bookBed(gameObject);
                     if(myBed == null)
                     {
-                        myState = NPCState.STATE_IDLE;
+                        addStateToQueue(2, NPCState.STATE_IDLE);
+                        cantFindBed = true;
                     }
                 }
                 if(dest == Vector3.zero && myBed != null)
@@ -115,12 +185,16 @@ public class NPC : MonoBehaviour
                 if( myBed != null && arrivedToDestination(1.0f) && !sleeping)
                 {
                     agent.Stop();
-                    RotateAwayFrom(myBed.transform);
+                    
                     GetComponent<IiroAnimBehavior>().goToSleep = true;
+                    sleeping = true;
                     
                 }
                 if(sleeping)
                 {
+                    fatique = 0;
+                    RotateAwayFrom(myBed.transform);
+                    GetComponent<IiroAnimBehavior>().goToSleep = true;
                     timer += Time.deltaTime;
                     if(timer > SLEEP_TIME)
                     {
@@ -128,6 +202,7 @@ public class NPC : MonoBehaviour
                         sleeping = false;
                         taskCompleted = true;
                         dest = Vector3.zero;
+                        agent.Resume();
                     }
                 }
                 break;
@@ -171,6 +246,8 @@ public class NPC : MonoBehaviour
                     timer += Time.deltaTime;
                     if (timer > QUE_WAITING_TIME)
                     {
+                        giveMed();
+                        diagnosed = true;
                         giveMed(CORRECT_MED);
                         timer = 0;
                         dest = Vector3.zero;
@@ -217,10 +294,6 @@ public class NPC : MonoBehaviour
                             if (!talking)
                                 addStateToQueue(2, NPCState.STATE_TALK_TO_OTHER_NPC);
                         }
-                        if (Random.Range(0f, 1f) > 0.9f)
-                        {
-                             addStateToQueue(2, NPCState.STATE_SLEEP);
-                        }
                     }
 
                 }
@@ -243,7 +316,14 @@ public class NPC : MonoBehaviour
                 checkMed();
                 //check that the target is actually capable of talking
                 if (target == null || target.tag != "NPC" || !target.GetComponent<NPC>().isIdle() && !target.GetComponent<NPC>().talking)
+                {
                     findOtherIdleNPC();
+                }
+                    
+                if(target == null)
+                {
+                    addStateToQueue(2, NPCState.STATE_IDLE);
+                }
                 //check if at target & set destination
                 if(walkToTarget())
                 {
@@ -268,10 +348,18 @@ public class NPC : MonoBehaviour
 
                     }
                 }
+
                 break;
 
 
         }
+    }
+
+    private void resetStateVariables()
+    {
+        talking = false;
+        dest = Vector3.zero;
+        agent.Resume();
     }
 
     public void setTarget(GameObject target)
@@ -338,9 +426,7 @@ public class NPC : MonoBehaviour
         
         Vector3 direction = (target.position - transform.position).normalized;
         Quaternion lookRotation = Quaternion.LookRotation(-direction);
-        transform.rotation = Quaternion.RotateTowards(transform.rotation, lookRotation, 5.0f);
-
-            
+        transform.rotation = Quaternion.RotateTowards(transform.rotation, lookRotation, 5.0f);     
     }
 
     private bool arrivedToDestination(float accuracy)
@@ -408,9 +494,7 @@ public class NPC : MonoBehaviour
         
         this.myName = myName;
         this.myId = myId;
-        //print("Uusi potilas spawnattu!");
-        //print("myName: " + this.myName);
-        //print("myId: " + this.myId);
+
     }
 
     public void moveTo(Vector3 dest)
@@ -427,7 +511,6 @@ public class NPC : MonoBehaviour
             {
                 medTimer = 0;
                 gotMed = false;
-                //print("medicine duration over!");
             }
             hpTimer += Time.deltaTime;
             if (hpTimer >= GET_HP_TIME)
@@ -441,7 +524,6 @@ public class NPC : MonoBehaviour
             deathTimer += Time.deltaTime;
             if (deathTimer >= LOSE_HP_TIME)
             {
-                //print("lost hp, give me new medicine!");
                 myHp--;
                 deathTimer = 0;
             }
@@ -454,6 +536,8 @@ public class NPC : MonoBehaviour
 
     public bool giveMed(string med)
     {
+        // TODO: check if given medicine is correct
+        gotMed = true;
         if (med == CORRECT_MED)
         {
             gotMed = true;
@@ -473,4 +557,5 @@ public class NPC : MonoBehaviour
     {
         dialogZone = transform.FindChild("ContactZone").transform.gameObject;
     }
+
 }
