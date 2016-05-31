@@ -49,7 +49,7 @@ public class Inventory : MonoBehaviour {
                     ItemData data = slots[i].transform.GetChild(0).GetComponent<ItemData>();
                     data.amount++;
                     data.transform.GetChild(0).GetComponent<Text>().text = data.amount.ToString();
-                    print("asd");
+                    
                     break;
                 }
             }
@@ -61,7 +61,6 @@ public class Inventory : MonoBehaviour {
                 // ID -1 = empty slot
                 if (items[i].ID == -1)
                 {
-                    print("ddd");
                     items[i] = itemToAdd;
                     GameObject itemObj = Instantiate(inventoryItem);
                     itemObj.GetComponent<ItemData>().item = itemToAdd;
