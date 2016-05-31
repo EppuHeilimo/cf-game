@@ -50,7 +50,12 @@ public class ItemData : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
             // give medicine to NPC with right click
             if (eventData.pointerId == -2)
             {
-                uiManager.giveMed(item.Title);
+                // remove medicine from inventory if giving it succeeds
+                if (uiManager.giveMed(item.Title))
+                {
+                    inv.RemoveItem(item.ID);
+                    tooltip.Deactivate();
+                }
             }
             else
             { 
@@ -58,8 +63,6 @@ public class ItemData : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
                 this.transform.position = eventData.position - offset;
             }
         }
-
-
     }
 
     public void OnPointerEnter(PointerEventData eventData)

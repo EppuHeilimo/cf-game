@@ -452,19 +452,23 @@ public class NPC : MonoBehaviour
         }
     }
 
-    public void giveMed(string med)
+    public bool giveMed(string med)
     {
         if (med == CORRECT_MED)
         {
             gotMed = true;
-            print("correct medicine!");
+            print("Correct medicine!");
+            return true;
         }           
         else
         {
             gotMed = false;
-            print("wrong medicine!");
-        }            
+            myHp = myHp - 20;
+            print("Wrong medicine! " + myName + " lost 20HP!");
+            return true;
+        }
     }
+
     public void initChild()
     {
         dialogZone = transform.FindChild("ContactZone").transform.gameObject;

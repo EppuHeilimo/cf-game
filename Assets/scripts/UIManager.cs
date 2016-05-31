@@ -16,11 +16,13 @@ public class UIManager : MonoBehaviour {
 	
 	}
 
-    public void giveMed(string med)
+    public bool giveMed(string med)
     {
         target = player.GetComponent<PlayerControl>().getTarget();
-        if (target == null) return;
+        if (target == null)
+            return false;
         else if (target.tag == "NPC")
-            target.GetComponent<NPC>().giveMed(med);
+            return(target.GetComponent<NPC>().giveMed(med));
+        return false;
     }
 }
