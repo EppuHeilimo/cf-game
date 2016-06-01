@@ -128,231 +128,268 @@ public class NPC : MonoBehaviour
             
         if (taskCompleted)
             setMyStateFromQueue();
+        actAccordingToState();
 
+    }
+
+    private void actAccordingToState()
+    {
         switch (myState)
         {
             case NPCState.STATE_SLEEP_ON_FLOOR:
-
-                transform.rotation = Quaternion.Euler(90, transform.eulerAngles.y, transform.eulerAngles.z);
-                if (!sleeping)
-                {
-                    agent.updateRotation = false;
-                    agent.Stop();
-                    sleeping = true;
-                }
-                if (sleeping)
-                {
-                    timer += Time.deltaTime;
-                    if(timer > 10.0f)
-                    {
-                        timer = 0;
-                        addStateToQueue(2, NPCState.STATE_IDLE);
-                        dest = Vector3.zero;
-                        cantFindBed = false;
-                        sleeping = false;
-                        myHp -= 10;
-                        fatique = 0;
-                        taskCompleted = true;
-                        agent.updateRotation = true;
-                        agent.Resume();
-                    }
-                }
-
+                sleepOnFloor();
                 break;
             case NPCState.STATE_SLEEP:
-                if(myBed == null)
-                {
-                    myBed = npcManager.bookBed(gameObject);
-                    if(myBed == null)
-                    {
-                        addStateToQueue(2, NPCState.STATE_IDLE);
-                        cantFindBed = true;
-                    }
-                }
-                if(dest == Vector3.zero && myBed != null)
-                {
-                    if(Mathf.Approximately(myBed.transform.rotation.y, 0.0f))
-                        dest = new Vector3( myBed.transform.position.x, transform.position.y, myBed.transform.position.z + 24.0f );
-                    else if (Mathf.Approximately(myBed.transform.rotation.y, 90.0f))
-                        dest = new Vector3(myBed.transform.position.x - 16, transform.position.y, myBed.transform.position.z);
-                    else if (myBed.transform.rotation.y == 180.0f)
-                        dest = new Vector3(myBed.transform.position.x, transform.position.y, myBed.transform.position.z - 16);
-                    else if (myBed.transform.rotation.y == 270.0f)
-                        dest = new Vector3(myBed.transform.position.x + 16, transform.position.y, myBed.transform.position.z);
-                    print(dest);
-                    moveTo(dest);
-                }
-                if( myBed != null && arrivedToDestination(1.0f) && !sleeping)
-                {
-                    agent.Stop();
-                    
-                    GetComponent<IiroAnimBehavior>().goToSleep = true;
-                    sleeping = true;
-                    
-                }
-                if(sleeping)
-                {
-                    fatique = 0;
-                    RotateAwayFrom(myBed.transform);
-                    GetComponent<IiroAnimBehavior>().goToSleep = true;
-                    timer += Time.deltaTime;
-                    if(timer > SLEEP_TIME)
-                    {
-                        GetComponent<IiroAnimBehavior>().goToSleep = false;
-                        sleeping = false;
-                        taskCompleted = true;
-                        dest = Vector3.zero;
-                        agent.Resume();
-                    }
-                }
+                sleep();
                 break;
             case NPCState.STATE_ARRIVED:
-                // move to reception when NPC first arrives
-                if (dest == Vector3.zero)
-                {
-                    dest = receptionPos;
-                    moveTo(dest);
-                }
-                
-                // NPC has arrived at reception
-                if (arrivedToDestination(30))
-                {
-                    // chill for a while at reception and then move to doctor's queue
-                    timer += Time.deltaTime;
-                    if (timer > RECEPTION_WAITING_TIME)
-                    {
-                        addStateToQueue(2, NPCState.STATE_QUE);
-                        timer = 0;
-                        dest = Vector3.zero;
-                        taskCompleted = true;
-                    }
-                }
+                arrival();
                 break;
-
             case NPCState.STATE_QUE:
-                if (dest == Vector3.zero)
-                {
-                    // get next free queue position from queManager
-                    float quePosX = queManager.addToQue();
-                    dest = new Vector3(quePosX, 0, QUE_POS_Y);
-                    // move to the queue position received
-                    moveTo(dest);
-                }
-
-                // NPC has arrived at the queue position
-                if (arrivedToDestination(30)) 
-                {
-                    // wait for a while at queue and then go idle
-                    timer += Time.deltaTime;
-                    if (timer > QUE_WAITING_TIME)
-                    {
-                        diagnosed = true;
-                        giveMed(CORRECT_MED);
-                        timer = 0;
-                        dest = Vector3.zero;
-                        taskCompleted = true;
-                    }
-                }
+                queue();
                 break;
-
             case NPCState.STATE_IDLE:
-                checkMed();
-                //check if there's something else to do
-                setMyStateFromQueue();
-                timer += Time.deltaTime;
-                if (target != null && talking)
-                {
-                    agent.Stop();
-                    RotateTowards(target.transform);
-                }
-                else 
-                {
-                    if (arrivedToDestination(30))
-                    {
-                        // move to idle at random position
-                        Vector3 randomDirection = Random.insideUnitSphere * WALK_RADIUS;
-                        randomDirection += transform.position;
-                        NavMeshHit hit;
-                        NavMesh.SamplePosition(randomDirection, out hit, WALK_RADIUS, 1);
-                        Vector3 finalPosition = hit.position;
-                        dest = new Vector3(finalPosition.x, 0, finalPosition.z);
-                        moveTo(dest);
-                    }
-                    else if (timer > IDLE_IN_THIS_PLACE_TIME)
-                    {
-                        timer = 0;
-                        Vector3 randomDirection = Random.insideUnitSphere * WALK_RADIUS;
-                        randomDirection += transform.position;
-                        NavMeshHit hit;
-                        NavMesh.SamplePosition(randomDirection, out hit, WALK_RADIUS, 1);
-                        Vector3 finalPosition = hit.position;
-                        dest = new Vector3(finalPosition.x, 0, finalPosition.z);
-                        moveTo(dest);
-                        if (Random.Range(0f, 1f) > 0.9f)
-                        {
-                            if (!talking)
-                                addStateToQueue(2, NPCState.STATE_TALK_TO_OTHER_NPC);
-                        }
-                    }
-
-                }
+                idle();
                 break;
             case NPCState.STATE_DEAD:
-                print(myName + " lähti teho-osastolle...");
-                Destroy(gameObject);
-                break;            
+                die();
+                break;
             case NPCState.STATE_TALK_TO_PLAYER:
-                checkMed();
-                agent.Stop();
-                RotateTowards(GameObject.FindGameObjectWithTag("Player").transform);
-                if (!dialogZone.GetComponent<Dialog>().playerInZone)
-                {
-                    myState = prevState;
-                    agent.Resume();
-                }
+                talkToPlayer();
                 break;
             case NPCState.STATE_TALK_TO_OTHER_NPC:
-                checkMed();
-                //check that the target is actually capable of talking
-                if (target == null || target.tag != "NPC" || !target.GetComponent<NPC>().isIdle() && !target.GetComponent<NPC>().talking)
-                {
-                    findOtherIdleNPC();
-                }
-                    
-                if(target == null)
-                {
-                    addStateToQueue(2, NPCState.STATE_IDLE);
-                }
-                //check if at target & set destination
-                if(walkToTarget())
-                {
-                    //set both npc's to talking
-                    target.GetComponent<NPC>().talking = true;
-                    talking = true;
-
-                    //stop moving
-                    agent.Stop();
-
-                    //rotate to look the target
-                    RotateTowards(target.transform);
-                    timer += Time.deltaTime;
-                    if(timer > MAX_TIME_TALK_TO_OTHER)
-                    {
-                        timer = 0;
-                        taskCompleted = true;
-                        talking = false;
-                        target.GetComponent<NPC>().talking = false;
-                        target.GetComponent<NPC>().agent.Resume();
-                        agent.Resume();
-
-                    }
-                }
-
+                talkToNPC();
                 break;
+        }
+    }
 
+    private void sleepOnFloor()
+    {
+        transform.rotation = Quaternion.Euler(90, transform.eulerAngles.y, transform.eulerAngles.z);
+        if (!sleeping)
+        {
+            agent.updateRotation = false;
+            agent.Stop();
+            sleeping = true;
+        }
+        if (sleeping)
+        {
+            timer += Time.deltaTime;
+            if (timer > 10.0f)
+            {
+                timer = 0;
+                addStateToQueue(2, NPCState.STATE_IDLE);
+                dest = Vector3.zero;
+                cantFindBed = false;
+                sleeping = false;
+                myHp -= 10;
+                fatique = 0;
+                taskCompleted = true;
+                agent.updateRotation = true;
+                agent.Resume();
+            }
+        }
+    }
+
+    private void sleep()
+    {
+        if (myBed == null)
+        {
+            myBed = npcManager.bookBed(gameObject);
+            if (myBed == null)
+            {
+                addStateToQueue(2, NPCState.STATE_IDLE);
+                cantFindBed = true;
+            }
+        }
+        if (dest == Vector3.zero && myBed != null)
+        {
+            if (Mathf.Approximately(myBed.transform.rotation.y, 0.0f))
+                dest = new Vector3(myBed.transform.position.x, transform.position.y, myBed.transform.position.z + 24.0f);
+            else if (Mathf.Approximately(myBed.transform.rotation.y, 90.0f))
+                dest = new Vector3(myBed.transform.position.x - 16, transform.position.y, myBed.transform.position.z);
+            else if (myBed.transform.rotation.y == 180.0f)
+                dest = new Vector3(myBed.transform.position.x, transform.position.y, myBed.transform.position.z - 16);
+            else if (myBed.transform.rotation.y == 270.0f)
+                dest = new Vector3(myBed.transform.position.x + 16, transform.position.y, myBed.transform.position.z);
+            print(dest);
+            moveTo(dest);
+        }
+        if (myBed != null && arrivedToDestination(1.0f) && !sleeping)
+        {
+            agent.Stop();
+            GetComponent<IiroAnimBehavior>().goToSleep = true;
+            sleeping = true;
+
+        }
+        if (sleeping)
+        {
+            fatique = 0;
+            RotateAwayFrom(myBed.transform);
+            GetComponent<IiroAnimBehavior>().goToSleep = true;
+            timer += Time.deltaTime;
+            if (timer > SLEEP_TIME)
+            {
+                GetComponent<IiroAnimBehavior>().goToSleep = false;
+                sleeping = false;
+                taskCompleted = true;
+                dest = Vector3.zero;
+                agent.Resume();
+            }
+        }
+    }
+
+    private void arrival()
+    {
+        // move to reception when NPC first arrives
+        if (dest == Vector3.zero)
+        {
+            dest = receptionPos;
+            moveTo(dest);
+        }
+
+        // NPC has arrived at reception
+        if (arrivedToDestination(30))
+        {
+            // chill for a while at reception and then move to doctor's queue
+            timer += Time.deltaTime;
+            if (timer > RECEPTION_WAITING_TIME)
+            {
+                addStateToQueue(2, NPCState.STATE_QUE);
+                timer = 0;
+                dest = Vector3.zero;
+                taskCompleted = true;
+            }
+        }
+    }
+
+    private void queue()
+    {
+        if (dest == Vector3.zero)
+        {
+            // get next free queue position from queManager
+            float quePosX = queManager.addToQue();
+            dest = new Vector3(quePosX, 0, QUE_POS_Y);
+            // move to the queue position received
+            moveTo(dest);
+        }
+
+        // NPC has arrived at the queue position
+        if (arrivedToDestination(30))
+        {
+            // wait for a while at queue and then go idle
+            timer += Time.deltaTime;
+            if (timer > QUE_WAITING_TIME)
+            {
+                diagnosed = true;
+                giveMed(CORRECT_MED);
+                timer = 0;
+                dest = Vector3.zero;
+                taskCompleted = true;
+            }
+        }
+    }
+
+    private void idle()
+    {
+        //check if there's something else to do
+        setMyStateFromQueue();
+        timer += Time.deltaTime;
+        if (target != null && talking)
+        {
+            agent.Stop();
+            RotateTowards(target.transform);
+        }
+        else
+        {
+            if (arrivedToDestination(30))
+            {
+                // move to idle at random position
+                Vector3 randomDirection = Random.insideUnitSphere * WALK_RADIUS;
+                randomDirection += transform.position;
+                NavMeshHit hit;
+                NavMesh.SamplePosition(randomDirection, out hit, WALK_RADIUS, 1);
+                Vector3 finalPosition = hit.position;
+                dest = new Vector3(finalPosition.x, 0, finalPosition.z);
+                moveTo(dest);
+            }
+            else if (timer > IDLE_IN_THIS_PLACE_TIME)
+            {
+                timer = 0;
+                Vector3 randomDirection = Random.insideUnitSphere * WALK_RADIUS;
+                randomDirection += transform.position;
+                NavMeshHit hit;
+                NavMesh.SamplePosition(randomDirection, out hit, WALK_RADIUS, 1);
+                Vector3 finalPosition = hit.position;
+                dest = new Vector3(finalPosition.x, 0, finalPosition.z);
+                moveTo(dest);
+                if (Random.Range(0f, 1f) > 0.9f)
+                {
+                    if (!talking)
+                        addStateToQueue(2, NPCState.STATE_TALK_TO_OTHER_NPC);
+                }
+            }
 
         }
     }
+
+    private void die()
+    {
+        print(myName + " lähti teho-osastolle...");
+        Destroy(gameObject);
+    }
+
+    private void talkToPlayer()
+    {
+        agent.Stop();
+        RotateTowards(GameObject.FindGameObjectWithTag("Player").transform);
+        if (!dialogZone.GetComponent<Dialog>().playerInZone)
+        {
+            myState = prevState;
+            agent.Resume();
+        }
+    }
+
+    private void talkToNPC()
+    {
+        //check that the target is actually capable of talking
+        if (target == null || target.tag != "NPC" || !target.GetComponent<NPC>().isIdle() && !target.GetComponent<NPC>().talking)
+        {
+            findOtherIdleNPC();
+        }
+
+        if (target == null)
+        {
+            addStateToQueue(2, NPCState.STATE_IDLE);
+        }
+        //check if at target & set destination
+        if (walkToTarget())
+        {
+            //set both npc's to talking
+            target.GetComponent<NPC>().talking = true;
+            talking = true;
+
+            //stop moving
+            agent.Stop();
+
+            //rotate to look the target
+            RotateTowards(target.transform);
+            timer += Time.deltaTime;
+            if (timer > MAX_TIME_TALK_TO_OTHER)
+            {
+                timer = 0;
+                taskCompleted = true;
+                talking = false;
+                target.GetComponent<NPC>().talking = false;
+                target.GetComponent<NPC>().agent.Resume();
+                agent.Resume();
+
+            }
+        }
+
+    }
+
+   
 
     private void resetStateVariables()
     {
@@ -529,13 +566,14 @@ public class NPC : MonoBehaviour
             if (myHp <= 0)
             {
                 addStateToQueue(3, NPCState.STATE_DEAD);
+                taskCompleted = true;
             }
         }
     }
 
     public bool giveMed(string med)
     {
-        if (diagnosed && dialogZone.GetComponent<Dialog>().playerInZone) //TODO: check if player is near enough the NPC to give medicine
+        if (diagnosed && dialogZone.GetComponent<Dialog>().playerInZone)
         { 
             if (med == CORRECT_MED)
             {
