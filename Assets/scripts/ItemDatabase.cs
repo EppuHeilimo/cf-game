@@ -3,6 +3,7 @@ using System.Collections;
 using LitJson;
 using System.Collections.Generic;
 using System.IO;
+using System;
 
 public class ItemDatabase : MonoBehaviour {
     List<Item> database = new List<Item>();
@@ -18,6 +19,14 @@ public class ItemDatabase : MonoBehaviour {
     {
         for (int i = 0; i < database.Count; i++)
             if (database[i].ID == id)
+                return database[i];
+        return null;
+    }
+
+    public Item FetchItemByTitle(string title)
+    {
+        for (int i = 0; i < database.Count; i++)
+            if (string.Equals(database[i].Title, title, StringComparison.CurrentCultureIgnoreCase))
                 return database[i];
         return null;
     }

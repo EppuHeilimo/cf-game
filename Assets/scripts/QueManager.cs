@@ -3,7 +3,7 @@ using System.Collections;
 
 public class QueManager : MonoBehaviour {
 
-    const int MAX_QUE = 15 * 2; // max number of NPCs in queue (change the first number, the second [multiplier] is hack fix) ** MUST BE SAME AS MAX_NPCS IN NPC MANAGER! **
+    const int MAX_QUE = 5 * 2; // max number of NPCs in queue (change the first number, the second [multiplier] is hack fix) ** MUST BE SAME AS MAX_NPCS IN NPC MANAGER! **
     bool[] queArr; // que slot taken = 1, que slot free = 0
     float offset; // x-space between NPCs in queue
     float[] quePos; // predefined array of queue x-positions

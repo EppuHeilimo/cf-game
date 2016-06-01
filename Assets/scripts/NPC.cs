@@ -224,7 +224,6 @@ public class NPC : MonoBehaviour
                 dest = new Vector3(myBed.transform.position.x, transform.position.y, myBed.transform.position.z - 16);
             else if (myBed.transform.rotation.y == 270.0f)
                 dest = new Vector3(myBed.transform.position.x + 16, transform.position.y, myBed.transform.position.z);
-            print(dest);
             moveTo(dest);
         }
         //if at the bed and not sleeping yet, stop navmeshagent and start animation
@@ -604,7 +603,7 @@ public class NPC : MonoBehaviour
     {
         if (diagnosed && dialogZone.GetComponent<Dialog>().playerInZone)
         { 
-            if (med == CORRECT_MED)
+            if (string.Equals(med, CORRECT_MED, System.StringComparison.CurrentCultureIgnoreCase))
             {
                 gotMed = true;
                 medTimer = 0;

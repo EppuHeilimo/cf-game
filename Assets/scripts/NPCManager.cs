@@ -28,7 +28,7 @@ public class NPCManager : MonoBehaviour
     // hard-coded pool for names, probably changed later
     string[] namePool = { "Aleksi", "Pekka", "Matti", "Kalle", "Jorma" };
     
-    const int MAX_NPCS = 15; // ** MUST BE SAME AS MAX_QUE IN QUE MANAGER! **
+    const int MAX_NPCS = 5; // ** MUST BE SAME AS MAX_QUE IN QUE MANAGER! **
 
     List<string> usedIds; // IDs already used
     Dictionary<GameObject, GameObject> beds = new Dictionary<GameObject, GameObject>();
