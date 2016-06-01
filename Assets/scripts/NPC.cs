@@ -49,7 +49,8 @@ public class NPC : MonoBehaviour
     const int LOSE_HP_TIME = 2; // lose one hitpoint every X seconds 
     const int GET_HP_TIME = 2; // get one hitpoint every X seconds 
     const float MED_DURATION = 30f;
-    const string CORRECT_MED = "Burana";
+    public string myProblem;
+    public string myMedicine;
 
     /* position stuff */
     Vector3 dest; // current destination position
@@ -301,7 +302,6 @@ public class NPC : MonoBehaviour
             if (timer > QUE_WAITING_TIME)
             {
                 diagnosed = true;
-                giveMed(CORRECT_MED);
                 timer = 0;
                 dest = Vector3.zero;
                 taskCompleted = true;
@@ -553,12 +553,12 @@ public class NPC : MonoBehaviour
         }
     }
 
-    public void Init(string myName, string myId)
+    public void Init(string myName, string myId, string myProblem, string myMedicine)
     {
-        
         this.myName = myName;
         this.myId = myId;
-
+        this.myProblem = myProblem;
+        this.myMedicine = myMedicine;
     }
 
     public void moveTo(Vector3 dest)
@@ -603,7 +603,7 @@ public class NPC : MonoBehaviour
     {
         if (diagnosed && dialogZone.GetComponent<Dialog>().playerInZone)
         { 
-            if (string.Equals(med, CORRECT_MED, System.StringComparison.CurrentCultureIgnoreCase))
+            if (string.Equals(med, myMedicine, System.StringComparison.CurrentCultureIgnoreCase))
             {
                 gotMed = true;
                 medTimer = 0;

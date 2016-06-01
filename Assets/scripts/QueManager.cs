@@ -21,12 +21,6 @@ public class QueManager : MonoBehaviour {
         }
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
-
     public float addToQue()
     {
         for (int i = 0; i < MAX_QUE; i++)

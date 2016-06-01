@@ -3,12 +3,14 @@
 		"id": 0,
 		"title": "Burana",
 		"desc": "Särkylääke",
-		"substance": "ibuprofeiini"
+		"substance": "ibuprofeiini",
+		"usage": "flu"
 	},
 	{
 		"id": 1,
 		"title": "Kokaiini",
 		"desc": "Auttaa vaivaan kuin vaivaan",
-		"substance": "coke"
+		"substance": "coke",
+		"usage": "pissed off"
 	}
 ]
