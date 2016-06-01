@@ -4,11 +4,8 @@
 TagManager:
   serializedVersion: 2
   tags:
-  - btnGiveMed
-  - Item Database
   - NPC
-  - New Tag
-  - NPC
+  - Inventory
   - Bed
   layers:
   - Default
