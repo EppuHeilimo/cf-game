@@ -33,7 +33,7 @@ public class Inventory : MonoBehaviour {
         AddItem(1);
         RemoveItem(1);
         AddItem(1);
-        AddItem(0);
+
     }
 
     public void AddItem(int id)
@@ -54,13 +54,15 @@ public class Inventory : MonoBehaviour {
                 itemObj.transform.SetParent(slots[i].transform);
                 itemObj.transform.position = Vector2.zero;
                 itemObj.GetComponent<Image>().sprite = itemToAdd.Sprite;
+                itemObj.GetComponent<RectTransform>().anchoredPosition = Vector2.zero;
+                itemObj.GetComponent<RectTransform>().sizeDelta = Vector2.zero;
                 break;
             }
         }
         if (!foundEmptySlot)
         {
             // no empty slots, show "inventory full" -message
-            Debug.Log("täynnä!");
+            Debug.Log("Inventaario on täynnä!");
         }
     }
 

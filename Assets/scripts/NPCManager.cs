@@ -28,10 +28,14 @@ public class NPCManager : MonoBehaviour
     // hard-coded pool for names, probably changed later
     string[] namePool = { "Aleksi", "Pekka", "Matti", "Kalle", "Jorma" };
     
-    const int MAX_NPCS = 15; // ** MUST BE SAME AS MAX_QUE IN QUE MANAGER! **
+    const int MAX_NPCS = 5; // ** MUST BE SAME AS MAX_QUE IN QUE MANAGER! **
 
     List<string> usedIds; // IDs already used
     Dictionary<GameObject, GameObject> beds = new Dictionary<GameObject, GameObject>();
+
+    // for generating random problem to patient from database
+    GameObject invObj;
+    ItemDatabase database;
 
     // Use this for initialization
     void Start()
@@ -45,6 +49,8 @@ public class NPCManager : MonoBehaviour
         {
             beds.Add(bed, null);
         }
+        invObj = GameObject.Find("Inventory");
+        database = invObj.GetComponent<ItemDatabase>();
     }
 
     public GameObject bookBed(GameObject npc)
@@ -89,7 +95,9 @@ public class NPCManager : MonoBehaviour
         string myName = namePool[nameIndex];
         string myId = RandomString(4);
         GameObject newNpc = Instantiate(npcPrefab, spawnPoint, Quaternion.identity) as GameObject; // the method that copies the prefab object
-        newNpc.GetComponent<NPC>().Init(myName, myId); // initialize the npc
+        // fetch random medicine item from database
+        Item randItem = database.FetchItemByID(UnityEngine.Random.Range(0, database.database.Count));
+        newNpc.GetComponent<NPC>().Init(myName, myId, randItem.Usage, randItem.Title); // initialize the npc
         npcList.Add(newNpc);
     }
 

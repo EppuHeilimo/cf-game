@@ -49,7 +49,8 @@ public class NPC : MonoBehaviour
     const int LOSE_HP_TIME = 2; // lose one hitpoint every X seconds 
     const int GET_HP_TIME = 2; // get one hitpoint every X seconds 
     const float MED_DURATION = 30f;
-    const string CORRECT_MED = "Burana";
+    public string myProblem;
+    public string myMedicine;
 
     /* position stuff */
     Vector3 dest; // current destination position
@@ -224,7 +225,6 @@ public class NPC : MonoBehaviour
                 dest = new Vector3(myBed.transform.position.x, transform.position.y, myBed.transform.position.z - 16);
             else if (myBed.transform.rotation.y == 270.0f)
                 dest = new Vector3(myBed.transform.position.x + 16, transform.position.y, myBed.transform.position.z);
-            print(dest);
             moveTo(dest);
         }
         //if at the bed and not sleeping yet, stop navmeshagent and start animation
@@ -302,7 +302,6 @@ public class NPC : MonoBehaviour
             if (timer > QUE_WAITING_TIME)
             {
                 diagnosed = true;
-                giveMed(CORRECT_MED);
                 timer = 0;
                 dest = Vector3.zero;
                 taskCompleted = true;
@@ -554,12 +553,12 @@ public class NPC : MonoBehaviour
         }
     }
 
-    public void Init(string myName, string myId)
+    public void Init(string myName, string myId, string myProblem, string myMedicine)
     {
-        
         this.myName = myName;
         this.myId = myId;
-
+        this.myProblem = myProblem;
+        this.myMedicine = myMedicine;
     }
 
     public void moveTo(Vector3 dest)
@@ -604,7 +603,7 @@ public class NPC : MonoBehaviour
     {
         if (diagnosed && dialogZone.GetComponent<Dialog>().playerInZone)
         { 
-            if (med == CORRECT_MED)
+            if (string.Equals(med, myMedicine, System.StringComparison.CurrentCultureIgnoreCase))
             {
                 gotMed = true;
                 medTimer = 0;

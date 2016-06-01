@@ -18,12 +18,12 @@ public class TextBoxManager : MonoBehaviour {
     {
     }
 
-    public void EnableTextBox(string myName, string myId, float myHp, bool medActive)
+    public void EnableTextBox(string myName, string myId, float myHp, bool medActive, string myProblem)
     {
         string medStatus = "Active";
         if (!medActive)
             medStatus = "Not active";
-        dialog.text = "Name: " + myName + "\n" + "ID: " + myId + "\n" + "Hp: " + myHp.ToString() + "\n" + "Medicine: " + medStatus;
+        dialog.text = "Name: " + myName + "\n" + "ID: " + myId + "\n" + "Hp: " + myHp.ToString() + "\n" + "Medicine: " + medStatus + "\n" + "Problem: " + myProblem;
     }
 
     public void DisableTextBox()
