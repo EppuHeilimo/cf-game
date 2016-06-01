@@ -535,7 +535,7 @@ public class NPC : MonoBehaviour
 
     public bool giveMed(string med)
     {
-        if (diagnosed) //TODO: check if player is near enough the NPC to give medicine
+        if (diagnosed && dialogZone.GetComponent<Dialog>().playerInZone) //TODO: check if player is near enough the NPC to give medicine
         { 
             if (med == CORRECT_MED)
             {
