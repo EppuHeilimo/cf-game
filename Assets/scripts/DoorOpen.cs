@@ -5,6 +5,7 @@ public class DoorOpen : MonoBehaviour {
     Quaternion defaultRot;
     Vector3 defaultPos;
     bool isOpen = false;
+    //how many objects are in the trigger area
     int triggerObjectsInArea = 0;
 
 	// Use this for initialization
@@ -37,6 +38,8 @@ public class DoorOpen : MonoBehaviour {
     void OnTriggerExit(Collider collider)
     {
         triggerObjectsInArea--;
+
+        //fail safe, lets not let the objects go to negative
         if(triggerObjectsInArea < 0)
         {
             triggerObjectsInArea = 0;

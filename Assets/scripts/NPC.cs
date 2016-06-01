@@ -95,8 +95,8 @@ public class NPC : MonoBehaviour
         //check status only if has visited the doctor
         if(diagnosed)
         {
+            //check medication every update if player is diagnosed
             checkMed();
-
             //Increase fatigue every x seconds if state is not sleep
             if(!sleeping)
             {
@@ -106,17 +106,13 @@ public class NPC : MonoBehaviour
                     fatique += 3f;
                     fatiquetimer = 0;
                 }
-                //if fatigue is too high, sleep immidiately
+                //if fatigue is too high and can't find bed, lose happiness, reset fatique
                 if (fatique > 30.0f && cantFindBed)
                 {
-                    /*
-                    taskCompleted = true;
-                    addStateToQueue(3, NPCState.STATE_SLEEP_ON_FLOOR);
-                    oldy = transform.rotation.y;
-                    */
                     myHappiness -= 10;
                     fatique = 0;
                 }
+                //if has bed and fatique over x, queue sleep task
                 if (fatique > 10.0f && !cantFindBed)
                 {
                     addStateToQueue(2, NPCState.STATE_SLEEP);
@@ -134,6 +130,7 @@ public class NPC : MonoBehaviour
 
     private void actAccordingToState()
     {
+        /* act according to myState */
         switch (myState)
         {
             case NPCState.STATE_SLEEP_ON_FLOOR:
@@ -165,19 +162,23 @@ public class NPC : MonoBehaviour
 
     private void sleepOnFloor()
     {
+        //slam npc face to floor
         transform.rotation = Quaternion.Euler(90, transform.eulerAngles.y, transform.eulerAngles.z);
         if (!sleeping)
         {
+            //stop the navmesh agent movement
             agent.updateRotation = false;
             agent.Stop();
             sleeping = true;
         }
         if (sleeping)
         {
+
             timer += Time.deltaTime;
             if (timer > 10.0f)
             {
                 timer = 0;
+                //go back to idle after sleeping, reset all values, lose health
                 addStateToQueue(2, NPCState.STATE_IDLE);
                 dest = Vector3.zero;
                 cantFindBed = false;
@@ -185,6 +186,8 @@ public class NPC : MonoBehaviour
                 myHp -= 10;
                 fatique = 0;
                 taskCompleted = true;
+
+                //navmesh agent resume
                 agent.updateRotation = true;
                 agent.Resume();
             }
@@ -193,15 +196,24 @@ public class NPC : MonoBehaviour
 
     private void sleep()
     {
+        //if npc doesn't have bed, try to find one
         if (myBed == null)
         {
+            //check if bed is available
             myBed = npcManager.bookBed(gameObject);
+            //if still null, bed not found
             if (myBed == null)
             {
+                //back to idle
                 addStateToQueue(2, NPCState.STATE_IDLE);
+
+                //mark that this npc doesn't have bed, so next loop will not go to sleep(), 
+                //but stay in idle until 
+                //fatique is too high
                 cantFindBed = true;
             }
         }
+        //if has no destination and has a bed
         if (dest == Vector3.zero && myBed != null)
         {
             if (Mathf.Approximately(myBed.transform.rotation.y, 0.0f))
@@ -215,6 +227,7 @@ public class NPC : MonoBehaviour
             print(dest);
             moveTo(dest);
         }
+        //if at the bed and not sleeping yet, stop navmeshagent and start animation
         if (myBed != null && arrivedToDestination(1.0f) && !sleeping)
         {
             agent.Stop();
@@ -222,23 +235,29 @@ public class NPC : MonoBehaviour
             sleeping = true;
 
         }
+        
         if (sleeping)
         {
             fatique = 0;
+            //rotate to look away from the bed so animation will move the player on the bed
             RotateAwayFrom(myBed.transform);
             GetComponent<IiroAnimBehavior>().goToSleep = true;
             timer += Time.deltaTime;
             if (timer > SLEEP_TIME)
             {
+                //stop animation
                 GetComponent<IiroAnimBehavior>().goToSleep = false;
                 sleeping = false;
                 taskCompleted = true;
                 dest = Vector3.zero;
+
+                //resume agent movement
                 agent.Resume();
             }
         }
     }
 
+    //arrives at hospital
     private void arrival()
     {
         // move to reception when NPC first arrives
@@ -263,6 +282,7 @@ public class NPC : MonoBehaviour
         }
     }
 
+    //queue to doctor
     private void queue()
     {
         if (dest == Vector3.zero)
@@ -290,6 +310,7 @@ public class NPC : MonoBehaviour
         }
     }
 
+    //just wander around the hospital, if npc has nothing else to do it will go to this state
     private void idle()
     {
         //check if there's something else to do
@@ -339,6 +360,7 @@ public class NPC : MonoBehaviour
         Destroy(gameObject);
     }
 
+    //if player is close and player has target on this npc, talk to player
     private void talkToPlayer()
     {
         agent.Stop();
@@ -349,6 +371,7 @@ public class NPC : MonoBehaviour
             agent.Resume();
         }
     }
+
 
     private void talkToNPC()
     {
@@ -422,6 +445,7 @@ public class NPC : MonoBehaviour
             return false;
         }
     }
+    //looks for other npcs who are idle
     private void findOtherIdleNPC()
     {
         GameObject[] npcs = GameObject.FindGameObjectsWithTag("NPC");
@@ -450,6 +474,7 @@ public class NPC : MonoBehaviour
         else return false;
     }
 
+    //rotates towards a position
     private void RotateTowards(Transform target)
     {
         Vector3 direction = (target.position - transform.position).normalized;
@@ -457,6 +482,7 @@ public class NPC : MonoBehaviour
         transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * 10.0f);
     }
 
+    //same as rotateTowards, but inverse look direction
     private void RotateAwayFrom(Transform target)
     {
         
@@ -465,6 +491,7 @@ public class NPC : MonoBehaviour
         transform.rotation = Quaternion.RotateTowards(transform.rotation, lookRotation, 5.0f);     
     }
 
+    //checks if navmesh is within accuracy zone of his destination
     private bool arrivedToDestination(float accuracy)
     {
         float dist = Vector3.Distance(dest, transform.position);
@@ -481,6 +508,8 @@ public class NPC : MonoBehaviour
         queue.Enqueue(state);
     }
 
+    //finds the highest priority task and selects it as current stage
+    //called only when task is completed
     public void setMyStateFromQueue()
     {
         
