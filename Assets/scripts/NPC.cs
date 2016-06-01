@@ -46,9 +46,9 @@ public class NPC : MonoBehaviour
     float deathTimer; // time without medicine
     float medTimer; // time with medicine
     float hpTimer;
-    const int LOSE_HP_TIME = 10; // lose one hitpoint every X seconds 
-    const int GET_HP_TIME = 10; // get one hitpoint every X seconds 
-    const float MED_DURATION = 10;
+    const int LOSE_HP_TIME = 2; // lose one hitpoint every X seconds 
+    const int GET_HP_TIME = 2; // get one hitpoint every X seconds 
+    const float MED_DURATION = 30f;
     const string CORRECT_MED = "Burana";
 
     /* position stuff */
@@ -535,7 +535,7 @@ public class NPC : MonoBehaviour
 
     public bool giveMed(string med)
     {
-        if (diagnosed && dialogZone.GetComponent<Dialog>().playerInZone) //TODO: check if player is near enough the NPC to give medicine
+        if (diagnosed && dialogZone.GetComponent<Dialog>().playerInZone)
         { 
             if (med == CORRECT_MED)
             {
