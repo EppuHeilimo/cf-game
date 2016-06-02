@@ -17,7 +17,7 @@ public class Inventory : MonoBehaviour {
     void Start()
     {
         database = GetComponent<ItemDatabase>();
-        slotAmount = 3;
+        slotAmount = 4;
         inventoryPanel = GameObject.Find("Inventory Panel");
         slotPanel = inventoryPanel.transform.FindChild("Slot Panel").gameObject;
         // create 3 empty slots and items

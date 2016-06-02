@@ -8,6 +8,8 @@ TagManager:
   - Inventory
   - Bed
   - HpBar
+  - HappyBar
+  - TargetPanel
   layers:
   - Default
   - TransparentFX
