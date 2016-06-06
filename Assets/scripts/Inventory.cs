@@ -20,7 +20,7 @@ public class Inventory : MonoBehaviour {
         slotAmount = 4;
         inventoryPanel = GameObject.Find("Inventory Panel");
         slotPanel = inventoryPanel.transform.FindChild("Slot Panel").gameObject;
-        // create 3 empty slots and items
+        // create 4 empty slots and items
         for (int i = 0; i < slotAmount; i++)
         {
             items.Add(new Item());
@@ -30,8 +30,6 @@ public class Inventory : MonoBehaviour {
         }
 
         AddItem(0);
-        AddItem(1);
-        RemoveItem(1);
         AddItem(1);
 
     }
@@ -52,10 +50,8 @@ public class Inventory : MonoBehaviour {
                 itemObj.GetComponent<ItemData>().slot = i;
                 // make the object child of the corresponding slot
                 itemObj.transform.SetParent(slots[i].transform);
-                itemObj.transform.position = Vector2.zero;
+                itemObj.transform.position = slots[i].transform.position;
                 itemObj.GetComponent<Image>().sprite = itemToAdd.Sprite;
-                itemObj.GetComponent<RectTransform>().anchoredPosition = Vector2.zero;
-                itemObj.GetComponent<RectTransform>().sizeDelta = Vector2.zero;
                 break;
             }
         }
