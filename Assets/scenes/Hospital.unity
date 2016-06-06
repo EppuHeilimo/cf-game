@@ -414,6 +414,18 @@ Prefab:
       propertyPath: m_Name
       value: TextBoxManager
       objectReference: {fileID: 0}
+    - target: {fileID: 11450064, guid: 2d70f5e3d8a6a9749aeeb4d1eb0c0480, type: 2}
+      propertyPath: myNameText
+      value: 
+      objectReference: {fileID: 1745818628}
+    - target: {fileID: 11450064, guid: 2d70f5e3d8a6a9749aeeb4d1eb0c0480, type: 2}
+      propertyPath: myIdText
+      value: 
+      objectReference: {fileID: 1612445092}
+    - target: {fileID: 11450064, guid: 2d70f5e3d8a6a9749aeeb4d1eb0c0480, type: 2}
+      propertyPath: myProblemText
+      value: 
+      objectReference: {fileID: 1990022383}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 2d70f5e3d8a6a9749aeeb4d1eb0c0480, type: 2}
   m_IsPrefabParent: 0
@@ -52735,6 +52747,12 @@ MeshFilter:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1611210059}
   m_Mesh: {fileID: 4300000, guid: a67f835d525493f44af81a9540ef9960, type: 3}
+--- !u!114 &1612445092 stripped
+MonoBehaviour:
+  m_PrefabParentObject: {fileID: 11438352, guid: cf3f2e712242b9940bfd0894141c3f8c,
+    type: 2}
+  m_PrefabInternal: {fileID: 1301910853}
+  m_Script: {fileID: 708705254, guid: f5f67c52d1564df4a8936ccd202a3bd8, type: 3}
 --- !u!1001 &1612986408
 Prefab:
   m_ObjectHideFlags: 0
@@ -57184,6 +57202,12 @@ Transform:
   - {fileID: 1265245712}
   m_Father: {fileID: 992171372}
   m_RootOrder: 0
+--- !u!114 &1745818628 stripped
+MonoBehaviour:
+  m_PrefabParentObject: {fileID: 11483612, guid: cf3f2e712242b9940bfd0894141c3f8c,
+    type: 2}
+  m_PrefabInternal: {fileID: 1301910853}
+  m_Script: {fileID: 708705254, guid: f5f67c52d1564df4a8936ccd202a3bd8, type: 3}
 --- !u!4 &1747188697 stripped
 Transform:
   m_PrefabParentObject: {fileID: 472206, guid: 46c604152703326449851cee781c4936, type: 2}
@@ -64952,6 +64976,12 @@ MeshFilter:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1988585466}
   m_Mesh: {fileID: 4300000, guid: d232221d520845148beea59d1dcecb0e, type: 3}
+--- !u!114 &1990022383 stripped
+MonoBehaviour:
+  m_PrefabParentObject: {fileID: 11497910, guid: cf3f2e712242b9940bfd0894141c3f8c,
+    type: 2}
+  m_PrefabInternal: {fileID: 1301910853}
+  m_Script: {fileID: 708705254, guid: f5f67c52d1564df4a8936ccd202a3bd8, type: 3}
 --- !u!1 &1991035710 stripped
 GameObject:
   m_PrefabParentObject: {fileID: 154992, guid: 3dc5c40a72121b740af46698baeb4394, type: 2}
