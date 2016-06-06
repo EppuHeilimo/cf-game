@@ -68,8 +68,6 @@ public class NPC : MonoBehaviour
     const float MAX_TIME_TALK_TO_OTHER = 5f;
     const int WALK_RADIUS = 500;
     const float SLEEP_TIME = 10f;
-    
-
 
     // Use this for initialization
     void Start()
@@ -82,7 +80,7 @@ public class NPC : MonoBehaviour
         stateQueue.Add(1, new Queue<NPCState>());
         stateQueue.Add(2, new Queue<NPCState>());
         stateQueue.Add(3, new Queue<NPCState>());
-        addStateToQueue(2, NPCState.STATE_ARRIVED);
+        addStateToQueue(2, NPCState.STATE_ARRIVED);    
     }
 
     // Update is called once per frame
@@ -117,16 +115,13 @@ public class NPC : MonoBehaviour
                 if (fatique > 10.0f && !cantFindBed)
                 {
                     addStateToQueue(2, NPCState.STATE_SLEEP);
-                }
-                
+                }             
             }
-
         }
             
         if (taskCompleted)
             setMyStateFromQueue();
         actAccordingToState();
-
     }
 
     private void actAccordingToState()
@@ -626,5 +621,4 @@ public class NPC : MonoBehaviour
     {
         dialogZone = transform.FindChild("ContactZone").transform.gameObject;
     }
-
 }

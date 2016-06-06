@@ -9,6 +9,9 @@ TagManager:
   - Bed
   - Hall
   - QueueChair
+  - HpBar
+  - HappyBar
+  - TargetPanel
   layers:
   - Default
   - TransparentFX

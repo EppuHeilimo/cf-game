@@ -1809,6 +1809,9 @@ MonoBehaviour:
   talking: 0
   oldy: 0
   gotMed: 0
+  myProblem: 
+  myMedicine: 
+  healthBar: {fileID: 0}
 --- !u!195 &19595110
 NavMeshAgent:
   m_ObjectHideFlags: 1
