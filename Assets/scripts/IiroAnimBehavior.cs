@@ -7,6 +7,7 @@ public class IiroAnimBehavior : MonoBehaviour {
     NavMeshAgent agent;
     public bool isWalking = false;
     public bool goToSleep = false;
+    public bool sit = false;
     void Start () {
         agent = GetComponent<NavMeshAgent>();
 	}   
@@ -15,6 +16,7 @@ public class IiroAnimBehavior : MonoBehaviour {
 	void Update () {
         transform.FindChild("Iiro").GetComponent<Animator>().SetBool("IsWalking", isWalking);
         transform.FindChild("Iiro").GetComponent<Animator>().SetBool("sleep", goToSleep);
+        transform.FindChild("Iiro").GetComponent<Animator>().SetBool("sit", sit);
         if (agent.velocity.magnitude < 30.0f)
         {
             isWalking = false;

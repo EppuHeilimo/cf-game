@@ -12,6 +12,7 @@ public class DoorOpen : MonoBehaviour {
 	void Start () {
         defaultRot = transform.parent.FindChild("default").transform.rotation;
         defaultPos = transform.parent.position;
+
 	}
 	
 	// Update is called once per frame

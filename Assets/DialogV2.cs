@@ -1,8 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-
-public class Dialog : MonoBehaviour {
+public class DialogV2 : MonoBehaviour
+{
 
     TextBoxManager textBoxManager;
     GameObject parent;
@@ -13,7 +13,7 @@ public class Dialog : MonoBehaviour {
     {
         textBoxManager = FindObjectOfType<TextBoxManager>();
         parent = transform.parent.gameObject;
-        parent.GetComponent<NPC>().initChild();
+        parent.GetComponent<NPCV2>().initChild();
     }
 
     void Update()
@@ -29,21 +29,21 @@ public class Dialog : MonoBehaviour {
             target = other.GetComponent<PlayerControl>().getTarget();
             if (target == transform.parent.gameObject)
             {
-                textBoxManager.EnableTextBox(parent.GetComponent<NPC>().myName, parent.GetComponent<NPC>().myId, parent.GetComponent<NPC>().myHp, parent.GetComponent<NPC>().gotMed, parent.GetComponent<NPC>().myProblem);
+                textBoxManager.EnableTextBox(parent.GetComponent<NPCV2>().myName, parent.GetComponent<NPCV2>().myId, parent.GetComponent<NPCV2>().myHp, parent.GetComponent<NPCV2>().gotMed, parent.GetComponent<NPCV2>().myProblem);
                 playerInZone = true;
             }
         }
-        if(other.tag == "NPC")
+        if (other.tag == "NPC")
         {
-            target = other.GetComponent<NPC>().getTarget();
-            if(target == transform.parent.gameObject)
+            target = other.GetComponent<NPCV2>().getTarget();
+            if (target == transform.parent.gameObject)
             {
-                if(target.GetComponent<NPC>().isIdle())
+                if (target.GetComponent<NPCV2>().isIdle())
                 {
-                    parent.GetComponent<NPC>().setTarget(other.gameObject);
+                    parent.GetComponent<NPCV2>().setTarget(other.gameObject);
                     npcInZone = true;
                 }
-                    
+
             }
         }
 
@@ -51,15 +51,15 @@ public class Dialog : MonoBehaviour {
 
     void OnTriggerStay(Collider other)
     {
-        
-        if(other.tag == "Player")
+
+        if (other.tag == "Player")
         {
             GameObject target;
 
             target = other.GetComponent<PlayerControl>().getTarget();
             if (target == transform.parent.gameObject)
             {
-                textBoxManager.EnableTextBox(parent.GetComponent<NPC>().myName, parent.GetComponent<NPC>().myId, parent.GetComponent<NPC>().myHp, parent.GetComponent<NPC>().gotMed, parent.GetComponent<NPC>().myProblem);
+                textBoxManager.EnableTextBox(parent.GetComponent<NPCV2>().myName, parent.GetComponent<NPCV2>().myId, parent.GetComponent<NPCV2>().myHp, parent.GetComponent<NPCV2>().gotMed, parent.GetComponent<NPCV2>().myProblem);
                 playerInZone = true;
             }
             else
@@ -71,7 +71,7 @@ public class Dialog : MonoBehaviour {
 
     void OnTriggerExit(Collider other)
     {
-        
+
         GameObject target;
         if (other.tag == "Player")
         {
@@ -85,7 +85,7 @@ public class Dialog : MonoBehaviour {
 
         if (other.tag == "NPC")
         {
-            target = other.GetComponent<NPC>().getTarget();
+            target = other.GetComponent<NPCV2>().getTarget();
             if (target == transform.parent.gameObject)
             {
                 npcInZone = false;
