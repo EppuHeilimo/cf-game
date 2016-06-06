@@ -15,11 +15,7 @@ public class QueManagerV2 : MonoBehaviour
 
     void Update()
     {
-        if(doctorIsFree)
-        {
-            nextInQueue = npcQueue.Dequeue();
-            doctorIsFree = false;
-        }
+
     }
 
 

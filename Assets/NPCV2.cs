@@ -22,6 +22,7 @@ public class NPCV2 : MonoBehaviour
     public string myId;
     public int myHp = 50;
     public int myHappiness = 50;
+
     //has the npc visited the doctor
     public bool diagnosed = false;
     //how tired the npc is

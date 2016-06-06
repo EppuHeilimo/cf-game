@@ -29,7 +29,7 @@ public class DialogV2 : MonoBehaviour
             target = other.GetComponent<PlayerControl>().getTarget();
             if (target == transform.parent.gameObject)
             {
-                textBoxManager.EnableTextBox(parent.GetComponent<NPCV2>().myName, parent.GetComponent<NPCV2>().myId, parent.GetComponent<NPCV2>().myHp, parent.GetComponent<NPCV2>().gotMed, parent.GetComponent<NPCV2>().myProblem);
+                textBoxManager.EnableTextBox(parent.GetComponent<NPCV2>().myName, parent.GetComponent<NPCV2>().myId, parent.GetComponent<NPCV2>().myHp, parent.GetComponent<NPCV2>().myHappiness, parent.GetComponent<NPCV2>().gotMed, parent.GetComponent<NPCV2>().myProblem);
                 playerInZone = true;
             }
         }
@@ -59,7 +59,7 @@ public class DialogV2 : MonoBehaviour
             target = other.GetComponent<PlayerControl>().getTarget();
             if (target == transform.parent.gameObject)
             {
-                textBoxManager.EnableTextBox(parent.GetComponent<NPCV2>().myName, parent.GetComponent<NPCV2>().myId, parent.GetComponent<NPCV2>().myHp, parent.GetComponent<NPCV2>().gotMed, parent.GetComponent<NPCV2>().myProblem);
+                textBoxManager.EnableTextBox(parent.GetComponent<NPCV2>().myName, parent.GetComponent<NPCV2>().myId, parent.GetComponent<NPCV2>().myHp, parent.GetComponent<NPCV2>().myHappiness, parent.GetComponent<NPCV2>().gotMed, parent.GetComponent<NPCV2>().myProblem);
                 playerInZone = true;
             }
             else
