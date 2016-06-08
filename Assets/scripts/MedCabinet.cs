@@ -17,11 +17,11 @@ public class MedCabinet : MonoBehaviour
         invObj = GameObject.Find("Inventory");
         playerInv = invObj.GetComponent<Inventory>();
         database = invObj.GetComponent<ItemDatabase>();
-        inventoryPanel = GameObject.Find("Med Cabinet Panel");      
+        inventoryPanel = GameObject.Find("Med Cabinet Panel");
         inventoryPanel.SetActive(false);
     }
 
-    void OnMouseDown()
+    void OnTriggerEnter(Collider other)
     {
         inventoryPanel.SetActive(true);
         //TODO: check if player is close enough to the cabinet
@@ -37,6 +37,7 @@ public class MedCabinet : MonoBehaviour
 
     public void AddItem()
     {
+        print("ASD");
         title = input.text.ToString();
         Item itemToAdd = database.FetchItemByTitle(title);
         if (itemToAdd == null)

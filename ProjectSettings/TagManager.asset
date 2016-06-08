@@ -16,6 +16,7 @@ TagManager:
   - BookableObject
   - Chair
   - Clock
+  - MedCabinetPanel
   layers:
   - Default
   - TransparentFX
