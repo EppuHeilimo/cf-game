@@ -12,6 +12,9 @@ TagManager:
   - HpBar
   - HappyBar
   - TargetPanel
+  - ObjectManager
+  - BookableObject
+  - Chair
   layers:
   - Default
   - TransparentFX

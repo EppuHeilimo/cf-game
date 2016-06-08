@@ -31,8 +31,9 @@ public class NPCManagerV2 : MonoBehaviour
     const int MAX_NPCS = 15; // ** MUST BE SAME AS MAX_QUE IN QUE MANAGER! **
 
     List<string> usedIds; // IDs already used
-    Dictionary<GameObject, GameObject> beds = new Dictionary<GameObject, GameObject>();
-    Dictionary<GameObject, GameObject> queueChairs = new Dictionary<GameObject, GameObject>();
+
+
+
 
     // for generating random problem to patient from database
     GameObject invObj;
@@ -47,63 +48,12 @@ public class NPCManagerV2 : MonoBehaviour
         spawnPoint = new Vector3(-331, 0, -5);
         spawnTime = 5; //Random.Range(5, 20); // spawn new NPC somewhere between 5 and 20 seconds
         usedIds = new List<string>();
-        GameObject[] bedstemp = GameObject.FindGameObjectsWithTag("Bed");
-        GameObject[] chairstemp = GameObject.FindGameObjectsWithTag("QueueChair");
-        foreach (GameObject chair in chairstemp)
-        {
-            queueChairs.Add(chair, null);
-        }
-        foreach (GameObject bed in bedstemp)
-        {
-            beds.Add(bed, null);
-        }
         invObj = GameObject.Find("Inventory");
         database = invObj.GetComponent<ItemDatabase>();
+
+
     }
 
-    public GameObject bookBed(GameObject npc)
-    {
-        foreach (KeyValuePair<GameObject, GameObject> bed in beds)
-        {
-            if (bed.Value == null)
-            {
-                beds[bed.Key] = npc;
-                return bed.Key;
-            }
-        }
-        return null;
-    }
-
-    public void unbookBed(GameObject bed)
-    {
-        beds[bed] = null;
-    }
-
-    public GameObject bookChair(GameObject npc)
-    {
-        List<KeyValuePair<GameObject, GameObject>> temp = new List<KeyValuePair<GameObject, GameObject>>();
-        foreach (KeyValuePair<GameObject, GameObject> chair in queueChairs)
-        {
-            if (chair.Value == null)
-            {
-                temp.Add(chair);
-            }
-        }
-        if(temp.Count > 0)
-        {
-            System.Random rnd = new System.Random();
-            int rand = rnd.Next(0, temp.Count);
-            GameObject key = temp[rand].Key;
-            queueChairs[key] = npc;
-            return key;
-        }
-        return null;
-    }
-
-    public void unbookChair(GameObject chair)
-    {
-        queueChairs[chair] = null;
-    }
 
     // Update is called once per frame
     void Update()

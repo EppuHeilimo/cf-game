@@ -22,7 +22,10 @@ public class NPCV2 : MonoBehaviour
     public string myId;
     public int myHp = 50;
     public int myHappiness = 50;
+    public Vector3 bedloc;
 
+    /* Reference to player */
+    private GameObject player;
     //has the npc visited the doctor
     public bool diagnosed = false;
     //how tired the npc is
@@ -36,13 +39,15 @@ public class NPCV2 : MonoBehaviour
     private float minDistanceToDestination = 30.0f;
     private bool taskCompleted = true;
     GameObject dialogZone;
-    GameObject target;
+    ObjectInteraction interactionComponent;
+    ObjectManager objectManager;
     public bool talking = false;
-    private bool sleeping = false;
+    public bool sleeping = false;
     private bool sitting = false;
-    private bool cantFindBed = false;
+    public bool cantFindBed = false;
     public float oldy = 0.0f;
-    public GameObject targetChair;
+
+    private bool sleepingqueued = false;
 
     /* medicine stuff */
     public bool gotMed;
@@ -72,11 +77,11 @@ public class NPCV2 : MonoBehaviour
     const int WALK_RADIUS = 500;
     const float SLEEP_TIME = 10f;
 
-
-
     // Use this for initialization
     void Start()
     {
+        player = GameObject.FindGameObjectWithTag("Player");
+        bedloc = Vector3.zero;
         stateQueue = new Dictionary<int, Queue<NPCState>>();
         agent = GetComponent<NavMeshAgent>();
         queManager = GameObject.Find("QueManager").GetComponent<QueManagerV2>();
@@ -86,12 +91,13 @@ public class NPCV2 : MonoBehaviour
         stateQueue.Add(2, new Queue<NPCState>());
         stateQueue.Add(3, new Queue<NPCState>());
         addStateToQueue(2, NPCState.STATE_ARRIVED);
+        interactionComponent = GetComponent<ObjectInteraction>();
+        objectManager = GameObject.FindGameObjectWithTag("ObjectManager").GetComponent<ObjectManager>();
     }
-
     // Update is called once per frame
     void Update()
     {
-        if (dialogZone.GetComponent<DialogV2>().playerInZone)
+        if (dialogZone.GetComponent<DialogV2>().playerInZone && !sleeping && !sitting)
         {
             myState = NPCState.STATE_TALK_TO_PLAYER;
         }
@@ -102,7 +108,7 @@ public class NPCV2 : MonoBehaviour
             //check medication every update if player is diagnosed
             checkMed();
             //Increase fatigue every x seconds if state is not sleep
-            if (!sleeping)
+            if (!sleepingqueued)
             {
                 fatiquetimer += Time.deltaTime;
                 if (fatiquetimer > 5.0f)
@@ -120,6 +126,7 @@ public class NPCV2 : MonoBehaviour
                 if (fatique > 10.0f && !cantFindBed)
                 {
                     addStateToQueue(2, NPCState.STATE_SLEEP);
+                    sleepingqueued = true;
                 }
 
             }
@@ -131,7 +138,6 @@ public class NPCV2 : MonoBehaviour
         actAccordingToState();
 
     }
-
     private void actAccordingToState()
     {
         /* act according to myState */
@@ -163,7 +169,6 @@ public class NPCV2 : MonoBehaviour
                 break;
         }
     }
-
     private void sleepOnFloor()
     {
         //slam npc face to floor
@@ -197,14 +202,13 @@ public class NPCV2 : MonoBehaviour
             }
         }
     }
-
     private void sleep()
     {
         //if npc doesn't have bed, try to find one
         if (myBed == null)
         {
             //check if bed is available
-            myBed = npcManager.bookBed(gameObject);
+            myBed = objectManager.bookBed(gameObject);
             //if still null, bed not found
             if (myBed == null)
             {
@@ -217,38 +221,37 @@ public class NPCV2 : MonoBehaviour
                 cantFindBed = true;
             }
         }
+
         //if has no destination and has a bed
         if (dest == Vector3.zero && myBed != null)
         {
-            if (Mathf.Approximately(myBed.transform.rotation.eulerAngles.y, 0.0f))
-                dest = new Vector3(myBed.transform.position.x, transform.position.y, myBed.transform.position.z + 24.0f);
-            else if (Mathf.Approximately(myBed.transform.rotation.eulerAngles.y, 90.0f))
-                dest = new Vector3(myBed.transform.position.x - 16, transform.position.y, myBed.transform.position.z);
-            else if (Mathf.Approximately(myBed.transform.rotation.eulerAngles.y, 180.0f))
-                dest = new Vector3(myBed.transform.position.x, transform.position.y, myBed.transform.position.z - 16);
-            else if (Mathf.Approximately(myBed.transform.rotation.eulerAngles.y, 270.0f))
-                dest = new Vector3(myBed.transform.position.x + 16, transform.position.y, myBed.transform.position.z);
+            interactionComponent.setTarget(myBed);
+            dest = interactionComponent.getDestToTargetObjectSide(1, 20.0f);
+            if(dest == Vector3.zero)
+            {
+                cantFindBed = true;
+                taskCompleted = true;
+            }
             else
             {
-                print(dest);
-                print(myBed.transform.rotation.eulerAngles.y);
+                moveTo(dest);
             }
-            moveTo(dest);
+            
         }
         //if at the bed and not sleeping yet, stop navmeshagent and start animation
         if (myBed != null && arrivedToDestination(10.0f) && !sleeping)
         {
             agent.Stop();
-            GetComponent<IiroAnimBehavior>().goToSleep = true;
-            sleeping = true;
+            //rotate until looking away from mybed
+            if (RotateAwayFrom(myBed.transform))
+            {
+                sleeping = true;
+            }
 
         }
 
         if (sleeping)
         {
-            fatique = 0;
-            //rotate to look away from the bed so animation will move the player on the bed
-            RotateAwayFrom(myBed.transform);
             GetComponent<IiroAnimBehavior>().goToSleep = true;
             timer += Time.deltaTime;
             if (timer > SLEEP_TIME)
@@ -257,10 +260,11 @@ public class NPCV2 : MonoBehaviour
                 GetComponent<IiroAnimBehavior>().goToSleep = false;
                 sleeping = false;
                 taskCompleted = true;
-                dest = Vector3.zero;
-                
+                timer = 0;
+                fatique = 0;
                 //resume agent movement
                 agent.Resume();
+                sleepingqueued = false;
             }
         }
     }
@@ -284,81 +288,57 @@ public class NPCV2 : MonoBehaviour
             {
                 addStateToQueue(2, NPCState.STATE_QUE);
                 timer = 0;
-                dest = Vector3.zero;
                 taskCompleted = true;
             }
         }
     }
-
     //queue to doctor
     private void queue()
     {
         if (dest == Vector3.zero)
         {
-            // get next free queue position from queManager
-            
-            if(targetChair == null)
-            {
-                targetChair = npcManager.bookChair(gameObject);
-            }
-            if(targetChair != null)
-            {
-                if (Mathf.Approximately(targetChair.transform.rotation.eulerAngles.y, 0.0f))
-                    dest = new Vector3(targetChair.transform.position.x, transform.position.y, targetChair.transform.position.z - 20.0f);
-                else if (Mathf.Approximately(targetChair.transform.rotation.eulerAngles.y, 90.0f))
-                    dest = new Vector3(targetChair.transform.position.x - 16, transform.position.y, targetChair.transform.position.z);
-                else if (Mathf.Approximately(targetChair.transform.rotation.eulerAngles.y, 180.0f))
-                    dest = new Vector3(targetChair.transform.position.x, transform.position.y, targetChair.transform.position.z - 16);
-                else if (Mathf.Approximately(targetChair.transform.rotation.eulerAngles.y, 270.0f))
-                    dest = new Vector3(targetChair.transform.position.x + 16, transform.position.y, targetChair.transform.position.z);
-                else
-                {
-                    print(dest);
-                    print(targetChair.transform.rotation.eulerAngles.y);
-                }
-                // move to the queue position received
-                moveTo(dest);
-            }
-            else
-            {
-                print("Can't find chair!");
-            }
-
+            interactionComponent.setTarget(objectManager.bookRandomQueueChair(gameObject));
+            interactionComponent.setCurrentChair(interactionComponent.getTarget());
+            // set destination to queue chair
+            dest = interactionComponent.getDestToTargetObjectSide(0, 20.0f);
+            // move to the queue position received
+            moveTo(dest);
         }
-        if (targetChair != null && arrivedToDestination(10.0f) && !sitting)
+
+        if (arrivedToDestination(10.0f) && !sitting)
         {
             agent.Stop();
-            GetComponent<IiroAnimBehavior>().sit = true;
             sitting = true;
-
         }
 
         if (sitting)
         {
             //rotate to look away from the bed so animation will move the player on the bed
-            RotateAwayFrom(targetChair.transform);
-            GetComponent<IiroAnimBehavior>().sit = true;
-            timer += Time.deltaTime;
-            if (timer > QUE_WAITING_TIME)
+            if (RotateAwayFrom(interactionComponent.getTarget().transform))
             {
-                GetComponent<IiroAnimBehavior>().sit = false;
-                diagnosed = true;
-                timer = 0;
-                dest = Vector3.zero;
-                taskCompleted = true;
-                npcManager.unbookChair(targetChair);
-                targetChair = null;
-                agent.Resume();
+                agent.GetComponent<IiroAnimBehavior>().sit = true;
+                timer += Time.deltaTime;
+                if (timer > QUE_WAITING_TIME)
+                {
+                    GetComponent<IiroAnimBehavior>().sit = false;
+                    diagnosed = true;
+                    timer = 0;
+                    taskCompleted = true;
+                    objectManager.unbookObject(interactionComponent.getCurrentChair());
+                    sitting = false;
+                    agent.Resume();
+                }
             }
+
         }
     }
-
     //just wander around the hospital, if npc has nothing else to do it will go to this state
     private void idle()
     {
         //check if there's something else to do
         setMyStateFromQueue();
         timer += Time.deltaTime;
+        GameObject target = interactionComponent.getTarget();
         if (target != null && talking)
         {
             agent.Stop();
@@ -396,40 +376,33 @@ public class NPCV2 : MonoBehaviour
 
         }
     }
-
     private void die()
     {
         print(myName + " lähti teho-osastolle...");
         Destroy(gameObject);
     }
-
     //if player is close and player has target on this npc, talk to player
     private void talkToPlayer()
     {
         agent.Stop();
-        RotateTowards(GameObject.FindGameObjectWithTag("Player").transform);
+        RotateTowards(player.transform);
         if (!dialogZone.GetComponent<DialogV2>().playerInZone)
         {
             myState = prevState;
             agent.Resume();
         }
     }
-
-
     private void talkToNPC()
     {
+        GameObject target = interactionComponent.getTarget();
         //check that the target is actually capable of talking
-        if (target == null || target.tag != "NPC" || !target.GetComponent<NPCV2>().isIdle() && !target.GetComponent<NPCV2>().talking)
+        if (target == null || target.tag != "NPC" || !target.GetComponent<NPCV2>().isIdle() || target.GetComponent<NPCV2>().talking)
         {
             findOtherIdleNPC();
         }
 
-        if (target == null)
-        {
-            addStateToQueue(2, NPCState.STATE_IDLE);
-        }
         //check if at target & set destination
-        if (walkToTarget())
+        if  (target.tag == "NPC" && target != null && walkToTarget())
         {
             //set both npc's to talking
             target.GetComponent<NPCV2>().talking = true;
@@ -437,6 +410,7 @@ public class NPCV2 : MonoBehaviour
 
             //stop moving
             agent.Stop();
+            target.GetComponent<NPCV2>().agent.Stop();
 
             //rotate to look the target
             RotateTowards(target.transform);
@@ -444,74 +418,73 @@ public class NPCV2 : MonoBehaviour
             if (timer > MAX_TIME_TALK_TO_OTHER)
             {
                 timer = 0;
-                taskCompleted = true;
-                talking = false;
-                target.GetComponent<NPCV2>().talking = false;
-                target.GetComponent<NPCV2>().agent.Resume();
-                agent.Resume();
+                target.GetComponent<NPCV2>().stopTalking();
+                stopTalking();
 
             }
         }
+        if(target == null || target.tag != "NPC")
+        {
+            stopTalking();
+        }
 
     }
-
-
-
     private void resetStateVariables()
     {
         talking = false;
         dest = Vector3.zero;
         agent.Resume();
     }
-
     public void setTarget(GameObject target)
     {
-        this.target = target;
+        interactionComponent.setTarget(target);
     }
-
     public GameObject getTarget()
     {
-        return target;
+        return interactionComponent.getTarget();
     }
-
     //returns true if npc is already at target, sets the agent destination
     private bool walkToTarget()
     {
-        if(target != null)
+        GameObject target = interactionComponent.getTarget();
+        if (Vector3.Distance(transform.position, target.transform.position) < 30.0f)
         {
-            if (Vector3.Distance(transform.position, target.transform.position) < 30.0f)
-            {
-                return true;
-            }
-            else
-            {
-                agent.SetDestination(target.transform.position);
-                return false;
-            }
+            return true;
         }
-        return false;
-
+        else
+        {
+            moveTo(target.transform.position);
+            return false;
+        }
     }
     //looks for other npcs who are idle
     private void findOtherIdleNPC()
     {
         GameObject[] npcs = GameObject.FindGameObjectsWithTag("NPC");
-
+        List<GameObject> idlenpcs = new List<GameObject>();
         foreach (GameObject npc in npcs)
         {
             //Check that the npc is not self and is idle
-            if (npc.gameObject != gameObject && npc.GetComponent<NPCV2>().isIdle())
+            if (npc.gameObject != gameObject && npc.GetComponent<NPCV2>().isIdle() && !npc.GetComponent<NPCV2>().talking)
             {
-                target = npc.transform.gameObject;
+                idlenpcs.Add(npc.gameObject);
             }
         }
-        //target is still null if there is no other idle npcs, so go back to idle
-        if (target == null || !target.GetComponent<NPCV2>().isIdle())
+        if(idlenpcs.Count > 0)
         {
-            myState = NPCState.STATE_IDLE;
+            interactionComponent.setTarget(idlenpcs[0]);
+        }
+        else
+        {
+            stopTalking();
         }
     }
-
+    public void stopTalking()
+    {
+        agent.Resume();
+        talking = false;
+        taskCompleted = true;
+    }
     public bool isIdle()
     {
         if (myState == NPCState.STATE_IDLE || myState == NPCState.STATE_TALK_TO_OTHER_NPC)
@@ -520,7 +493,6 @@ public class NPCV2 : MonoBehaviour
         }
         else return false;
     }
-
     //rotates towards a position
     private void RotateTowards(Transform target)
     {
@@ -528,16 +500,20 @@ public class NPCV2 : MonoBehaviour
         Quaternion lookRotation = Quaternion.LookRotation(direction);
         transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * 10.0f);
     }
-
     //same as rotateTowards, but inverse look direction
-    private void RotateAwayFrom(Transform target)
+    private bool RotateAwayFrom(Transform target)
     {
-
         Vector3 direction = (target.position - transform.position).normalized;
         Quaternion lookRotation = Quaternion.LookRotation(-direction);
         transform.rotation = Quaternion.RotateTowards(transform.rotation, lookRotation, 5.0f);
+        float transformy = Mathf.Abs(transform.rotation.eulerAngles.y);
+        float looky = Mathf.Abs(lookRotation.eulerAngles.y);
+        if (approx(transformy, looky, 0.1f))
+        {
+            return true;
+        }
+        return false;
     }
-
     //checks if navmesh is within accuracy zone of his destination
     private bool arrivedToDestination(float accuracy)
     {
@@ -547,22 +523,18 @@ public class NPCV2 : MonoBehaviour
         else
             return false;
     }
-
     public void addStateToQueue(int priority, NPCState state)
     {
         Queue<NPCState> queue = new Queue<NPCState>();
         stateQueue.TryGetValue(priority, out queue);
         queue.Enqueue(state);
     }
-
     //finds the highest priority task and selects it as current stage
     //called only when task is completed
     public void setMyStateFromQueue()
     {
-
         taskCompleted = false;
         Queue<NPCState> queue = new Queue<NPCState>();
-
         //Dequeue a task from priority 3 queue if it has a task and the current task is less important
         stateQueue.TryGetValue(3, out queue);
         if (queue.Count > 0)
@@ -593,14 +565,16 @@ public class NPCV2 : MonoBehaviour
                 }
                 else
                 {
-                    prevState = myState;
-                    myState = NPCState.STATE_IDLE;
-                    dest = Vector3.zero;
+                    if(myState != NPCState.STATE_IDLE)
+                    {
+                        prevState = myState;
+                        myState = NPCState.STATE_IDLE;
+                        dest = Vector3.zero;
+                    }
                 }
             }
         }
     }
-
     public void Init(string myName, string myId, string myProblem, string myMedicine)
     {
         this.myName = myName;
@@ -608,12 +582,10 @@ public class NPCV2 : MonoBehaviour
         this.myProblem = myProblem;
         this.myMedicine = myMedicine;
     }
-
     public void moveTo(Vector3 dest)
     {
         agent.SetDestination(dest);
     }
-
     void checkMed()
     {
         if (gotMed)
@@ -646,7 +618,6 @@ public class NPCV2 : MonoBehaviour
             }
         }
     }
-
     public bool giveMed(string med)
     {
         if (diagnosed && dialogZone.GetComponent<DialogV2>().playerInZone)
@@ -669,10 +640,18 @@ public class NPCV2 : MonoBehaviour
         }
         return false;
     }
-
     public void initChild()
     {
         dialogZone = transform.FindChild("ContactZone").transform.gameObject;
     }
+    private bool approx(float a, float b, float accuracy)
+    {
+        float sub = a - b;
+        if(Mathf.Abs(sub) < accuracy)
+        {
+            return true;
+        }
+        return false;
 
+    }
 }
