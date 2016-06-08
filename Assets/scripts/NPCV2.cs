@@ -14,7 +14,9 @@ public class NPCV2 : MonoBehaviour
         STATE_TALK_TO_OTHER_NPC, 
         STATE_TALK_TO_PLAYER,
         STATE_SLEEP,
-        STATE_SLEEP_ON_FLOOR
+        STATE_SLEEP_ON_FLOOR,
+        STATE_GO_TO_DOC,
+        STATE_LEAVE_HOSPITAL
     }
 
     /* basic stuff */
@@ -23,7 +25,8 @@ public class NPCV2 : MonoBehaviour
     public int myHp = 50;
     public int myHappiness = 50;
     public Vector3 bedloc;
-
+    int currentTaskPriority = 0;
+    int prevTaskPriority = 0;
     /* Reference to player */
     private GameObject player;
     //has the npc visited the doctor
@@ -46,6 +49,7 @@ public class NPCV2 : MonoBehaviour
     private bool sitting = false;
     public bool cantFindBed = false;
     public float oldy = 0.0f;
+    bool prevStateUncompleted = false;
 
     private bool sleepingqueued = false;
 
@@ -71,7 +75,6 @@ public class NPCV2 : MonoBehaviour
     /* position stuff */
     Vector3 dest; // current destination position
     NavMeshAgent agent;
-    QueManagerV2 queManager;
     NPCManagerV2 npcManager;
     Vector3 receptionPos = new Vector3(49, 0, 124); // position of reception
     const float QUE_POS_Y = 130; // y-position of queue
@@ -84,6 +87,7 @@ public class NPCV2 : MonoBehaviour
     const float MAX_TIME_TALK_TO_OTHER = 5f;
     const int WALK_RADIUS = 500;
     const float SLEEP_TIME = 10f;
+    const float AT_DOC = 10f;
 
     // Use this for initialization
     void Start()
@@ -92,7 +96,6 @@ public class NPCV2 : MonoBehaviour
         bedloc = Vector3.zero;
         stateQueue = new Dictionary<int, Queue<NPCState>>();
         agent = GetComponent<NavMeshAgent>();
-        queManager = GameObject.Find("QueManager").GetComponent<QueManagerV2>();
         npcManager = GameObject.Find("NPCManager").GetComponent<NPCManagerV2>();
         dest = Vector3.zero;
         stateQueue.Add(1, new Queue<NPCState>());
@@ -174,8 +177,61 @@ public class NPCV2 : MonoBehaviour
             case NPCState.STATE_TALK_TO_OTHER_NPC:
                 talkToNPC();
                 break;
+            case NPCState.STATE_GO_TO_DOC:
+                goToDoc();
+                break;
+            case NPCState.STATE_LEAVE_HOSPITAL:
+                leaveHospital();
+                break;
         }
     }
+
+    private void leaveHospital()
+    {
+        if(dest == Vector3.zero)
+        {
+            dest = new Vector3(-620, transform.position.y, 0);
+            moveTo(dest); 
+        }
+        if(arrivedToDestination(30))
+        {
+            npcManager.deleteNpcFromList(gameObject);
+            Destroy(gameObject);
+        }
+    }
+
+    private void goToDoc()
+    {
+        if(dest == Vector3.zero)
+        {
+            dest = new Vector3(0, transform.position.y, 394);
+            moveTo(dest);
+            timer = 0;
+        }
+        if(arrivedToDestination(10.0f))
+        {
+            timer += Time.deltaTime;
+            if(timer > AT_DOC)
+            {
+                System.Random rand = new System.Random();
+                int r = rand.Next(0, 10);
+                if(r > 5)
+                {
+                    addStateToQueue(2, NPCState.STATE_SLEEP);
+                    diagnosed = true;
+                }
+                else
+                {
+                    addStateToQueue(3, NPCState.STATE_LEAVE_HOSPITAL);
+                }
+                timer = 0;
+                taskCompleted = true;
+                npcManager.setDocFree();
+
+            }
+        }
+    }
+
     private void sleepOnFloor()
     {
         //slam npc face to floor
@@ -302,41 +358,49 @@ public class NPCV2 : MonoBehaviour
     //queue to doctor
     private void queue()
     {
-        if (dest == Vector3.zero)
+        if(npcManager.isDocBusy())
         {
-            interactionComponent.setTarget(objectManager.bookRandomQueueChair(gameObject));
-            interactionComponent.setCurrentChair(interactionComponent.getTarget());
-            // set destination to queue chair
-            dest = interactionComponent.getDestToTargetObjectSide(0, 20.0f);
-            // move to the queue position received
-            moveTo(dest);
-        }
-
-        if (arrivedToDestination(10.0f) && !sitting)
-        {
-            agent.Stop();
-            sitting = true;
-        }
-
-        if (sitting)
-        {
-            //rotate to look away from the bed so animation will move the player on the bed
-            if (RotateAwayFrom(interactionComponent.getTarget().transform))
+            if (dest == Vector3.zero)
             {
-                agent.GetComponent<IiroAnimBehavior>().sit = true;
-                timer += Time.deltaTime;
-                if (timer > QUE_WAITING_TIME)
-                {
-                    GetComponent<IiroAnimBehavior>().sit = false;
-                    diagnosed = true;
-                    timer = 0;
-                    taskCompleted = true;
-                    objectManager.unbookObject(interactionComponent.getCurrentChair());
-                    sitting = false;
-                    agent.Resume();
-                }
+                interactionComponent.setTarget(objectManager.bookRandomQueueChair(gameObject));
+                interactionComponent.setCurrentChair(interactionComponent.getTarget());
+                // set destination to queue chair
+                dest = interactionComponent.getDestToTargetObjectSide(0, 20.0f);
+                // move to the queue position received
+                moveTo(dest);
             }
 
+            if (arrivedToDestination(10.0f) && !sitting)
+            {
+                agent.Stop();
+                sitting = true;
+            }
+
+            if (sitting)
+            {
+                //rotate to look away from the bed so animation will move the player on the bed
+                if (RotateAwayFrom(interactionComponent.getTarget().transform))
+                {
+                    agent.GetComponent<IiroAnimBehavior>().sit = true;
+
+                }
+
+            }
+        }
+        else
+        {
+            if(sitting)
+            {
+                GetComponent<IiroAnimBehavior>().sit = false;
+            }
+           
+            taskCompleted = true;
+            if((interactionComponent.getCurrentChair() != null))
+                objectManager.unbookObject(interactionComponent.getCurrentChair());
+            sitting = false;
+            agent.Resume();
+            addStateToQueue(3, NPCState.STATE_GO_TO_DOC);
+            npcManager.setDocBusy();
         }
     }
     //just wander around the hospital, if npc has nothing else to do it will go to this state
@@ -540,47 +604,101 @@ public class NPCV2 : MonoBehaviour
     //called only when task is completed
     public void setMyStateFromQueue()
     {
-        taskCompleted = false;
-        Queue<NPCState> queue = new Queue<NPCState>();
-        //Dequeue a task from priority 3 queue if it has a task and the current task is less important
-        stateQueue.TryGetValue(3, out queue);
-        if (queue.Count > 0)
+        if(taskCompleted)
         {
-            prevState = myState;
-            myState = queue.Dequeue();
-            dest = Vector3.zero;
-        }
-        else
-        {
-            //Dequeue a task from priority 2 queue if it has a task and the current task is less important
-            stateQueue.TryGetValue(2, out queue);
-            if (queue.Count > 0)
+            if(prevStateUncompleted)
             {
-                prevState = myState;
-                myState = queue.Dequeue();
+                prevStateUncompleted = false;
+                myState = prevState;
                 dest = Vector3.zero;
+                taskCompleted = false;
+                currentTaskPriority = 3;
             }
             else
             {
-                //Dequeue a task from priority 2 queue if it has a task and the current task is less important
-                stateQueue.TryGetValue(1, out queue);
+                Queue<NPCState> queue = new Queue<NPCState>();
+                //Dequeue a task from priority 3 queue if it has a task and the current task is less important
+                stateQueue.TryGetValue(3, out queue);
                 if (queue.Count > 0)
                 {
                     prevState = myState;
                     myState = queue.Dequeue();
                     dest = Vector3.zero;
+                    taskCompleted = false;
+                    currentTaskPriority = 3;
                 }
                 else
                 {
-                    if(myState != NPCState.STATE_IDLE)
+                    //Dequeue a task from priority 2 queue if it has a task and the current task is less important
+                    stateQueue.TryGetValue(2, out queue);
+                    if (queue.Count > 0)
                     {
                         prevState = myState;
-                        myState = NPCState.STATE_IDLE;
+                        myState = queue.Dequeue();
                         dest = Vector3.zero;
+                        taskCompleted = false;
+                        currentTaskPriority = 2;
+                    }
+                    else
+                    {
+                        //Dequeue a task from priority 2 queue if it has a task and the current task is less important
+                        stateQueue.TryGetValue(1, out queue);
+                        if (queue.Count > 0)
+                        {
+                            prevState = myState;
+                            myState = queue.Dequeue();
+                            dest = Vector3.zero;
+                            taskCompleted = false;
+                            currentTaskPriority = 1;
+                        }
+                        else
+                        {
+                            if (myState != NPCState.STATE_IDLE)
+                            {
+                                prevState = myState;
+                                myState = NPCState.STATE_IDLE;
+                                dest = Vector3.zero;
+                                taskCompleted = false;
+                                currentTaskPriority = 0;
+                            }
+                        }
                     }
                 }
             }
+            
         }
+        else
+        {
+            Queue<NPCState> queue = new Queue<NPCState>();
+            //Dequeue a task from priority 3 queue if it has a task and the current task is less important
+            stateQueue.TryGetValue(3, out queue);
+            if (currentTaskPriority < 3 && queue.Count > 0)
+            {
+                //save current state info so it can be done after the prioritized task is complete
+                prevState = myState;
+                myState = queue.Dequeue();
+                prevStateUncompleted = true;
+                prevTaskPriority = currentTaskPriority;
+                dest = Vector3.zero;
+                taskCompleted = false;
+            }
+            else
+            {
+                //Dequeue a task from priority 2 queue if it has a task and the current task is less important
+                stateQueue.TryGetValue(2, out queue);
+                if (currentTaskPriority < 2 && queue.Count > 0)
+                {
+                    //save current state info so it can be done after the prioritized task is complete
+                    prevState = myState;
+                    myState = queue.Dequeue();
+                    dest = Vector3.zero;
+                    prevStateUncompleted = true;
+                    prevTaskPriority = currentTaskPriority;
+                    taskCompleted = false;
+                }
+            }
+        }
+        
     }
 
     public void Init(string myName, string myId)
