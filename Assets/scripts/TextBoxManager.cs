@@ -21,19 +21,10 @@ public class TextBoxManager : MonoBehaviour {
         DisableTextBox();
     }
 
-    // Update is called once per frame
-    void Update()
+    public void EnableTextBox(string myName, string myId, int myHp, int myHappiness)
     {
-    }
-
-    public void EnableTextBox(string myName, string myId, int myHp, int myHappiness, bool medActive, string myProblem)
-    {
-        string medStatus = "Active";
-        if (!medActive)
-            medStatus = "Not active";
         myNameText.text = myName;
         myIdText.text = myId;
-        myProblemText.text = myProblem;
         SetHealthBar(myHp);
         SetHappyBar(myHappiness);
         targetPanel.SetActive(true);

@@ -26,7 +26,7 @@ public class UIManager : MonoBehaviour {
         if (target == null)
             return false;
         else if (target.tag == "NPC")
-            return(target.GetComponent<NPC>().giveMed(med));
+            return(target.GetComponent<NPCV2>().giveMed(med));
         return false;
     }
 

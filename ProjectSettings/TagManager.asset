@@ -15,6 +15,7 @@ TagManager:
   - ObjectManager
   - BookableObject
   - Chair
+  - Clock
   layers:
   - Default
   - TransparentFX

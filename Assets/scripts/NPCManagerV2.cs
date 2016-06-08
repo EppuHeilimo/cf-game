@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using System;
+using System.Linq;
 
 public class NPCManagerV2 : MonoBehaviour
 {
@@ -11,7 +12,7 @@ public class NPCManagerV2 : MonoBehaviour
     GameObject npcPrefab;
 
     // list to keep track of the NPC instances in the scene
-    List<GameObject> npcList;
+    public List<GameObject> npcList;
 
     // total amount of NPCs in the scene currently
     int npcCount;
@@ -28,7 +29,7 @@ public class NPCManagerV2 : MonoBehaviour
     // hard-coded pool for names, probably changed later
     string[] namePool = { "Aleksi", "Pekka", "Matti", "Kalle", "Jorma" };
 
-    const int MAX_NPCS = 15; // ** MUST BE SAME AS MAX_QUE IN QUE MANAGER! **
+    const int MAX_NPCS = 2; // ** MUST BE SAME AS MAX_QUE IN QUE MANAGER! **
 
     List<string> usedIds; // IDs already used
 
@@ -79,10 +80,26 @@ public class NPCManagerV2 : MonoBehaviour
         string myName = namePool[nameIndex];
         string myId = RandomString(4);
         GameObject newNpc = Instantiate(npcPrefab, spawnPoint, Quaternion.identity) as GameObject; // the method that copies the prefab object
-        // fetch random medicine item from database
-        Item randItem = database.FetchItemByID(UnityEngine.Random.Range(0, database.database.Count));
-        newNpc.GetComponent<NPCV2>().Init(myName, myId, randItem.Usage, randItem.Title); // initialize the npc
+        // Randomize 1-4 DIFFERENT problems for the NPC
+        int numProblems = UnityEngine.Random.Range(1, 5);
+        Item[] randMeds = new Item[4];
+        // Fetch random medicine items from database
+        for (int i = 0; i < numProblems; i++)
+        {
+            randMeds[i] = RandomItem(randMeds);
+        }
+        newNpc.GetComponent<NPCV2>().Init(myName, myId); // initialize the npc
+        newNpc.GetComponent<NPCV2>().InitMedication(randMeds);
         npcList.Add(newNpc);
+    }
+
+    private Item RandomItem(Item[] randMeds)
+    {
+        Item randItem = database.FetchItemByID(UnityEngine.Random.Range(0, database.database.Count));
+        if (!randMeds.Contains(randItem))
+            return randItem;
+        else
+            return RandomItem(randMeds);
     }
 
     private string RandomString(int size)
