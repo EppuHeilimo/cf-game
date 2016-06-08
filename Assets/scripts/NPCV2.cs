@@ -582,7 +582,7 @@ public class NPCV2 : MonoBehaviour
             }
         }
     }
-    public void Init(string myName, string myId, string myProblem, string myMedicine)
+
     public void Init(string myName, string myId)
     {
         this.myName = myName;
