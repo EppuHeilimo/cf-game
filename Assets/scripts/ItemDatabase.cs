@@ -56,6 +56,10 @@ public class Item
         this.Desc = desc;
         this.Substance = substance;
         this.Sprite = Resources.Load<Sprite>("Sprites/Items/" + title); // name the sprites same as titles!
+        if (Sprite == null)
+        {
+            this.Sprite = Resources.Load<Sprite>("Sprites/Items/null");
+        }
         this.Usage = usage;
     }
 

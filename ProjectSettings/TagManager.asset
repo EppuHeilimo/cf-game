@@ -12,6 +12,7 @@ TagManager:
   - HpBar
   - HappyBar
   - TargetPanel
+  - Clock
   layers:
   - Default
   - TransparentFX

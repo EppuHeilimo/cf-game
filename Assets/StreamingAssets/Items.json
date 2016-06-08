@@ -3,14 +3,49 @@
 		"id": 0,
 		"title": "Burana",
 		"desc": "Särkylääke",
-		"substance": "ibuprofeiini",
-		"usage": "flu"
+		"substance": "ibuprofeeni",
+		"usage": "kuume"
 	},
 	{
 		"id": 1,
-		"title": "Kokaiini",
-		"desc": "Auttaa vaivaan kuin vaivaan",
-		"substance": "coke",
-		"usage": "pissed off"
+		"title": "Marevan",
+		"desc": "Kuvaus tähän",
+		"substance": "varfariini",
+		"usage": "laskimotukos"
+	},
+	{
+		"id": 2,
+		"title": "Selexid",
+		"desc": "Kuvaus",
+		"substance": "pivmesillinaami",
+		"usage": "virtsainfektio"
+	},
+	{
+		"id": 3,
+		"title": "Amorion",
+		"desc": "Kuvaus",
+		"substance": "amoksisilliini",
+		"usage": "keuhkoputkitulehdus"
+	},
+	{
+		"id": 4,
+		"title": "Metforem",
+		"desc": "Kuvaus",
+		"substance": "metformiini",
+		"usage": "diabetes"
+	},
+	{
+		"id": 5,
+		"title": "Heinix",
+		"desc": "Kuvaus",
+		"substance": "setiritsiini",
+		"usage": "allergia"
+	},
+	{
+		"id": 6,
+		"title": "Simvastatin",
+		"desc": "Kuvaus",
+		"substance": "simvastatiini",
+		"usage": "korkea veren kolesteroli"
 	}
 ]

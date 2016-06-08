@@ -44,16 +44,24 @@ public class NPCV2 : MonoBehaviour
     public float oldy = 0.0f;
     public GameObject targetChair;
 
-    /* medicine stuff */
-    public bool gotMed;
+    /* NEW MEDICINE SYSTEM */
     float deathTimer; // time without medicine
-    float medTimer; // time with medicine
-    float hpTimer;
-    const int LOSE_HP_TIME = 2; // lose one hitpoint every X seconds 
-    const int GET_HP_TIME = 2; // get one hitpoint every X seconds 
-    const float MED_DURATION = 30f;
-    public string myProblem;
-    public string myMedicine;
+    const int LOSE_HP_TIME = 2; // lose one hitpoint every X seconds if there is no medicine active
+
+    public struct Medicine
+    {
+        public string title;
+        public bool isActive;
+    };
+
+    public Item[] myMedication = new Item[4]; // all of this NPC's meds, usages etc.
+    /* specific meds for different times of day */
+    public Medicine morningMed;
+    public Medicine afternoonMed;
+    public Medicine eveningMed;
+    public Medicine nightMed;
+    /* if correct med is not active at the correct time of the day, start losing hp */
+    public bool isLosingHp = false;
 
     /* position stuff */
     Vector3 dest; // current destination position
@@ -72,8 +80,6 @@ public class NPCV2 : MonoBehaviour
     const int WALK_RADIUS = 500;
     const float SLEEP_TIME = 10f;
 
-
-
     // Use this for initialization
     void Start()
     {
@@ -85,7 +91,9 @@ public class NPCV2 : MonoBehaviour
         stateQueue.Add(1, new Queue<NPCState>());
         stateQueue.Add(2, new Queue<NPCState>());
         stateQueue.Add(3, new Queue<NPCState>());
-        addStateToQueue(2, NPCState.STATE_ARRIVED);
+        addStateToQueue(2, NPCState.STATE_IDLE);
+        diagnosed = true;
+
     }
 
     // Update is called once per frame
@@ -123,7 +131,6 @@ public class NPCV2 : MonoBehaviour
                 }
 
             }
-
         }
 
         if (taskCompleted)
@@ -415,7 +422,6 @@ public class NPCV2 : MonoBehaviour
         }
     }
 
-
     private void talkToNPC()
     {
         //check that the target is actually capable of talking
@@ -454,8 +460,6 @@ public class NPCV2 : MonoBehaviour
         }
 
     }
-
-
 
     private void resetStateVariables()
     {
@@ -601,12 +605,51 @@ public class NPCV2 : MonoBehaviour
         }
     }
 
-    public void Init(string myName, string myId, string myProblem, string myMedicine)
+    public void Init(string myName, string myId)
     {
         this.myName = myName;
         this.myId = myId;
-        this.myProblem = myProblem;
-        this.myMedicine = myMedicine;
+    }
+
+    // Init 1-4 random problems and their corresponding medicines
+    public void InitMedication(Item[] randMeds)
+    {
+        for (int i = 0; i < myMedication.Length; i++)
+        {
+            myMedication[i] = randMeds[i];
+        }
+
+        // assign meds to different times of day
+        if (myMedication[0] != null)
+            morningMed.title = myMedication[0].Title;
+        morningMed.isActive = false;
+        if (myMedication[1] != null)
+            afternoonMed.title = myMedication[1].Title;
+        afternoonMed.isActive = false;
+        if (myMedication[2] != null)
+            eveningMed.title = myMedication[2].Title;
+        eveningMed.isActive = false;
+        if (myMedication[3] != null)
+            nightMed.title = myMedication[3].Title;
+        nightMed.isActive = false;
+
+        // print 'em (temporary)
+        if (myMedication[0] != null)
+            print("aamu: " + morningMed.title + " -- " + myMedication[0].Title + " -- " + myMedication[0].Usage);
+        else
+            print("aamu: N/A");
+        if (myMedication[1] != null)
+            print("päivä: " + afternoonMed.title + " -- " + myMedication[1].Title + " -- " + myMedication[1].Usage);
+        else
+            print("päivä: N/A");
+        if (myMedication[2] != null)
+            print("ilta: " + eveningMed.title + " -- " + myMedication[2].Title + " -- " + myMedication[2].Usage);
+        else
+            print("ilta: N/A");
+        if (myMedication[3] != null)
+            print("yö: " + nightMed.title + " -- " + myMedication[3].Title + " -- " + myMedication[3].Usage);
+        else
+            print("yö: N/A");
     }
 
     public void moveTo(Vector3 dest)
@@ -616,63 +659,140 @@ public class NPCV2 : MonoBehaviour
 
     void checkMed()
     {
-        if (gotMed)
+        if (isLosingHp)
         {
-            medTimer += Time.deltaTime;
-            if (medTimer >= MED_DURATION)
-            {
-                medTimer = 0;
-                gotMed = false;
-            }
-            hpTimer += Time.deltaTime;
-            if (hpTimer >= GET_HP_TIME)
-            {
-                hpTimer = 0;
-                myHp++;
-            }
-        }
-        else
-        {
+            // lose hp if no medicine is active, if hp reaches zero -> die
             deathTimer += Time.deltaTime;
             if (deathTimer >= LOSE_HP_TIME)
             {
-               // myHp--;
+                myHp--;
                 deathTimer = 0;
             }
             if (myHp <= 0)
             {
-               // addStateToQueue(3, NPCState.STATE_DEAD);
+                addStateToQueue(3, NPCState.STATE_DEAD);
                 taskCompleted = true;
+            }
+            // check if medicine has been activated and stop losing hp if so
+            ClockTime.DayTime currTime = GameObject.FindGameObjectWithTag("Clock").GetComponent<ClockTime>().currentDayTime;
+
+            // MORNING
+            if (currTime == ClockTime.DayTime.MORNING)
+            {
+                if (morningMed.isActive)
+                    isLosingHp = false;
+            }
+            // AFTERNOON
+            if (currTime == ClockTime.DayTime.AFTERNOON)
+            {
+                if (afternoonMed.isActive)
+                    isLosingHp = false;
+            }
+            // EVENING
+            if (currTime == ClockTime.DayTime.EVENING)
+            {
+                if (eveningMed.isActive)
+                    isLosingHp = false;
+            }
+            // NIGHT
+            if (currTime == ClockTime.DayTime.NIGHT)
+            {
+                if (nightMed.isActive)
+                    isLosingHp = false;
             }
         }
     }
 
     public bool giveMed(string med)
     {
+        // make sure the NPC is diagnosed and player is near enough
         if (diagnosed && dialogZone.GetComponent<DialogV2>().playerInZone)
         {
-            if (string.Equals(med, myMedicine, System.StringComparison.CurrentCultureIgnoreCase))
+            // check the current time of the day to do the correct comparsion
+            ClockTime.DayTime currTime = GameObject.FindGameObjectWithTag("Clock").GetComponent<ClockTime>().currentDayTime;
+
+            // MORNING
+            if (currTime == ClockTime.DayTime.MORNING)
             {
-                gotMed = true;
-                medTimer = 0;
-                print("Correct medicine!");
+                if (string.Equals(med, morningMed.title, System.StringComparison.CurrentCultureIgnoreCase))
+                {
+                    morningMed.isActive = true;
+                    myHp = myHp + 20;
+                    print("Correct medicine!");
+                }
+                else
+                {
+                    morningMed.isActive = false;
+                    myHp = myHp - 20;
+                    print("Wrong medicine! " + myName + " lost 20HP!");
+                }
                 return true;
             }
-            else
+            // AFTERNOON
+            else if (currTime == ClockTime.DayTime.AFTERNOON)
             {
-                gotMed = false;
-                deathTimer = 0;
-                myHp = myHp - 20;
-                print("Wrong medicine! " + myName + " lost 20HP!");
+                if (string.Equals(med, afternoonMed.title, System.StringComparison.CurrentCultureIgnoreCase))
+                {
+                    afternoonMed.isActive = true;
+                    myHp = myHp + 20;
+                    print("Correct medicine!");
+                }
+                else
+                {
+                    afternoonMed.isActive = false;
+                    myHp = myHp - 20;
+                    print("Wrong medicine! " + myName + " lost 20HP!");
+                }
+                return true;
+            }
+            // EVENING
+            else if (currTime == ClockTime.DayTime.EVENING)
+            {
+                if (string.Equals(med, eveningMed.title, System.StringComparison.CurrentCultureIgnoreCase))
+                {
+                    eveningMed.isActive = true;
+                    myHp = myHp + 20;
+                    print("Correct medicine!");
+                }
+                else
+                {
+                    eveningMed.isActive = false;
+                    myHp = myHp - 20;
+                    print("Wrong medicine! " + myName + " lost 20HP!");
+                }
+                return true;
+            }
+            // NIGHT
+            else if (currTime == ClockTime.DayTime.NIGHT)
+            {
+                if (string.Equals(med, nightMed.title, System.StringComparison.CurrentCultureIgnoreCase))
+                {
+                    nightMed.isActive = true;
+                    myHp = myHp + 20;
+                    print("Correct medicine!");
+                }
+                else
+                {
+                    nightMed.isActive = false;
+                    myHp = myHp - 20;
+                    print("Wrong medicine! " + myName + " lost 20HP!");
+                }
                 return true;
             }
         }
         return false;
     }
 
+    public void disableAllMeds()
+    {
+        morningMed.isActive = false;
+        afternoonMed.isActive = false;
+        eveningMed.isActive = false;
+        nightMed.isActive = false;
+    }
+
     public void initChild()
     {
         dialogZone = transform.FindChild("ContactZone").transform.gameObject;
     }
-
 }

@@ -1395,7 +1395,7 @@ RectTransform:
   m_RootOrder: 1
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: 697.4, y: -35.9}
+  m_AnchoredPosition: {x: 697.4, y: -37.25}
   m_SizeDelta: {x: -766.8, y: 73.2}
   m_Pivot: {x: 0, y: 0}
 --- !u!114 &273586418
@@ -3492,7 +3492,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 22409532, guid: 177cc6ec120a1d941a66ad846b77044e, type: 2}
       propertyPath: m_SizeDelta.y
-      value: 0
+      value: 29.93172
       objectReference: {fileID: 0}
     - target: {fileID: 22409532, guid: 177cc6ec120a1d941a66ad846b77044e, type: 2}
       propertyPath: m_AnchorMin.x
@@ -3520,27 +3520,27 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 22415210, guid: 177cc6ec120a1d941a66ad846b77044e, type: 2}
       propertyPath: m_AnchorMin.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 22415210, guid: 177cc6ec120a1d941a66ad846b77044e, type: 2}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 22415210, guid: 177cc6ec120a1d941a66ad846b77044e, type: 2}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 75
       objectReference: {fileID: 0}
     - target: {fileID: 22415210, guid: 177cc6ec120a1d941a66ad846b77044e, type: 2}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -14.96586
       objectReference: {fileID: 0}
     - target: {fileID: 22415210, guid: 177cc6ec120a1d941a66ad846b77044e, type: 2}
       propertyPath: m_SizeDelta.x
-      value: 0
+      value: 136
       objectReference: {fileID: 0}
     - target: {fileID: 22415210, guid: 177cc6ec120a1d941a66ad846b77044e, type: 2}
       propertyPath: m_SizeDelta.y
-      value: 0
+      value: 15.931721
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 177cc6ec120a1d941a66ad846b77044e, type: 2}
@@ -5733,6 +5733,27 @@ Prefab:
     - target: {fileID: 22408812, guid: 2ecc4f05112d0a5458cd25cc143684bf, type: 2}
       propertyPath: m_Pivot.y
       value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 11423220, guid: 2ecc4f05112d0a5458cd25cc143684bf, type: 2}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300016, guid: b8d287f8279f2584c97ae499ca791ea9,
+        type: 3}
+    - target: {fileID: 11423220, guid: 2ecc4f05112d0a5458cd25cc143684bf, type: 2}
+      propertyPath: m_Color.r
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 11423220, guid: 2ecc4f05112d0a5458cd25cc143684bf, type: 2}
+      propertyPath: m_Color.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 11423220, guid: 2ecc4f05112d0a5458cd25cc143684bf, type: 2}
+      propertyPath: m_Color.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 11423220, guid: 2ecc4f05112d0a5458cd25cc143684bf, type: 2}
+      propertyPath: m_Color.a
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 2ecc4f05112d0a5458cd25cc143684bf, type: 2}
@@ -8216,6 +8237,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isWalking: 0
   goToSleep: 0
+  sit: 0
 --- !u!1001 &1678051759
 Prefab:
   m_ObjectHideFlags: 0
@@ -8696,7 +8718,7 @@ GameObject:
   - 114: {fileID: 1730957086}
   m_Layer: 5
   m_Name: Clock
-  m_TagString: Untagged
+  m_TagString: Clock
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -8729,6 +8751,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 567a9efb8cc6c57459dff0749836667b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  currentDayTime: 0
 --- !u!114 &1730957087
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8898,10 +8921,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 1761894139}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: db7aa4ecd609a844687e6204bd01cfaf, type: 3}
+  m_Script: {fileID: 11500000, guid: 981ca6752108ead4eb6352e22cdc6471, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  npcPrefab: {fileID: 187668, guid: 4a5e25e9f991f9c4db813e115aea5e38, type: 2}
+  npcPrefab: {fileID: 113848, guid: a9c6c736e05ba9e49a85b732ef091ec7, type: 2}
 --- !u!4 &1761894141
 Transform:
   m_ObjectHideFlags: 0
