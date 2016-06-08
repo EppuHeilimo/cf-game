@@ -1,0 +1,647 @@
+fileFormatVersion: 2
+guid: 67ef98bd8303811489d738901fc64f9a
+timeCreated: 1465384769
+licenseType: Free
+TextureImporter:
+  fileIDToRecycleName:
+    21300000: UI_elements3_0
+    21300002: UI_elements3_1
+    21300004: UI_elements3_2
+    21300006: UI_elements3_3
+    21300008: UI_elements3_4
+    21300010: UI_elements3_5
+    21300012: UI_elements3_6
+    21300014: UI_elements3_7
+    21300016: UI_elements3_8
+    21300018: UI_elements3_9
+    21300020: UI_elements3_10
+    21300022: UI_elements3_11
+    21300024: UI_elements3_12
+    21300026: UI_elements3_13
+    21300028: UI_elements3_14
+    21300030: UI_elements3_15
+    21300032: UI_elements3_16
+    21300034: UI_elements3_17
+    21300036: UI_elements3_18
+    21300038: UI_elements3_19
+    21300040: UI_elements3_20
+    21300042: UI_elements3_21
+    21300044: UI_elements3_22
+    21300046: UI_elements3_23
+    21300048: UI_elements3_24
+    21300050: UI_elements3_25
+    21300052: UI_elements3_26
+    21300054: UI_elements3_27
+    21300056: UI_elements3_28
+    21300058: UI_elements3_29
+    21300060: UI_elements3_30
+    21300062: UI_elements3_31
+  serializedVersion: 2
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    linearTexture: 0
+    correctGamma: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+  isReadable: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 0
+  cubemapConvolution: 0
+  cubemapConvolutionSteps: 7
+  cubemapConvolutionExponent: 1.5
+  seamlessCubemap: 0
+  textureFormat: -3
+  maxTextureSize: 2048
+  textureSettings:
+    filterMode: -1
+    aniso: 16
+    mipBias: -1
+    wrapMode: 1
+  nPOTScale: 0
+  lightmap: 0
+  rGBM: 0
+  compressionQuality: 50
+  allowsAlphaSplitting: 0
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spritePixelsToUnits: 100
+  alphaIsTransparency: 1
+  textureType: 8
+  buildTargetSettings: []
+  spriteSheet:
+    sprites:
+    - name: UI_elements3_0
+      rect:
+        serializedVersion: 2
+        x: 16
+        y: 1393
+        width: 158
+        height: 355
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: 46.04188, y: 118.30255}
+        - {x: -47.95812, y: 118.30255}
+        - {x: -51.95812, y: 111.30255}
+        - {x: -51.95812, y: -116.69745}
+        - {x: 53.04188, y: -116.69745}
+        - {x: 53.04188, y: 113.30255}
+    - name: UI_elements3_1
+      rect:
+        serializedVersion: 2
+        x: 225
+        y: 1393
+        width: 157
+        height: 355
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -43.75479, y: 118.30255}
+        - {x: -50.75479, y: 114.30255}
+        - {x: -51.75479, y: 111.30255}
+        - {x: -51.75479, y: -116.69745}
+        - {x: 52.24521, y: -116.69745}
+        - {x: 52.24521, y: 113.30255}
+        - {x: 46.24521, y: 118.30255}
+    - name: UI_elements3_2
+      rect:
+        serializedVersion: 2
+        x: 439
+        y: 1393
+        width: 158
+        height: 355
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -44.25711, y: 118.30255}
+        - {x: -46.25711, y: 117.30255}
+        - {x: -51.25711, y: 112.30255}
+        - {x: -52.25711, y: 110.30255}
+        - {x: -52.25711, y: -116.69745}
+        - {x: 52.74289, y: -116.69745}
+        - {x: 52.74289, y: 113.30255}
+        - {x: 45.74289, y: 118.30255}
+    - name: UI_elements3_3
+      rect:
+        serializedVersion: 2
+        x: 659
+        y: 1393
+        width: 157
+        height: 355
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: 45.193756, y: 118.30255}
+        - {x: -44.806244, y: 118.30255}
+        - {x: -46.806244, y: 117.30255}
+        - {x: -51.806244, y: 111.30255}
+        - {x: -51.806244, y: -116.69745}
+        - {x: 52.193756, y: -116.69745}
+        - {x: 52.193756, y: 111.30255}
+        - {x: 48.193756, y: 117.30255}
+    - name: UI_elements3_4
+      rect:
+        serializedVersion: 2
+        x: 886
+        y: 1673
+        width: 464
+        height: 464
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: 145.25671, y: -64.71448}
+        - {x: 150.25671, y: -49.714478}
+        - {x: 154.25671, y: -32.714478}
+        - {x: 154.25671, y: 38.285522}
+        - {x: 136.25671, y: 78.28552}
+        - {x: 122.256714, y: 94.28552}
+        - {x: 103.256714, y: 115.28552}
+        - {x: 74.256714, y: 137.28552}
+        - {x: 51.256714, y: 148.28552}
+        - {x: 33.256714, y: 153.28552}
+        - {x: -35.743286, y: 153.28552}
+        - {x: -55.743286, y: 148.28552}
+        - {x: -80.743286, y: 138.28552}
+        - {x: -114.743286, y: 110.28552}
+        - {x: -136.74329, y: 82.28552}
+        - {x: -152.74329, y: 41.285522}
+        - {x: -152.74329, y: -26.714478}
+        - {x: -141.74329, y: -60.714478}
+        - {x: -133.74329, y: -75.71448}
+        - {x: -119.743286, y: -94.71448}
+        - {x: -94.743286, y: -119.71448}
+        - {x: -65.743286, y: -140.71448}
+        - {x: -28.743286, y: -152.71448}
+        - {x: 36.256714, y: -152.71448}
+        - {x: 56.256714, y: -146.71448}
+        - {x: 90.256714, y: -129.71448}
+        - {x: 120.256714, y: -104.71448}
+    - name: UI_elements3_5
+      rect:
+        serializedVersion: 2
+        x: 2013
+        y: 1172
+        width: 1087
+        height: 793
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: 357.8004, y: -254.30719}
+        - {x: 358.8004, y: -253.30719}
+        - {x: 358.8004, y: 242.69281}
+        - {x: 357.8004, y: 245.69281}
+        - {x: 354.8004, y: 248.69281}
+        - {x: 349.8004, y: 250.69281}
+        - {x: 347.8004, y: 252.69281}
+        - {x: 346.8004, y: 255.69281}
+        - {x: 341.8004, y: 260.6928}
+        - {x: 338.8004, y: 261.6928}
+        - {x: -349.1996, y: 261.6928}
+        - {x: -350.1996, y: 260.6928}
+        - {x: -352.1996, y: 260.6928}
+        - {x: -357.1996, y: 256.6928}
+        - {x: -358.1996, y: 253.69281}
+        - {x: -358.1996, y: -242.30719}
+        - {x: -357.1996, y: -243.30719}
+        - {x: -357.1996, y: -244.30719}
+        - {x: -351.1996, y: -250.30719}
+        - {x: -347.1996, y: -251.30719}
+        - {x: -347.1996, y: -253.30719}
+        - {x: -342.1996, y: -260.3072}
+        - {x: -339.1996, y: -261.3072}
+        - {x: 350.8004, y: -261.3072}
+        - {x: 351.8004, y: -260.3072}
+        - {x: 352.8004, y: -260.3072}
+        - {x: 357.8004, y: -255.30719}
+    - name: UI_elements3_6
+      rect:
+        serializedVersion: 2
+        x: 993
+        y: 1567
+        width: 204
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - name: UI_elements3_7
+      rect:
+        serializedVersion: 2
+        x: 990
+        y: 1465
+        width: 169
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - name: UI_elements3_8
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 442
+        width: 1068
+        height: 846
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: 352, y: 271.21948}
+        - {x: 351, y: 273.21948}
+        - {x: 348, y: 277.21948}
+        - {x: 343, y: 279.21948}
+        - {x: -345, y: 279.21948}
+        - {x: -346, y: 278.21948}
+        - {x: -348, y: 278.21948}
+        - {x: -352, y: 275.21948}
+        - {x: -352, y: -274.78052}
+        - {x: -349, y: -277.78052}
+        - {x: -346, y: -278.78052}
+        - {x: 344, y: -278.78052}
+        - {x: 347, y: -277.78052}
+        - {x: 351, y: -273.78052}
+        - {x: 352, y: -270.78052}
+    - name: UI_elements3_9
+      rect:
+        serializedVersion: 2
+        x: 1235
+        y: 1151
+        width: 162
+        height: 157
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -49.298523, y: 52.35663}
+        - {x: -53.298523, y: 42.35663}
+        - {x: -53.298523, y: -49.64337}
+        - {x: -45.298523, y: -51.64337}
+        - {x: 52.701477, y: -51.64337}
+        - {x: 54.701477, y: -48.64337}
+        - {x: 54.701477, y: 52.35663}
+    - name: UI_elements3_10
+      rect:
+        serializedVersion: 2
+        x: 1188
+        y: 863
+        width: 766
+        height: 238
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: 252.73468, y: 69.60272}
+        - {x: 250.73468, y: 72.60272}
+        - {x: 245.73468, y: 77.60272}
+        - {x: 243.73468, y: 77.60272}
+        - {x: 241.73468, y: 79.60272}
+        - {x: -240.26532, y: 79.60272}
+        - {x: -245.26532, y: 77.60272}
+        - {x: -250.26532, y: 71.60272}
+        - {x: -250.26532, y: 70.60272}
+        - {x: -252.26532, y: 68.60272}
+        - {x: -252.26532, y: -78.39728}
+        - {x: 253.73468, y: -78.39728}
+        - {x: 253.73468, y: 64.60272}
+    - name: UI_elements3_11
+      rect:
+        serializedVersion: 2
+        x: 2022
+        y: 163
+        width: 1086
+        height: 794
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: 358.23022, y: 245.39542}
+        - {x: 354.23022, y: 249.39542}
+        - {x: 351.23022, y: 251.39542}
+        - {x: 349.23022, y: 251.39542}
+        - {x: 348.23022, y: 252.39542}
+        - {x: 348.23022, y: 254.39542}
+        - {x: 343.23022, y: 261.39542}
+        - {x: 338.23022, y: 262.39542}
+        - {x: -348.76978, y: 262.39542}
+        - {x: -351.76978, y: 261.39542}
+        - {x: -356.76978, y: 255.39542}
+        - {x: -357.76978, y: 251.39542}
+        - {x: -357.76978, y: -240.60458}
+        - {x: -355.76978, y: -245.60458}
+        - {x: -351.76978, y: -248.60458}
+        - {x: -349.76978, y: -248.60458}
+        - {x: -345.76978, y: -252.60458}
+        - {x: -344.76978, y: -255.60458}
+        - {x: -339.76978, y: -260.60458}
+        - {x: -336.76978, y: -261.60458}
+        - {x: 348.23022, y: -261.60458}
+        - {x: 353.23022, y: -260.60458}
+        - {x: 358.23022, y: -255.60458}
+    - name: UI_elements3_12
+      rect:
+        serializedVersion: 2
+        x: 1201
+        y: 597
+        width: 647
+        height: 93
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -201.20001, y: 31.343964}
+        - {x: -213.20001, y: 16.343964}
+        - {x: -213.20001, y: -12.656036}
+        - {x: -209.20001, y: -19.656036}
+        - {x: -196.20001, y: -30.656036}
+        - {x: 213.79999, y: -30.656036}
+        - {x: 213.79999, y: 31.343964}
+    - name: UI_elements3_13
+      rect:
+        serializedVersion: 2
+        x: 1198
+        y: 418
+        width: 647
+        height: 93
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -194.17664, y: 31.406647}
+        - {x: -201.17664, y: 28.406647}
+        - {x: -213.17664, y: 26.406647}
+        - {x: -213.17664, y: -25.593353}
+        - {x: -199.17664, y: -28.593353}
+        - {x: -192.17664, y: -30.593353}
+        - {x: 213.82336, y: -30.593353}
+        - {x: 213.82336, y: 31.406647}
+    - name: UI_elements3_14
+      rect:
+        serializedVersion: 2
+        x: 602
+        y: 206
+        width: 42
+        height: 107
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - name: UI_elements3_15
+      rect:
+        serializedVersion: 2
+        x: 652
+        y: 204
+        width: 48
+        height: 111
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - name: UI_elements3_16
+      rect:
+        serializedVersion: 2
+        x: 709
+        y: 206
+        width: 49
+        height: 109
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -16.362885, y: 37.22673}
+        - {x: -16.362885, y: -35.77327}
+        - {x: 16.637115, y: -35.77327}
+        - {x: 16.637115, y: 37.22673}
+    - name: UI_elements3_17
+      rect:
+        serializedVersion: 2
+        x: 764
+        y: 206
+        width: 53
+        height: 107
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -17.625153, y: 36.72673}
+        - {x: -17.625153, y: -31.27327}
+        - {x: -10.625153, y: -35.27327}
+        - {x: 18.374847, y: -35.27327}
+        - {x: 18.374847, y: 36.72673}
+    - name: UI_elements3_18
+      rect:
+        serializedVersion: 2
+        x: 819
+        y: 206
+        width: 53
+        height: 107
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -17.387451, y: 36.72673}
+        - {x: -17.387451, y: 18.72673}
+        - {x: -4.387451, y: -35.27327}
+        - {x: 7.612549, y: -35.27327}
+        - {x: 18.612549, y: 22.72673}
+        - {x: 18.612549, y: 36.72673}
+    - name: UI_elements3_19
+      rect:
+        serializedVersion: 2
+        x: 876
+        y: 206
+        width: 10
+        height: 107
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - name: UI_elements3_20
+      rect:
+        serializedVersion: 2
+        x: 896
+        y: 263
+        width: 9
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - name: UI_elements3_21
+      rect:
+        serializedVersion: 2
+        x: 392
+        y: 109
+        width: 140
+        height: 141
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -25.223907, y: 47.816566}
+        - {x: -46.223907, y: 35.816566}
+        - {x: -46.223907, y: -38.183434}
+        - {x: -33.223907, y: -46.183434}
+        - {x: 37.776093, y: -46.183434}
+        - {x: 46.776093, y: -31.183434}
+        - {x: 46.776093, y: 33.816566}
+        - {x: 31.776093, y: 47.816566}
+    - name: UI_elements3_22
+      rect:
+        serializedVersion: 2
+        x: 896
+        y: 206
+        width: 9
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - name: UI_elements3_23
+      rect:
+        serializedVersion: 2
+        x: 602
+        y: 25
+        width: 48
+        height: 109
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - name: UI_elements3_24
+      rect:
+        serializedVersion: 2
+        x: 658
+        y: 25
+        width: 44
+        height: 108
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - name: UI_elements3_25
+      rect:
+        serializedVersion: 2
+        x: 711
+        y: 25
+        width: 49
+        height: 109
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -16.045135, y: 36.971687}
+        - {x: -16.045135, y: -36.028313}
+        - {x: 14.9548645, y: -36.028313}
+        - {x: 16.954865, y: -35.028313}
+        - {x: 16.954865, y: 29.971687}
+        - {x: 10.9548645, y: 36.971687}
+    - name: UI_elements3_26
+      rect:
+        serializedVersion: 2
+        x: 766
+        y: 25
+        width: 59
+        height: 109
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: 11.692566, y: 16.971687}
+        - {x: 7.692566, y: 33.971687}
+        - {x: 6.692566, y: 36.971687}
+        - {x: -7.307434, y: 36.971687}
+        - {x: -19.307434, y: -15.028313}
+        - {x: -19.307434, y: -36.028313}
+        - {x: 20.692566, y: -36.028313}
+        - {x: 20.692566, y: -23.028313}
+        - {x: 19.692566, y: -19.028313}
+    - name: UI_elements3_27
+      rect:
+        serializedVersion: 2
+        x: 832
+        y: 25
+        width: 47
+        height: 109
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - name: UI_elements3_28
+      rect:
+        serializedVersion: 2
+        x: 911
+        y: 25
+        width: 50
+        height: 109
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: 17.228394, y: 36.971687}
+        - {x: 10.228394, y: 36.971687}
+        - {x: 9.228394, y: 35.971687}
+        - {x: 6.2283936, y: 36.971687}
+        - {x: -16.771606, y: 36.971687}
+        - {x: -16.771606, y: -36.028313}
+        - {x: 17.228394, y: -36.028313}
+    - name: UI_elements3_29
+      rect:
+        serializedVersion: 2
+        x: 971
+        y: 25
+        width: 43
+        height: 108
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - name: UI_elements3_30
+      rect:
+        serializedVersion: 2
+        x: 1022
+        y: 25
+        width: 49
+        height: 108
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -16.13733, y: 36.471687}
+        - {x: -16.13733, y: -35.528313}
+        - {x: 12.862671, y: -35.528313}
+        - {x: 16.86267, y: -29.528313}
+        - {x: 16.86267, y: 36.471687}
+    - name: UI_elements3_31
+      rect:
+        serializedVersion: 2
+        x: 1080
+        y: 25
+        width: 44
+        height: 108
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    outline: []
+  spritePackingTag: 
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

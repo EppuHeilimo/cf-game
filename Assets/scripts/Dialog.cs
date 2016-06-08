@@ -60,6 +60,8 @@ public class Dialog : MonoBehaviour {
             if (target == transform.parent.gameObject)
             {
                 textBoxManager.EnableTextBox(parent.GetComponent<NPC>().myName, parent.GetComponent<NPC>().myId, parent.GetComponent<NPC>().myHp, parent.GetComponent<NPC>().myHappiness);
+                if (transform.parent.gameObject.GetComponent<NPCV2>().myState == NPCV2.NPCState.STATE_DEAD)
+                    textBoxManager.DisableTextBox();
                 playerInZone = true;
             }
             else
