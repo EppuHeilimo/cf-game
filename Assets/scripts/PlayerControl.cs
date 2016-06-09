@@ -53,8 +53,12 @@ public class PlayerControl : MonoBehaviour {
             //check if the ray hits any collider
             if (Physics.Raycast(ray, out hit, 10000.0f, layerMask))
             {
+#if (UNITY_ANDROID || UNITY_IPHONE || UNITY_WP8)
+                if(!UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject(0))
+#else
 
                 if (!UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject())
+#endif
                 {
                     if (hit.transform.tag != "Bed" && hit.transform.tag != "NPC" || target == hit.transform.gameObject)
                     {

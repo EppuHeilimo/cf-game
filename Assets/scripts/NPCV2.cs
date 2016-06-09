@@ -224,9 +224,9 @@ public class NPCV2 : MonoBehaviour
             timer += Time.deltaTime;
             if(timer > AT_DOC)
             {
-                System.Random rand = new System.Random();
-                int r = rand.Next(0, 10);
-                if(r > 5)
+
+                int r = Random.Range(1, 10);
+                if(r > 1)
                 {
                     addStateToQueue(2, NPCState.STATE_SLEEP);
                     diagnosed = true;
@@ -475,6 +475,10 @@ public class NPCV2 : MonoBehaviour
     {      
         List<GameObject> npcList = GameObject.Find("NPCManager").GetComponent<NPCManagerV2>().npcList;
         npcList.Remove(gameObject);
+        if(player.GetComponent<PlayerControl>().getTarget() == gameObject)
+        {
+            GameObject.FindGameObjectWithTag("TextBoxManager").GetComponent<TextBoxManager>().DisableTextBox();
+        }
         Destroy(gameObject);
         print(myName + " lähti teho-osastolle...");
     }

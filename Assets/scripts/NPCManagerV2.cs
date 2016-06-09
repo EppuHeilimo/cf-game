@@ -1,9 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using System.Text;
-using System;
-using System.Linq;
 
 public class NPCManagerV2 : MonoBehaviour
 {
@@ -29,7 +26,7 @@ public class NPCManagerV2 : MonoBehaviour
     // hard-coded pool for names, probably changed later
     string[] namePool = { "Aleksi", "Pekka", "Matti", "Kalle", "Jorma" };
 
-    const int MAX_NPCS = 15; // ** MUST BE SAME AS MAX_QUE IN QUE MANAGER! **
+    const int MAX_NPCS = 5; // ** MUST BE SAME AS MAX_QUE IN QUE MANAGER! **
 
     List<string> usedIds; // IDs already used
 
@@ -87,7 +84,7 @@ public class NPCManagerV2 : MonoBehaviour
             if (timeSinceLastSpawn > spawnTime)
             {
                 timeSinceLastSpawn = 0;
-                spawnTime = 5; 
+                spawnTime = 5;
                 spawnNPC();
             }
         }
@@ -111,42 +108,52 @@ public class NPCManagerV2 : MonoBehaviour
                 numProblems--;
             }
             else
-                randMeds[i] = null;        
+                randMeds[i] = null;
         }
         newNpc.GetComponent<NPCV2>().Init(myName, myId); // initialize the npc
         newNpc.GetComponent<NPCV2>().InitMedication(randMeds);
-        newNpc.GetComponent<HeadChange>().ChangeToRandomHead();
         npcList.Add(newNpc);
     }
-
 
     private Item RandomItem(Item[] randMeds)
     {
         Item randItem = database.FetchItemByID(UnityEngine.Random.Range(0, database.database.Count));
-        if (!randMeds.Contains(randItem))
-            return randItem;
-        else
+        bool found = false;
+        for (int i = 0; i < randMeds.Length; i++)
+        {
+            if (randMeds[i] != null)
+            {
+                if (randMeds[i].Title == randItem.Title)
+                {
+                    found = true;
+                    break;
+                }
+            }
+        }
+        if (found)
             return RandomItem(randMeds);
+        else
+            return randItem;
     }
 
-    private string RandomString(int size)
+    private string RandomString(int length)
     {
-        StringBuilder builder = new StringBuilder();
-        System.Random random = new System.Random();
-        char ch;
-        for (int i = 0; i < size; i++)
+        char[] c = new char[length];
+        for (int i = 0; i < length; i++)
         {
-            ch = Convert.ToChar(Convert.ToInt32(Math.Floor(26 * random.NextDouble() + 65)));
-            builder.Append(ch);
+            int num = Random.Range(0, 26);
+            char let = (char)('a' + num);
+            c[i] = let;
         }
+        string s = new string(c);
+        s = s.ToUpper();
 
-        // check if the ID was used already, if so, generate a new one
-        if (!usedIds.Contains(builder.ToString()))
+        for (int i = 0; i < usedIds.Count; i++)
         {
-            usedIds.Add(builder.ToString());
-            return builder.ToString();
+            if (usedIds[i] == s)
+                return RandomString(4);
         }
-        else
-            return RandomString(3);
+        usedIds.Add(s);
+        return s;
     }
 }

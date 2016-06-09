@@ -5,13 +5,33 @@ using System.Collections.Generic;
 using System.IO;
 using System;
 
-public class ItemDatabase : MonoBehaviour {
+public class ItemDatabase : MonoBehaviour
+{
     public List<Item> database = new List<Item>();
     JsonData itemData;
 
     void Start()
     {
-        itemData = JsonMapper.ToObject(File.ReadAllText(Application.dataPath + "/StreamingAssets/Items.json"));
+        string path = "";
+        if (Application.platform == RuntimePlatform.Android)
+        {
+            // Android
+            string oriPath = System.IO.Path.Combine(Application.streamingAssetsPath, "Items.json");
+
+            // Android only use WWW to read file
+            WWW reader = new WWW(oriPath);
+            while (!reader.isDone) { }
+
+            string realPath = Application.persistentDataPath + "/db";
+            System.IO.File.WriteAllBytes(realPath, reader.bytes);
+
+            path = realPath;
+        }
+        else
+        {
+            path = Application.dataPath + "/StreamingAssets/Items.json";
+        }
+        itemData = JsonMapper.ToObject(File.ReadAllText(path));
         ConstructItemDatabase();
     }
 
@@ -67,5 +87,4 @@ public class Item
     {
         this.ID = -1;
     }
-
 }
