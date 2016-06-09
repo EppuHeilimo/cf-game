@@ -29,18 +29,18 @@ public class NPCManagerV2 : MonoBehaviour
     // hard-coded pool for names, probably changed later
     string[] namePool = { "Aleksi", "Pekka", "Matti", "Kalle", "Jorma" };
 
-    const int MAX_NPCS = 2; // ** MUST BE SAME AS MAX_QUE IN QUE MANAGER! **
+    const int MAX_NPCS = 15; // ** MUST BE SAME AS MAX_QUE IN QUE MANAGER! **
 
     List<string> usedIds; // IDs already used
-
-
-
 
     // for generating random problem to patient from database
     GameObject invObj;
     ItemDatabase database;
 
     Queue<GameObject> docQueue = new Queue<GameObject>();
+
+    int docque = 0;
+    public bool docBusy = false;
 
     // Use this for initialization
     void Start()
@@ -51,9 +51,28 @@ public class NPCManagerV2 : MonoBehaviour
         usedIds = new List<string>();
         invObj = GameObject.Find("Inventory");
         database = invObj.GetComponent<ItemDatabase>();
-
-
     }
+
+    public void deleteNpcFromList(GameObject go)
+    {
+        npcList.Remove(go);
+    }
+
+    public bool isDocBusy()
+    {
+        return docBusy;
+    }
+
+    public void setDocBusy()
+    {
+        docBusy = true;
+    }
+
+    public void setDocFree()
+    {
+        docBusy = false;
+    }
+
 
 
     // Update is called once per frame
