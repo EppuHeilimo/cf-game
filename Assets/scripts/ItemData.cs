@@ -50,19 +50,26 @@ public class ItemData : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
             if (item != null)
             {
                 // give medicine to NPC with double tap
-                if (eventData.clickCount == 2)
+                for (int i = 0; i < Input.touchCount; ++i)
                 {
-                    // remove medicine from inventory if giving it succeeds
-                    if (uiManager.giveMed(item.Title))
+                    Touch touch = Input.GetTouch(i);
+                    if (touch.phase == TouchPhase.Began)
                     {
-                        inv.RemoveItem(item.ID);
-                        tooltip.Deactivate();
+                        if (touch.tapCount >= 2)
+                        {
+                            // remove medicine from inventory if giving it succeeds
+                            if (uiManager.giveMed(item.Title))
+                            {
+                                inv.RemoveItem(item.ID);
+                                tooltip.Deactivate();
+                            }
+                        }
+                        else
+                        {
+                            offset = eventData.position - new Vector2(this.transform.position.x, this.transform.position.y);
+                            this.transform.position = eventData.position - offset;
+                        }
                     }
-                }
-                else
-                {
-                    offset = eventData.position - new Vector2(this.transform.position.x, this.transform.position.y);
-                    this.transform.position = eventData.position - offset;
                 }
             }
         }
