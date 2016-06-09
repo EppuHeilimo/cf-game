@@ -17,7 +17,19 @@ public class Tooltip : MonoBehaviour {
     {
         if (tooltip.activeSelf)
         {
-            tooltip.transform.position = Input.mousePosition;
+            if (Application.platform == RuntimePlatform.Android)
+            {
+                for (var i = 0; i < Input.touchCount; ++i)
+                {
+                    Touch touch = Input.GetTouch(i);
+                    if (touch.phase == TouchPhase.Began)
+                    {
+                        tooltip.transform.position = touch.position;
+                    }
+                }
+            }
+            else
+                tooltip.transform.position = Input.mousePosition;
         }
     }
 
