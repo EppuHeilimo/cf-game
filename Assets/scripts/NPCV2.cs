@@ -219,7 +219,7 @@ public class NPCV2 : MonoBehaviour
             moveTo(dest);
             timer = 0;
         }
-        if(arrivedToDestination(10.0f))
+        if(arrivedToDestination(30.0f))
         {
             timer += Time.deltaTime;
             if(timer > AT_DOC)
