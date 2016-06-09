@@ -60,6 +60,7 @@ public class PlayerControl : MonoBehaviour {
                 if (!UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject())
 #endif
                 {
+                    print(hit.transform.tag);
                     if (hit.transform.tag != "Bed" && hit.transform.tag != "NPC" || target == hit.transform.gameObject)
                     {
                         Vector3 pos = new Vector3(hit.point.x, 0, hit.point.z);
@@ -67,8 +68,9 @@ public class PlayerControl : MonoBehaviour {
                         agent.SetDestination(pos);
                     }
 
-                    if (hit.transform.gameObject.tag == "NPC" || hit.transform.gameObject.tag == "Bed")
+                    if (hit.transform.gameObject.tag == "NPC" || hit.transform.gameObject.tag == "Chair")
                     {
+                        
                         if (target != null)
                         {
                             outlineGameObject(target.transform, Shader.Find("Diffuse"));
