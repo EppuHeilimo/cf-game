@@ -45,22 +45,46 @@ public class ItemData : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
 
     public void OnPointerDown(PointerEventData eventData)
     {
-        if (item != null)
+        if (Application.platform == RuntimePlatform.Android)
         {
-            // give medicine to NPC with right click
-            if (eventData.pointerId == -2)
+            if (item != null)
             {
-                // remove medicine from inventory if giving it succeeds
-                if (uiManager.giveMed(item.Title))
+                // give medicine to NPC with double tap
+                if (eventData.clickCount == 2)
                 {
-                    inv.RemoveItem(item.ID);
-                    tooltip.Deactivate();
+                    // remove medicine from inventory if giving it succeeds
+                    if (uiManager.giveMed(item.Title))
+                    {
+                        inv.RemoveItem(item.ID);
+                        tooltip.Deactivate();
+                    }
+                }
+                else
+                {
+                    offset = eventData.position - new Vector2(this.transform.position.x, this.transform.position.y);
+                    this.transform.position = eventData.position - offset;
                 }
             }
-            else
-            { 
-                offset = eventData.position - new Vector2(this.transform.position.x, this.transform.position.y);
-                this.transform.position = eventData.position - offset;
+        }
+        else
+        {
+            if (item != null)
+            {
+                // give medicine to NPC with right click
+                if (eventData.pointerId == -2)
+                {
+                    // remove medicine from inventory if giving it succeeds
+                    if (uiManager.giveMed(item.Title))
+                    {
+                        inv.RemoveItem(item.ID);
+                        tooltip.Deactivate();
+                    }
+                }
+                else
+                { 
+                    offset = eventData.position - new Vector2(this.transform.position.x, this.transform.position.y);
+                    this.transform.position = eventData.position - offset;
+                }
             }
         }
     }

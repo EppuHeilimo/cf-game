@@ -5,8 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System;
 
-public class ItemDatabase : MonoBehaviour
-{
+public class ItemDatabase : MonoBehaviour {
     public List<Item> database = new List<Item>();
     JsonData itemData;
 
@@ -14,7 +13,7 @@ public class ItemDatabase : MonoBehaviour
     {
         string path = "";
         if (Application.platform == RuntimePlatform.Android)
-        {
+        {  
             // Android
             string oriPath = System.IO.Path.Combine(Application.streamingAssetsPath, "Items.json");
 

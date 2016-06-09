@@ -44548,31 +44548,31 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 22402940, guid: cf3f2e712242b9940bfd0894141c3f8c, type: 2}
       propertyPath: m_AnchorMin.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 22402940, guid: cf3f2e712242b9940bfd0894141c3f8c, type: 2}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 22402940, guid: cf3f2e712242b9940bfd0894141c3f8c, type: 2}
       propertyPath: m_AnchoredPosition.x
-      value: 75
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 22402940, guid: cf3f2e712242b9940bfd0894141c3f8c, type: 2}
       propertyPath: m_AnchoredPosition.y
-      value: -14.906977
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 22402940, guid: cf3f2e712242b9940bfd0894141c3f8c, type: 2}
       propertyPath: m_SizeDelta.x
-      value: 136
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 22402940, guid: cf3f2e712242b9940bfd0894141c3f8c, type: 2}
       propertyPath: m_SizeDelta.y
-      value: 15.813953
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 22492084, guid: cf3f2e712242b9940bfd0894141c3f8c, type: 2}
       propertyPath: m_SizeDelta.y
-      value: 29.813953
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 183584, guid: cf3f2e712242b9940bfd0894141c3f8c, type: 2}
       propertyPath: m_Name
@@ -44613,6 +44613,18 @@ Prefab:
     - target: {fileID: 11497910, guid: cf3f2e712242b9940bfd0894141c3f8c, type: 2}
       propertyPath: m_FontData.m_MaxSize
       value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 22492084, guid: cf3f2e712242b9940bfd0894141c3f8c, type: 2}
+      propertyPath: m_AnchoredPosition.y
+      value: -107.0976
+      objectReference: {fileID: 0}
+    - target: {fileID: 22492084, guid: cf3f2e712242b9940bfd0894141c3f8c, type: 2}
+      propertyPath: m_Pivot.y
+      value: -0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 11419814, guid: cf3f2e712242b9940bfd0894141c3f8c, type: 2}
+      propertyPath: m_Color.a
+      value: 0.83137256
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: cf3f2e712242b9940bfd0894141c3f8c, type: 2}
