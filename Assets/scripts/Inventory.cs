@@ -30,6 +30,8 @@ public class Inventory : MonoBehaviour {
         }
 
         AddItem(0);
+        AddItem(0);
+        AddItem(0);
         AddItem(1);
 
     }

@@ -84,9 +84,15 @@ public class NPCManagerV2 : MonoBehaviour
         int numProblems = UnityEngine.Random.Range(1, 5);
         Item[] randMeds = new Item[4];
         // Fetch random medicine items from database
-        for (int i = 0; i < numProblems; i++)
+        for (int i = 0; i < randMeds.Length; i++)
         {
-            randMeds[i] = RandomItem(randMeds);
+            if (numProblems > 0)
+            {
+                randMeds[i] = RandomItem(randMeds);
+                numProblems--;
+            }
+            else
+                randMeds[i] = null;        
         }
         newNpc.GetComponent<NPCV2>().Init(myName, myId); // initialize the npc
         newNpc.GetComponent<NPCV2>().InitMedication(randMeds);

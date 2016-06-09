@@ -60,6 +60,7 @@ public class NPCV2 : MonoBehaviour
     };
 
     public Item[] myMedication = new Item[4]; // all of this NPC's meds, usages etc.
+    public string[] myProblems;
     /* specific meds for different times of day */
     public Medicine morningMed;
     public Medicine afternoonMed;
@@ -384,9 +385,11 @@ public class NPCV2 : MonoBehaviour
         }
     }
     private void die()
-    {
-        print(myName + " lähti teho-osastolle...");
+    {      
+        List<GameObject> npcList = GameObject.Find("NPCManager").GetComponent<NPCManagerV2>().npcList;
+        npcList.Remove(gameObject);
         Destroy(gameObject);
+        print(myName + " lähti teho-osastolle...");
     }
     //if player is close and player has target on this npc, talk to player
     private void talkToPlayer()
@@ -592,9 +595,19 @@ public class NPCV2 : MonoBehaviour
     // Init 1-4 random problems and their corresponding medicines
     public void InitMedication(Item[] randMeds)
     {
+        myProblems = new string[4];
         for (int i = 0; i < myMedication.Length; i++)
         {
-            myMedication[i] = randMeds[i];
+            if (randMeds[i] != null)
+            {
+                myMedication[i] = randMeds[i];
+                myProblems[i] = randMeds[i].Usage;
+            }
+            else
+            {
+                myMedication[i] = null;
+                myProblems[i] = null;
+            }       
         }
 
         // assign meds to different times of day
@@ -610,7 +623,7 @@ public class NPCV2 : MonoBehaviour
         if (myMedication[3] != null)
             nightMed.title = myMedication[3].Title;
         nightMed.isActive = false;
-
+        /*
         // print 'em (temporary)
         if (myMedication[0] != null)
             print("aamu: " + morningMed.title + " -- " + myMedication[0].Title + " -- " + myMedication[0].Usage);
@@ -628,6 +641,7 @@ public class NPCV2 : MonoBehaviour
             print("yö: " + nightMed.title + " -- " + myMedication[3].Title + " -- " + myMedication[3].Usage);
         else
             print("yö: N/A");
+        */
     }
     public void moveTo(Vector3 dest)
     {
