@@ -7,8 +7,6 @@ public class PlayerControl : MonoBehaviour {
     GameObject target;
     public GameObject moveindicator;
     GameObject indicator;
-
-    List<GameObject> children = new List<GameObject>();
     // Use this for initialization
     void Start () {
         agent = GetComponent<NavMeshAgent>();
@@ -46,10 +44,6 @@ public class PlayerControl : MonoBehaviour {
             //for unity editor
             #if UNITY_EDITOR
 
-            if (Input.GetKeyDown(KeyCode.A))
-            {
-                Debug.DrawRay(ray.origin, ray.direction, Color.red, 10.0f);
-            }
 
             //for touch device
             #elif (UNITY_ANDROID || UNITY_IPHONE || UNITY_WP8)

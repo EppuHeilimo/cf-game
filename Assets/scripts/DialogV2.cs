@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class DialogV2 : MonoBehaviour
 {
@@ -8,6 +9,8 @@ public class DialogV2 : MonoBehaviour
     GameObject parent;
     public bool playerInZone = false;
     public bool npcInZone = false;
+    Dictionary<GameObject, float> timers = new Dictionary<GameObject, float>();
+
 
     void Start()
     {
@@ -23,6 +26,7 @@ public class DialogV2 : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
+
         GameObject target;
         if (other.tag == "Player")
         {
@@ -55,7 +59,6 @@ public class DialogV2 : MonoBehaviour
         if (other.tag == "Player")
         {
             GameObject target;
-
             target = other.GetComponent<PlayerControl>().getTarget();
             if (target == transform.parent.gameObject)
             {

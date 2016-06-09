@@ -109,8 +109,10 @@ public class NPCManagerV2 : MonoBehaviour
         }
         newNpc.GetComponent<NPCV2>().Init(myName, myId); // initialize the npc
         newNpc.GetComponent<NPCV2>().InitMedication(randMeds);
+        newNpc.GetComponent<HeadChange>().ChangeToRandomHead();
         npcList.Add(newNpc);
     }
+
 
     private Item RandomItem(Item[] randMeds)
     {

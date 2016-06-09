@@ -1785,6 +1785,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isWalking: 0
   goToSleep: 0
+  sit: 0
 --- !u!114 &11457860
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1811,7 +1812,6 @@ MonoBehaviour:
   gotMed: 0
   myProblem: 
   myMedicine: 
-  healthBar: {fileID: 0}
 --- !u!195 &19595110
 NavMeshAgent:
   m_ObjectHideFlags: 1

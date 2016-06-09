@@ -2,7 +2,6 @@
 using System.Collections;
 
 public class DoorOpen : MonoBehaviour {
-    Quaternion defaultRot;
     Vector3 defaultPos;
     bool isOpen = false;
     //how many objects are in the trigger area
@@ -10,8 +9,7 @@ public class DoorOpen : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-        defaultRot = transform.parent.FindChild("default").transform.rotation;
-        defaultPos = transform.parent.position;
+
 
 	}
 	
