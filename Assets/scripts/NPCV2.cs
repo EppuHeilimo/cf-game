@@ -20,6 +20,8 @@ public class NPCV2 : MonoBehaviour
     }
 
     /* basic stuff */
+   
+    LineRenderer DebugPath;
     public string myName;
     public string myId;
     public int myHp = 50;
@@ -39,7 +41,6 @@ public class NPCV2 : MonoBehaviour
     public Dictionary<int, Queue<NPCState>> stateQueue;
     public GameObject myBed;
     //how far from destination player can be to start the task
-    private float minDistanceToDestination = 30.0f;
     private bool taskCompleted = true;
     GameObject dialogZone;
     ObjectInteraction interactionComponent;
@@ -90,9 +91,12 @@ public class NPCV2 : MonoBehaviour
     const float SLEEP_TIME = 10f;
     const float AT_DOC = 10f;
 
+
+    
     // Use this for initialization
     void Start()
     {
+        DebugPath = GetComponent<LineRenderer>(); //get the line renderer
         player = GameObject.FindGameObjectWithTag("Player");
         bedloc = Vector3.zero;
         stateQueue = new Dictionary<int, Queue<NPCState>>();
@@ -109,6 +113,7 @@ public class NPCV2 : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+
         if (dialogZone.GetComponent<DialogV2>().playerInZone && !sleeping && !sitting)
         {
             myState = NPCState.STATE_TALK_TO_PLAYER;
@@ -144,9 +149,13 @@ public class NPCV2 : MonoBehaviour
             }
         }
 
-        if (taskCompleted)
+        if(taskCompleted)
             setMyStateFromQueue();
         actAccordingToState();
+        if(agent.isPathStale)
+        {
+            print("asd");
+        }
 
     }
     private void actAccordingToState()
@@ -203,9 +212,10 @@ public class NPCV2 : MonoBehaviour
 
     private void goToDoc()
     {
-        if(dest == Vector3.zero)
+
+        if (dest == Vector3.zero)
         {
-            dest = new Vector3(0, transform.position.y, 394);
+            dest = new Vector3(-50.0f, transform.position.y, 393.0f);
             moveTo(dest);
             timer = 0;
         }
@@ -214,9 +224,9 @@ public class NPCV2 : MonoBehaviour
             timer += Time.deltaTime;
             if(timer > AT_DOC)
             {
-                System.Random rand = new System.Random();
-                int r = rand.Next(0, 10);
-                if(r > 5)
+
+                int r = Random.Range(1, 10);
+                if(r > 1)
                 {
                     addStateToQueue(2, NPCState.STATE_SLEEP);
                     diagnosed = true;
@@ -230,6 +240,19 @@ public class NPCV2 : MonoBehaviour
                 npcManager.setDocFree();
 
             }
+        }
+    }
+
+    private void debugDrawPath(NavMeshPath path)
+    {
+        if (path.corners.Length < 2) //if the path has 1 or no corners, there is no need
+            return;
+
+        DebugPath.SetVertexCount(path.corners.Length); //set the array of positions to the amount of corners
+
+        for (var i = 1; i < path.corners.Length; i++)
+        {
+            DebugPath.SetPosition(i, path.corners[i]); //go through each corner and set that to the line renderer's position
         }
     }
 
@@ -452,6 +475,10 @@ public class NPCV2 : MonoBehaviour
     {      
         List<GameObject> npcList = GameObject.Find("NPCManager").GetComponent<NPCManagerV2>().npcList;
         npcList.Remove(gameObject);
+        if(player.GetComponent<PlayerControl>().getTarget() == gameObject)
+        {
+            GameObject.FindGameObjectWithTag("TextBoxManager").GetComponent<TextBoxManager>().DisableTextBox();
+        }
         Destroy(gameObject);
         print(myName + " lähti teho-osastolle...");
     }
@@ -710,6 +737,13 @@ public class NPCV2 : MonoBehaviour
         this.myId = myId;
     }
 
+    public void rePath()
+    {
+        Vector3 temp = agent.destination;
+        agent.ResetPath();
+        agent.SetDestination(temp);
+    }
+
     // Init 1-4 random problems and their corresponding medicines
     public void InitMedication(Item[] randMeds)
     {
@@ -776,11 +810,7 @@ public class NPCV2 : MonoBehaviour
                 myHp--;
                 deathTimer = 0;
             }
-            if (myHp <= 0)
-            {
-                addStateToQueue(3, NPCState.STATE_DEAD);
-                taskCompleted = true;
-            }
+
             // check if medicine has been activated and stop losing hp if so
             ClockTime.DayTime currTime = GameObject.FindGameObjectWithTag("Clock").GetComponent<ClockTime>().currentDayTime;
 
@@ -808,6 +838,11 @@ public class NPCV2 : MonoBehaviour
                 if (nightMed.isActive)
                     isLosingHp = false;
             }
+        }
+        if (myHp <= 0)
+        {
+            addStateToQueue(3, NPCState.STATE_DEAD);
+            taskCompleted = true;
         }
     }
     public bool giveMed(string med)

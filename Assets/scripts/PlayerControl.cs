@@ -7,8 +7,6 @@ public class PlayerControl : MonoBehaviour {
     GameObject target;
     public GameObject moveindicator;
     GameObject indicator;
-
-    List<GameObject> children = new List<GameObject>();
     // Use this for initialization
     void Start () {
         agent = GetComponent<NavMeshAgent>();
@@ -46,10 +44,6 @@ public class PlayerControl : MonoBehaviour {
             //for unity editor
             #if UNITY_EDITOR
 
-            if (Input.GetKeyDown(KeyCode.A))
-            {
-                Debug.DrawRay(ray.origin, ray.direction, Color.red, 10.0f);
-            }
 
             //for touch device
             #elif (UNITY_ANDROID || UNITY_IPHONE || UNITY_WP8)
@@ -59,8 +53,12 @@ public class PlayerControl : MonoBehaviour {
             //check if the ray hits any collider
             if (Physics.Raycast(ray, out hit, 10000.0f, layerMask))
             {
+#if (UNITY_ANDROID || UNITY_IPHONE || UNITY_WP8)
+                if(!UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject(0))
+#else
 
                 if (!UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject())
+#endif
                 {
                     if (hit.transform.tag != "Bed" && hit.transform.tag != "NPC" || target == hit.transform.gameObject)
                     {

@@ -26,7 +26,7 @@ public class NPCManagerV2 : MonoBehaviour
     // hard-coded pool for names, probably changed later
     string[] namePool = { "Aleksi", "Pekka", "Matti", "Kalle", "Jorma" };
 
-    const int MAX_NPCS = 15; // ** MUST BE SAME AS MAX_QUE IN QUE MANAGER! **
+    const int MAX_NPCS = 5; // ** MUST BE SAME AS MAX_QUE IN QUE MANAGER! **
 
     List<string> usedIds; // IDs already used
 
@@ -84,7 +84,7 @@ public class NPCManagerV2 : MonoBehaviour
             if (timeSinceLastSpawn > spawnTime)
             {
                 timeSinceLastSpawn = 0;
-                spawnTime = 5; 
+                spawnTime = 5;
                 spawnNPC();
             }
         }
@@ -108,7 +108,7 @@ public class NPCManagerV2 : MonoBehaviour
                 numProblems--;
             }
             else
-                randMeds[i] = null;        
+                randMeds[i] = null;
         }
         newNpc.GetComponent<NPCV2>().Init(myName, myId); // initialize the npc
         newNpc.GetComponent<NPCV2>().InitMedication(randMeds);

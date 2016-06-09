@@ -32,7 +32,6 @@ public class NPC : MonoBehaviour
     public Dictionary<int, Queue<NPCState>> stateQueue;
     public GameObject myBed;
     //how far from destination player can be to start the task
-    private float minDistanceToDestination = 30.0f;
     private bool taskCompleted = true;
     GameObject dialogZone;
     GameObject target;
