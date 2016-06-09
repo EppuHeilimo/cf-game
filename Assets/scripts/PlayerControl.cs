@@ -60,22 +60,21 @@ public class PlayerControl : MonoBehaviour {
                 if (!UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject())
 #endif
                 {
-                    print(hit.transform.tag);
-                    if (hit.transform.tag != "Bed" && hit.transform.tag != "NPC" || target == hit.transform.gameObject)
+                    if (hit.transform.tag != "Chair" && hit.transform.tag != "Bed" && hit.transform.tag != "NPC" || target == hit.transform.gameObject)
                     {
                         Vector3 pos = new Vector3(hit.point.x, 0, hit.point.z);
                         enableMoveIndicator(pos);
                         agent.SetDestination(pos);
                     }
 
-                    if (hit.transform.gameObject.tag == "NPC" || hit.transform.gameObject.tag == "Chair")
+                    if (hit.transform.gameObject.tag == "NPC" || hit.transform.gameObject.tag == "QueueChair")
                     {
-                        
                         if (target != null)
                         {
                             outlineGameObject(target.transform, Shader.Find("Diffuse"));
                         }
                         target = hit.transform.gameObject;
+                        print(target.tag);
                         outlineGameObject(target.transform, Shader.Find("Outlined/Silhouetted Diffuse"));
                     }
                 }
@@ -119,7 +118,14 @@ public class PlayerControl : MonoBehaviour {
 
     void outlineGameObject(Transform gameobject, Shader shader)
     {
-        foreach(Transform child in gameobject)
+        Renderer renderer = GetComponent<Renderer>();
+        if(renderer != null)
+        {
+            renderer.material.shader = shader;
+            renderer.material.SetFloat("_Outline", 0.023f);
+            renderer.material.SetColor("_OutlineColor", new Color(1.0f, 0.0f, 0.0f));
+        }
+        foreach (Transform child in gameobject)
         {
             outlineGameObject(child, shader);
             if(child.GetComponent<Renderer>() != null)
