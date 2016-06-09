@@ -29,7 +29,12 @@ public class Dialog : MonoBehaviour {
             target = other.GetComponent<PlayerControl>().getTarget();
             if (target == transform.parent.gameObject)
             {
-                textBoxManager.EnableTextBox(parent.GetComponent<NPC>().myName, parent.GetComponent<NPC>().myId, parent.GetComponent<NPC>().myHp, parent.GetComponent<NPC>().myHappiness);
+                textBoxManager.EnableTextBox(parent.GetComponent<NPCV2>().myName, parent.GetComponent<NPCV2>().myId,
+                             parent.GetComponent<NPCV2>().myHp, parent.GetComponent<NPCV2>().myHappiness,
+                             parent.GetComponent<NPCV2>().morningMed.title, parent.GetComponent<NPCV2>().afternoonMed.title,
+                             parent.GetComponent<NPCV2>().eveningMed.title, parent.GetComponent<NPCV2>().nightMed.title,
+                             parent.GetComponent<NPCV2>().myProblems
+                             );
                 playerInZone = true;
             }
         }
@@ -59,10 +64,21 @@ public class Dialog : MonoBehaviour {
             target = other.GetComponent<PlayerControl>().getTarget();
             if (target == transform.parent.gameObject)
             {
-                textBoxManager.EnableTextBox(parent.GetComponent<NPC>().myName, parent.GetComponent<NPC>().myId, parent.GetComponent<NPC>().myHp, parent.GetComponent<NPC>().myHappiness);
-                if (transform.parent.gameObject.GetComponent<NPCV2>().myState == NPCV2.NPCState.STATE_DEAD)
+                if (transform.parent.gameObject.GetComponent<NPCV2>().myHp <= 0)
+                {
                     textBoxManager.DisableTextBox();
-                playerInZone = true;
+                    playerInZone = false;
+                }              
+                else
+                {
+                    textBoxManager.EnableTextBox(parent.GetComponent<NPCV2>().myName, parent.GetComponent<NPCV2>().myId,
+                             parent.GetComponent<NPCV2>().myHp, parent.GetComponent<NPCV2>().myHappiness,
+                             parent.GetComponent<NPCV2>().morningMed.title, parent.GetComponent<NPCV2>().afternoonMed.title,
+                             parent.GetComponent<NPCV2>().eveningMed.title, parent.GetComponent<NPCV2>().nightMed.title,
+                             parent.GetComponent<NPCV2>().myProblems
+                             );
+                    playerInZone = true;
+                }
             }
             else
             {

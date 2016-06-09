@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine.UI;
 
 public class TextBoxManager : MonoBehaviour {
@@ -7,6 +8,17 @@ public class TextBoxManager : MonoBehaviour {
     public Text myNameText = null;
     public Text myIdText = null;
     public Text myProblemText = null;
+
+    public GameObject medCardPanel = null;
+    public Text patientInfo = null;
+    public Text morningInfo = null;
+    public Text morningX = null;
+    public Text afternoonInfo = null;
+    public Text afternoonX = null;
+    public Text eveningInfo = null;
+    public Text eveningX = null;
+    public Text nightInfo = null;
+    public Text nightX = null;
 
     GameObject targetPanel;
     GameObject healthBar;
@@ -21,15 +33,67 @@ public class TextBoxManager : MonoBehaviour {
         DisableTextBox();
     }
 
-    public void EnableTextBox(string myName, string myId, int myHp, int myHappiness)
+    public void EnableTextBox(string myName, string myId, int myHp, int myHappiness, string morningMed, string afternoonMed, string eveningMed, string nightMed, string[] myProblems)
     {
         myNameText.text = myName;
         myIdText.text = myId;
+        myProblemText.text = null;
+        foreach (string s in myProblems)
+        {
+            myProblemText.text += s + "\n";
+        }
         SetHealthBar(myHp);
         SetHappyBar(myHappiness);
         targetPanel.SetActive(true);
         healthBar.SetActive(true);
         happyBar.SetActive(true);
+        medCardPanel.SetActive(true);
+
+        patientInfo.text = myName + " (" + myId + ")";
+        if (string.IsNullOrEmpty(morningMed))
+        {
+            morningInfo.text = null;
+            morningX.text = null;
+        }
+        else
+        {
+            morningInfo.text = morningMed;
+            morningX.text = "X";
+        }
+
+        if (string.IsNullOrEmpty(afternoonMed))
+        {
+            afternoonInfo.text = null;
+            afternoonX.text = null;
+        }
+        else
+        {
+            afternoonInfo.text = afternoonMed;
+            afternoonX.text = "X";
+        }
+
+        if (string.IsNullOrEmpty(eveningMed))
+        {
+            eveningInfo.text = null;
+            eveningX.text = null;
+        }
+        else
+        {
+            eveningInfo.text = eveningMed;
+            eveningX.text = "X";
+        }
+
+        if (string.IsNullOrEmpty(nightMed))
+        {
+            nightInfo.text = null;
+            nightX.text = null;
+        }
+        else
+        {
+            nightInfo.text = nightMed;
+            nightX.text = "X";
+        }
+
     }
 
     public void DisableTextBox()
@@ -40,7 +104,18 @@ public class TextBoxManager : MonoBehaviour {
         myNameText.text = null;
         myIdText.text = null;
         myProblemText.text = null;
-    }
+
+        medCardPanel.SetActive(false);
+        patientInfo.text = null;
+        morningInfo.text = null;
+        morningX.text = null;
+        afternoonInfo.text = null;
+        afternoonX.text = null;
+        eveningInfo.text = null;
+        eveningX.text = null;
+        nightInfo.text = null;
+        nightX.text = null;
+}
 
     public void SetHealthBar(int myHp)
     {
@@ -53,4 +128,5 @@ public class TextBoxManager : MonoBehaviour {
         float scaledHappiness = myHappiness / 100f;
         happyBar.transform.localScale = new Vector3(Mathf.Clamp(scaledHappiness, 0f, 1f), happyBar.transform.localScale.y, happyBar.transform.localScale.z);
     }
+
 }

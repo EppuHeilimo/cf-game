@@ -39,7 +39,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f64c6bffc37d9be4b9166caa6a5d8d71, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dialog: {fileID: 0}
+  myNameText: {fileID: 0}
+  myIdText: {fileID: 0}
+  myProblemText: {fileID: 0}
+  medCardPanel: {fileID: 0}
+  patientInfo: {fileID: 0}
+  morningInfo: {fileID: 0}
+  morningX: {fileID: 0}
+  afternoonInfo: {fileID: 0}
+  afternoonX: {fileID: 0}
+  eveningInfo: {fileID: 0}
+  eveningX: {fileID: 0}
+  nightInfo: {fileID: 0}
+  nightX: {fileID: 0}
 --- !u!1001 &100100000
 Prefab:
   m_ObjectHideFlags: 1
