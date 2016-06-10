@@ -6,19 +6,13 @@ public class UIManager : MonoBehaviour {
     GameObject player;
     GameObject target;
     GameObject inv;
-    bool showInventory;
+    bool showInventory = true;
 
 	// Use this for initialization
 	void Start () {
         player = GameObject.FindGameObjectWithTag("Player");
         inv = GameObject.FindGameObjectWithTag("Inventory");
 	}
-	
-	// Update is called once per frame
-	void Update () {
-        if (Input.GetButtonDown("Inventory"))
-            toggleInventory();
-    }
 
     public bool giveMed(string med)
     {
@@ -39,5 +33,10 @@ public class UIManager : MonoBehaviour {
     public void drawInventory(bool show)
     {
         inv.SetActive(show);
+    }
+
+    public void quitGame()
+    {
+        Application.Quit();
     }
 }

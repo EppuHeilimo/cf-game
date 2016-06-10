@@ -49,25 +49,19 @@ public class ItemData : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
         {
             if (item != null)
             {
-                // give medicine to NPC with double tap
+                tooltip.Activate(item);
+                // give medicine to NPC with second tap
                 for (int i = 0; i < Input.touchCount; ++i)
                 {
                     Touch touch = Input.GetTouch(i);
                     if (touch.phase == TouchPhase.Began)
                     {
-                        if (touch.tapCount >= 2)
+                        // remove medicine from inventory if giving it succeeds
+                        if (uiManager.giveMed(item.Title))
                         {
-                            // remove medicine from inventory if giving it succeeds
-                            if (uiManager.giveMed(item.Title))
-                            {
-                                inv.RemoveItem(item.ID);
-                                tooltip.Deactivate();
-                            }
-                        }
-                        else
-                        {
-                            offset = eventData.position - new Vector2(this.transform.position.x, this.transform.position.y);
-                            this.transform.position = eventData.position - offset;
+                            inv.RemoveItem(item.ID);
+                            tooltip.Deactivate();
+                            break;
                         }
                     }
                 }
@@ -77,15 +71,11 @@ public class ItemData : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
         {
             if (item != null)
             {
-                // give medicine to NPC with right click
-                if (eventData.pointerId == -2)
+                // remove medicine from inventory if giving it succeeds
+                if (uiManager.giveMed(item.Title))
                 {
-                    // remove medicine from inventory if giving it succeeds
-                    if (uiManager.giveMed(item.Title))
-                    {
-                        inv.RemoveItem(item.ID);
-                        tooltip.Deactivate();
-                    }
+                    inv.RemoveItem(item.ID);
+                    tooltip.Deactivate();
                 }
                 else
                 { 
