@@ -330,7 +330,7 @@ public class NPCV2 : MonoBehaviour
         {
             agent.Stop();
             //rotate until looking away from mybed
-            if (RotateAwayFrom(myBed.transform))
+            if (interactionComponent.RotateAwayFrom(myBed.transform))
             {
                 sleeping = true;
             }
@@ -403,7 +403,7 @@ public class NPCV2 : MonoBehaviour
             if (sitting)
             {
                 //rotate to look away from the bed so animation will move the player on the bed
-                if (RotateAwayFrom(interactionComponent.getTarget().transform))
+                if (interactionComponent.RotateAwayFrom(interactionComponent.getTarget().transform))
                 {
                     agent.GetComponent<IiroAnimBehavior>().sit = true;
 
@@ -437,7 +437,7 @@ public class NPCV2 : MonoBehaviour
         if (target != null && talking)
         {
             agent.Stop();
-            RotateTowards(target.transform);
+            interactionComponent.RotateTowards(target.transform);
         }
         else
         {
@@ -486,7 +486,7 @@ public class NPCV2 : MonoBehaviour
     private void talkToPlayer()
     {
         agent.Stop();
-        RotateTowards(player.transform);
+        interactionComponent.RotateTowards(player.transform);
         if (!dialogZone.GetComponent<DialogV2>().playerInZone)
         {
             myState = prevState;
@@ -514,7 +514,7 @@ public class NPCV2 : MonoBehaviour
             target.GetComponent<NPCV2>().agent.Stop();
 
             //rotate to look the target
-            RotateTowards(target.transform);
+            interactionComponent.RotateTowards(target.transform);
             timer += Time.deltaTime;
             if (timer > MAX_TIME_TALK_TO_OTHER)
             {
@@ -594,27 +594,7 @@ public class NPCV2 : MonoBehaviour
         }
         else return false;
     }
-    //rotates towards a position
-    private void RotateTowards(Transform target)
-    {
-        Vector3 direction = (target.position - transform.position).normalized;
-        Quaternion lookRotation = Quaternion.LookRotation(direction);
-        transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * 10.0f);
-    }
-    //same as rotateTowards, but inverse look direction
-    private bool RotateAwayFrom(Transform target)
-    {
-        Vector3 direction = (target.position - transform.position).normalized;
-        Quaternion lookRotation = Quaternion.LookRotation(-direction);
-        transform.rotation = Quaternion.RotateTowards(transform.rotation, lookRotation, 5.0f);
-        float transformy = Mathf.Abs(transform.rotation.eulerAngles.y);
-        float looky = Mathf.Abs(lookRotation.eulerAngles.y);
-        if (approx(transformy, looky, 0.1f))
-        {
-            return true;
-        }
-        return false;
-    }
+
     //checks if navmesh is within accuracy zone of his destination
     private bool arrivedToDestination(float accuracy)
     {

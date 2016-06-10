@@ -56,6 +56,28 @@ public class ObjectInteraction : MonoBehaviour {
         return bookedBed;
     }
 
+    //rotates towards a position
+    public void RotateTowards(Transform target)
+    {
+        Vector3 direction = (target.position - transform.position).normalized;
+        Quaternion lookRotation = Quaternion.LookRotation(direction);
+        transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * 10.0f);
+    }
+    //same as rotateTowards, but inverse look direction
+    public bool RotateAwayFrom(Transform target)
+    {
+        Vector3 direction = (target.position - transform.position).normalized;
+        Quaternion lookRotation = Quaternion.LookRotation(-direction);
+        transform.rotation = Quaternion.RotateTowards(transform.rotation, lookRotation, 5.0f);
+        float transformy = Mathf.Abs(transform.rotation.eulerAngles.y);
+        float looky = Mathf.Abs(lookRotation.eulerAngles.y);
+        if (approx(transformy, looky, 0.1f))
+        {
+            return true;
+        }
+        return false;
+    }
+
     /* Gets Vector3 position next to the bed left side */
     /* Side: 0 - front, 1 - left, 2 - back, 3 - right */
     public Vector3 getDestToTargetObjectSide(int side, float offset)

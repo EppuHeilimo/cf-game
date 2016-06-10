@@ -7,8 +7,15 @@ public class PlayerControl : MonoBehaviour {
     GameObject target;
     public GameObject moveindicator;
     GameObject indicator;
+    ObjectInteraction interaction;
+    ObjectManager objManager;
+    IiroAnimBehavior anim;
+    bool sitting = false;
     // Use this for initialization
     void Start () {
+        interaction = GetComponent<ObjectInteraction>();
+        anim = GetComponent<IiroAnimBehavior>();
+        objManager = GameObject.FindGameObjectWithTag("ObjectManager").GetComponent<ObjectManager>();
         agent = GetComponent<NavMeshAgent>();
     }
 	
@@ -24,64 +31,141 @@ public class PlayerControl : MonoBehaviour {
                 }
             }
         }
+        if(sitting)
+        {
+            if(arrivedToDestination(10.0f))
+            {
+                if (interaction.RotateAwayFrom(target.transform))
+                {
+                    if (anim.sit != true)
+                    {
+                        anim.sit = true;
+                    }
+                }
+            }
+        }
+        else
+        {
+            if(anim.sit == true)
+            {
+                anim.sit = false;
+            }
+        }
 
         handleInput();
+    }
+
+    private bool arrivedToDestination(float accuracy)
+    {
+        float dist = Vector3.Distance(agent.destination, transform.position);
+        if (dist < accuracy)
+            return true;
+        else
+            return false;
     }
 
     void handleInput()
     {
         if ((Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began) || (Input.GetMouseButtonDown(0)))
         {
-
             RaycastHit hit;
             //Create a Ray on the tapped / clicked position
 
             //Layer mask
-            LayerMask layerMask = (1 << 8) | (1 << 9) | (1 << 10);
-
+            LayerMask layerMask = (1 << 8);
+            LayerMask layerMaskTargetableLayer = (1 << 9) | (1 << 10);
             Ray ray = new Ray();
-            ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             //for unity editor
-            #if UNITY_EDITOR
-
-
+            #if UNITY_EDITOR || UNITY_STANDALONE_WIN
+            ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             //for touch device
             #elif (UNITY_ANDROID || UNITY_IPHONE || UNITY_WP8)
-                ray = Camera.main.ScreenPointToRay(Input.GetTouch(0).position);
+            ray = Camera.main.ScreenPointToRay(Input.GetTouch(0).position);     
             #endif
-
-            //check if the ray hits any collider
-            if (Physics.Raycast(ray, out hit, 10000.0f, layerMask))
+            if (Physics.Raycast(ray, out hit, 10000.0f, layerMaskTargetableLayer))
             {
-#if (UNITY_ANDROID || UNITY_IPHONE || UNITY_WP8)
-                if(!UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject(0))
-#else
-
+                #if UNITY_EDITOR || UNITY_STANDALONE_WIN
+                /* Check if click was over UI on PC*/
                 if (!UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject())
-#endif
+                #elif (UNITY_ANDROID || UNITY_IPHONE || UNITY_WP8)
+                /* Check if touch was over UI on mobile*/
+                if (!UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject(0))
+                #endif
                 {
-                    if (hit.transform.tag != "Chair" && hit.transform.tag != "Bed" && hit.transform.tag != "NPC" || target == hit.transform.gameObject)
+                    //if object was already targeted act depending on the targetable object
+                    if (target == hit.transform.gameObject)
                     {
-                        Vector3 pos = new Vector3(hit.point.x, 0, hit.point.z);
-                        enableMoveIndicator(pos);
-                        agent.SetDestination(pos);
-                    }
+                        if (target.tag == "Chair" || target.tag == "QueueChair")
+                        {
+                            objManager.bookTargetObject(target, gameObject);
+                            interaction.setCurrentChair(interaction.getTarget());
+                            agent.SetDestination(interaction.getDestToTargetObjectSide(0, 20.0f));
+                            sitting = true;
+                        }
+                        if (target.tag == "NPC")
+                        {
 
-                    if (hit.transform.gameObject.tag == "NPC" || hit.transform.gameObject.tag == "QueueChair")
+                        }
+                    }
+                    else
                     {
+                        /*Reset old target shader*/
                         if (target != null)
                         {
-                            outlineGameObject(target.transform, Shader.Find("Diffuse"));
+                            if (target.tag == "NPC")
+                            {
+                                outlineGameObjectRecursive(target.transform, Shader.Find("Standard"));
+                            }
+                            else
+                            {
+                                outlineOnlyParent(target.transform, Shader.Find("Standard"));
+                            }
+                        }
+                        if(sitting)
+                        {
+                            sitting = false;
+                            objManager.unbookObject(target);
                         }
                         target = hit.transform.gameObject;
-                        print(target.tag);
-                        outlineGameObject(target.transform, Shader.Find("Outlined/Silhouetted Diffuse"));
+                        interaction.setTarget(target);
+                        if (target.tag == "NPC")
+                        {
+                            outlineGameObjectRecursive(target.transform, Shader.Find("Outlined/Silhouetted Diffuse"));
+                        }
+                        else
+                        {
+                            outlineOnlyParent(target.transform, Shader.Find("Outlined/Silhouetted Diffuse"));
+                        }
                     }
                 }
-
-
             }
+            //check if the ray hits floor collider
+            else if (Physics.Raycast(ray, out hit, 10000.0f, layerMask))
+            {
+                #if UNITY_EDITOR || UNITY_STANDALONE_WIN
+                /* Check if click was over UI on PC*/
+                if (!UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject())
+                #elif (UNITY_ANDROID || UNITY_IPHONE || UNITY_WP8)
+                /* Check if touch was over UI on mobile*/
+                if (!UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject(0))
+                #endif
+                {
+                 //get position of hit and move there
+                    Vector3 pos = new Vector3(hit.point.x, 0, hit.point.z);
+                    enableMoveIndicator(pos);
+                    agent.SetDestination(pos);
+                    if(sitting == true)
+                    {
+                        sitting = false;
+                        objManager.unbookObject(target);
+                    }
+                }
+            }
+            //check if the ray hits targetableobjects collider
+            
         }
+
+        /* Scrollwheel zooming */
         var d = Input.GetAxis("Mouse ScrollWheel");
         if (d > 0f)
         {
@@ -116,23 +200,35 @@ public class PlayerControl : MonoBehaviour {
         indicator = (GameObject)Instantiate(moveindicator, pos, new Quaternion(0, 0, 0, 0));
     }
 
-    void outlineGameObject(Transform gameobject, Shader shader)
+    void outlineOnlyParent(Transform gameobject, Shader shader)
     {
-        Renderer renderer = GetComponent<Renderer>();
-        if(renderer != null)
+        Renderer renderer = gameobject.GetComponent<Renderer>();
+        if (renderer != null)
         {
             renderer.material.shader = shader;
-            renderer.material.SetFloat("_Outline", 0.023f);
-            renderer.material.SetColor("_OutlineColor", new Color(1.0f, 0.0f, 0.0f));
+            if (shader.name == "Outlined/Silhouetted Diffuse")
+            {
+                gameobject.GetComponent<Renderer>().material.SetFloat("_Outline", 0.3f);
+                gameobject.GetComponent<Renderer>().material.SetColor("_OutlineColor", new Color(1.0f, 0.0f, 0.0f));
+            }
         }
+    }
+
+    void outlineGameObjectRecursive(Transform gameobject, Shader shader)
+    {
+
         foreach (Transform child in gameobject)
         {
-            outlineGameObject(child, shader);
+            outlineGameObjectRecursive(child, shader);
             if(child.GetComponent<Renderer>() != null)
             {
                 child.GetComponent<Renderer>().material.shader = shader;
-                child.GetComponent<Renderer>().material.SetFloat("_Outline", 0.023f);
-                child.GetComponent<Renderer>().material.SetColor("_OutlineColor", new Color(1.0f, 0.0f, 0.0f));
+                if(shader.name == "Outlined/Silhouetted Diffuse")
+                {
+                    child.GetComponent<Renderer>().material.SetFloat("_Outline", 0.023f);
+                    child.GetComponent<Renderer>().material.SetColor("_OutlineColor", new Color(1.0f, 0.0f, 0.0f));
+                }
+
             }
                 
 
