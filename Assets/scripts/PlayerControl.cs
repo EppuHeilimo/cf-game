@@ -11,6 +11,7 @@ public class PlayerControl : MonoBehaviour {
     ObjectManager objManager;
     IiroAnimBehavior anim;
     bool sitting = false;
+    bool sleeping = false;
     // Use this for initialization
     void Start () {
         interaction = GetComponent<ObjectInteraction>();
@@ -35,13 +36,22 @@ public class PlayerControl : MonoBehaviour {
         {
             if(arrivedToDestination(10.0f))
             {
-                if (interaction.RotateAwayFrom(target.transform))
+                if(target != null)
                 {
-                    if (anim.sit != true)
+                    if (interaction.RotateAwayFrom(target.transform))
                     {
-                        anim.sit = true;
+                        if (anim.sit != true)
+                        {
+                            anim.sit = true;
+                        }
                     }
                 }
+                else
+                {
+                    sitting = false;
+                    objManager.unbookObject(target);
+                }
+
             }
         }
         else
@@ -49,6 +59,36 @@ public class PlayerControl : MonoBehaviour {
             if(anim.sit == true)
             {
                 anim.sit = false;
+            }
+        }
+
+        if (sleeping)
+        {
+            if (arrivedToDestination(10.0f))
+            {
+                if(target != null)
+                {
+                    if (interaction.RotateAwayFrom(target.transform))
+                    {
+                        if (anim.goToSleep != true)
+                        {
+                            anim.goToSleep = true;
+                        }
+                    }
+                }
+                else
+                {
+                    sleeping = false;
+                    objManager.unbookObject(target);
+                }
+
+            }
+        }
+        else
+        {
+            if (anim.goToSleep == true)
+            {
+                anim.goToSleep = false;
             }
         }
 
@@ -66,6 +106,10 @@ public class PlayerControl : MonoBehaviour {
 
     void handleInput()
     {
+        if(Input.GetKeyDown(KeyCode.Escape))
+        {
+            disableTarget();
+        }
         if ((Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began) || (Input.GetMouseButtonDown(0)))
         {
             RaycastHit hit;
@@ -97,35 +141,38 @@ public class PlayerControl : MonoBehaviour {
                     {
                         if (target.tag == "Chair" || target.tag == "QueueChair")
                         {
-                            objManager.bookTargetObject(target, gameObject);
-                            interaction.setCurrentChair(interaction.getTarget());
-                            agent.SetDestination(interaction.getDestToTargetObjectSide(0, 20.0f));
-                            sitting = true;
-                        }
-                        if (target.tag == "NPC")
-                        {
+                            if (objManager.bookTargetObject(target, gameObject))
+                            {
+                                interaction.setCurrentChair(interaction.getTarget());
+                                agent.SetDestination(interaction.getDestToTargetObjectSide(0, 16.0f));
+                                sitting = true;
+                                disableMoveIndicator();
+                            }
 
+                        }
+                        else if (target.tag == "NPC")
+                        {
+                            agent.SetDestination(target.transform.position);
+                        }
+                        else if (target.tag == "Bed")
+                        {
+                            objManager.bookTargetObject(target, gameObject);
+                            interaction.setBookedBed(interaction.getTarget());
+                            agent.SetDestination(interaction.getDestToTargetObjectSide(1, 16.0f));
+                            sleeping = true;
+                            disableMoveIndicator();
                         }
                     }
                     else
                     {
-                        /*Reset old target shader*/
-                        if (target != null)
-                        {
-                            if (target.tag == "NPC")
-                            {
-                                outlineGameObjectRecursive(target.transform, Shader.Find("Standard"));
-                            }
-                            else
-                            {
-                                outlineOnlyParent(target.transform, Shader.Find("Standard"));
-                            }
-                        }
-                        if(sitting)
+
+                        if (sitting)
                         {
                             sitting = false;
                             objManager.unbookObject(target);
                         }
+                        /*Disable target*/
+                        disableTarget();
                         target = hit.transform.gameObject;
                         interaction.setTarget(target);
                         if (target.tag == "NPC")
@@ -175,6 +222,22 @@ public class PlayerControl : MonoBehaviour {
         {
             GameObject.Find("Main Camera").GetComponent<Camera>().orthographicSize--;
         }
+    }
+
+    void disableTarget()
+    {
+        if (target != null)
+        {
+            if (target.tag == "NPC")
+            {
+                outlineGameObjectRecursive(target.transform, Shader.Find("Standard"));
+            }
+            else
+            {
+                outlineOnlyParent(target.transform, Shader.Find("Standard"));
+            }
+        }
+        target = null;
     }
 
     void disableMoveIndicator()
