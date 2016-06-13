@@ -37,7 +37,6 @@ public class MedCabinet : MonoBehaviour
 
     public void AddItem()
     {
-        print("ASD");
         title = input.text.ToString();
         Item itemToAdd = database.FetchItemByTitle(title);
         if (itemToAdd == null)

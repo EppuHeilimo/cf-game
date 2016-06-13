@@ -91,15 +91,17 @@ public class ObjectManager : MonoBehaviour {
     }
 
 
-    public void bookTargetObject(GameObject target, GameObject targetee)
+    public bool bookTargetObject(GameObject target, GameObject targetee)
     {
         if (bookableObjects[target] == null)
         {
             bookableObjects[target] = targetee;
+            return true;
         }
         else
         {
             print("object in use");
+            return false;
         }
     }
 

@@ -386,7 +386,8 @@ public class NPCV2 : MonoBehaviour
         {
             if (dest == Vector3.zero)
             {
-                interactionComponent.setTarget(objectManager.bookRandomQueueChair(gameObject));
+                GameObject targetChair = objectManager.bookRandomQueueChair(gameObject);
+                interactionComponent.setTarget(targetChair);
                 interactionComponent.setCurrentChair(interactionComponent.getTarget());
                 // set destination to queue chair
                 dest = interactionComponent.getDestToTargetObjectSide(0, 20.0f);

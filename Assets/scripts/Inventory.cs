@@ -32,6 +32,7 @@ public class Inventory : MonoBehaviour {
         AddItem(0);
         AddItem(0);
         AddItem(0);
+        RemoveItem(0);
         AddItem(1);
 
     }
@@ -52,7 +53,10 @@ public class Inventory : MonoBehaviour {
                 itemObj.GetComponent<ItemData>().slot = i;
                 // make the object child of the corresponding slot
                 itemObj.transform.SetParent(slots[i].transform);
-                itemObj.transform.position = slots[i].transform.position;
+                //itemObj.transform.position = slots[i].transform.position;
+                itemObj.transform.localScale = Vector3.one;
+                itemObj.GetComponent<RectTransform>().sizeDelta = Vector2.zero;
+                itemObj.GetComponent<RectTransform>().anchoredPosition = Vector2.zero;
                 itemObj.GetComponent<Image>().sprite = itemToAdd.Sprite;
                 break;
             }
