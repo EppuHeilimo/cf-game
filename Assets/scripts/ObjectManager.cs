@@ -105,6 +105,15 @@ public class ObjectManager : MonoBehaviour {
         }
     }
 
+    public GameObject isObjectBooked(GameObject target)
+    {
+        if (bookableObjects.ContainsKey(target) && bookableObjects[target] != null)
+        {
+            return bookableObjects[target];
+        }
+        else return null;
+    }
+
     public void unbookObject(GameObject go)
     {
         bookableObjects[go] = null;

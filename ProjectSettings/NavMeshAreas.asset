@@ -17,8 +17,8 @@ NavMeshAreas:
     cost: 1
   - name: PublicInsideArea
     cost: 1
-  - name: 
-    cost: 1
+  - name: AvoidThis
+    cost: 2
   - name: 
     cost: 1
   - name: 

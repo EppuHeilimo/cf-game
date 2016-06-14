@@ -9,9 +9,12 @@ public class IiroAnimBehavior : MonoBehaviour {
     public bool isWalking = false;
     public bool goToSleep = false;
     public bool sit = false;
+    Animator animator;
+    float walkspeed = 1f;
     void Start () {
         agent = GetComponent<NavMeshAgent>();
         rbody = GetComponent<Rigidbody>();
+        animator = transform.FindChild("Iiro").GetComponent<Animator>();
     }   
 	
 	// Update is called once per frame
@@ -25,16 +28,25 @@ public class IiroAnimBehavior : MonoBehaviour {
         {
             agent.obstacleAvoidanceType = ObstacleAvoidanceType.HighQualityObstacleAvoidance;
         }
-        transform.FindChild("Iiro").GetComponent<Animator>().SetBool("sleep", goToSleep);
-        transform.FindChild("Iiro").GetComponent<Animator>().SetBool("IsWalking", isWalking);
-        transform.FindChild("Iiro").GetComponent<Animator>().SetBool("sit", sit);
-        if (agent.velocity.magnitude < 30.0f)
+        animator.SetBool("sleep", goToSleep);
+        animator.SetBool("IsWalking", isWalking);
+        animator.SetBool("sit", sit);
+        if (agent.velocity.magnitude < 10.0f)
         {
             isWalking = false;
+            animator.speed = 1f;
         }
         else
         {
             isWalking = true;
+            animator.speed = walkspeed;
         }
+    }
+
+    public void setWalkAnimSpeed(float speed)
+    {
+        //calc % of normal speed
+        float temp = (speed / 100.0f) ;
+        walkspeed = temp * 1f;
     }
 }
