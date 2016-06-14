@@ -26,7 +26,7 @@ public class NPCManagerV2 : MonoBehaviour
     // hard-coded pool for names, probably changed later
     string[] namePool = { "Aleksi", "Pekka", "Matti", "Kalle", "Jorma" };
 
-    const int MAX_NPCS = 50; // ** MUST BE SAME AS MAX_QUE IN QUE MANAGER! **
+    const int MAX_NPCS = 3; // ** MUST BE SAME AS MAX_QUE IN QUE MANAGER! **
 
     List<string> usedIds; // IDs already used
 
@@ -44,7 +44,7 @@ public class NPCManagerV2 : MonoBehaviour
     {
         npcList = new List<GameObject>();
         spawnPoint = new Vector3(-331, 0, -5);
-        spawnTime = 1; //Random.Range(5, 20); // spawn new NPC somewhere between 5 and 20 seconds
+        spawnTime = 5; //Random.Range(5, 20); // spawn new NPC somewhere between 5 and 20 seconds
         usedIds = new List<string>();
         invObj = GameObject.Find("Inventory");
         database = invObj.GetComponent<ItemDatabase>();
@@ -84,7 +84,7 @@ public class NPCManagerV2 : MonoBehaviour
             if (timeSinceLastSpawn > spawnTime)
             {
                 timeSinceLastSpawn = 0;
-                spawnTime = 1;
+                spawnTime = 5;
                 spawnNPC();
             }
         }

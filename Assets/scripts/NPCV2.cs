@@ -318,7 +318,7 @@ public class NPCV2 : MonoBehaviour
             {
 
                 int r = Random.Range(1, 10);
-                if(r < 1)
+                if(r > 1)
                 {
                     addStateToQueue(2, NPCState.STATE_MOVE_TO_WARD_AREA);
                     addStateToQueue(2, NPCState.STATE_IDLE);
