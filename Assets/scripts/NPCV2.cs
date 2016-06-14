@@ -16,7 +16,9 @@ public class NPCV2 : MonoBehaviour
         STATE_SLEEP,
         STATE_SLEEP_ON_FLOOR,
         STATE_GO_TO_DOC,
-        STATE_LEAVE_HOSPITAL
+        STATE_LEAVE_HOSPITAL,
+        STATE_MOVE_TO_WARD_AREA,
+        STATE_TRY_UNSTUCK
     }
 
     /* basic stuff */
@@ -26,7 +28,8 @@ public class NPCV2 : MonoBehaviour
     public string myId;
     public int myHp = 50;
     public int myHappiness = 50;
-    public Vector3 bedloc;
+
+
     int currentTaskPriority = 0;
     int prevTaskPriority = 0;
     /* Reference to player */
@@ -49,7 +52,7 @@ public class NPCV2 : MonoBehaviour
     public bool sleeping = false;
     private bool sitting = false;
     public bool cantFindBed = false;
-    public float oldy = 0.0f;
+
     bool prevStateUncompleted = false;
 
     private bool sleepingqueued = false;
@@ -75,7 +78,7 @@ public class NPCV2 : MonoBehaviour
     public bool isLosingHp = false;
 
     /* position stuff */
-    Vector3 dest; // current destination position
+    public Vector3 dest; // current destination position
     NavMeshAgent agent;
     NPCManagerV2 npcManager;
     Vector3 receptionPos = new Vector3(49, 0, 124); // position of reception
@@ -89,8 +92,18 @@ public class NPCV2 : MonoBehaviour
     const float MAX_TIME_TALK_TO_OTHER = 5f;
     const int WALK_RADIUS = 500;
     const float SLEEP_TIME = 10f;
-    const float AT_DOC = 10f;
+    const float AT_DOC = 2f;
 
+    //stuck testing
+    const float STUCK = 5f;
+    //how long doctor will wait for patient
+    const float DOC_WAIT_TIME = 10.0f;
+    float doctimer = 0;
+    float stucktimer = 0f;
+    //current distance to destination
+    float currentdisttodest;
+    //distance to destination at last test
+    float lastdisttodest;
 
     
     // Use this for initialization
@@ -98,7 +111,6 @@ public class NPCV2 : MonoBehaviour
     {
         DebugPath = GetComponent<LineRenderer>(); //get the line renderer
         player = GameObject.FindGameObjectWithTag("Player");
-        bedloc = Vector3.zero;
         stateQueue = new Dictionary<int, Queue<NPCState>>();
         agent = GetComponent<NavMeshAgent>();
         npcManager = GameObject.Find("NPCManager").GetComponent<NPCManagerV2>();
@@ -108,11 +120,35 @@ public class NPCV2 : MonoBehaviour
         stateQueue.Add(3, new Queue<NPCState>());
         addStateToQueue(2, NPCState.STATE_ARRIVED);
         interactionComponent = GetComponent<ObjectInteraction>();
+        lastdisttodest = 0;
         objectManager = GameObject.FindGameObjectWithTag("ObjectManager").GetComponent<ObjectManager>();
     }
     // Update is called once per frame
     void Update()
     {
+        //stuck test
+        stucktimer += Time.deltaTime;
+        //test every STUCK seconds if npc hasn't moved towards it's dest
+        if(stucktimer > STUCK && !arrivedToDestination(10.0f) && myState != NPCState.STATE_TRY_UNSTUCK)
+        {
+            stucktimer = 0;
+            currentdisttodest = Vector3.Distance(transform.position, dest);
+            if(lastdisttodest == 0)
+            {
+                lastdisttodest = currentdisttodest;
+            }
+            else
+            {
+                float sub = currentdisttodest - lastdisttodest;
+                if (Mathf.Abs(sub) < 40.0f)
+                {
+                    lastdisttodest = 0;
+                    addStateToQueue(3, NPCState.STATE_TRY_UNSTUCK);
+                    taskCompleted = true;
+                }
+            }
+
+        }
 
         if (dialogZone.GetComponent<DialogV2>().playerInZone && !sleeping && !sitting)
         {
@@ -152,10 +188,6 @@ public class NPCV2 : MonoBehaviour
         if(taskCompleted)
             setMyStateFromQueue();
         actAccordingToState();
-        if(agent.isPathStale)
-        {
-            print("asd");
-        }
 
     }
     private void actAccordingToState()
@@ -193,6 +225,58 @@ public class NPCV2 : MonoBehaviour
             case NPCState.STATE_LEAVE_HOSPITAL:
                 leaveHospital();
                 break;
+            case NPCState.STATE_MOVE_TO_WARD_AREA:
+                goToWardArea();
+                break;
+            case NPCState.STATE_TRY_UNSTUCK:
+                tryUnstuck();
+                break;
+        }
+    }
+
+    bool isDestInvalid()
+    {
+        if(agent.pathStatus == NavMeshPathStatus.PathInvalid)
+        {
+            return true;
+        }
+        if(dest.x == Mathf.Infinity || dest.z == Mathf.Infinity)
+        {
+            return true;
+        }
+        return false;
+    }
+
+    private void tryUnstuck()
+    {
+        if (dest == Vector3.zero || isDestInvalid())
+        {
+            Vector3 randomDirection = Random.insideUnitSphere * 80.0f;
+            randomDirection += transform.position;
+            NavMeshHit hit;
+            
+            NavMesh.SamplePosition(randomDirection, out hit, 80.0f, 1);
+            Vector3 finalPosition = hit.position;
+            dest = new Vector3(finalPosition.x, transform.position.y, finalPosition.z);
+            moveTo(dest);
+        }
+        if(arrivedToDestination(30.0f))
+        {
+            taskCompleted = true;
+            addStateToQueue(2, prevState);
+        }
+    }
+
+    private void goToWardArea()
+    {
+        if(dest == Vector3.zero)
+        {
+            dest = new Vector3(637.0f, transform.position.y, -76.0f);
+            moveTo(dest);
+        }
+        if(arrivedToDestination(100.0f))
+        {
+            taskCompleted = true;
         }
     }
 
@@ -212,23 +296,32 @@ public class NPCV2 : MonoBehaviour
 
     private void goToDoc()
     {
-
+        doctimer += Time.deltaTime;
+        if (doctimer > DOC_WAIT_TIME)
+        {
+            addStateToQueue(3, NPCState.STATE_TRY_UNSTUCK);
+            taskCompleted = true;
+            doctimer = 0;
+        }
         if (dest == Vector3.zero)
         {
             dest = new Vector3(-50.0f, transform.position.y, 393.0f);
             moveTo(dest);
             timer = 0;
+            doctimer = 0;
         }
         if(arrivedToDestination(30.0f))
         {
+            doctimer = 0;
             timer += Time.deltaTime;
             if(timer > AT_DOC)
             {
 
                 int r = Random.Range(1, 10);
-                if(r > 1)
+                if(r < 1)
                 {
-                    addStateToQueue(2, NPCState.STATE_SLEEP);
+                    addStateToQueue(2, NPCState.STATE_MOVE_TO_WARD_AREA);
+                    addStateToQueue(2, NPCState.STATE_IDLE);
                     diagnosed = true;
                 }
                 else
@@ -237,6 +330,7 @@ public class NPCV2 : MonoBehaviour
                 }
                 timer = 0;
                 taskCompleted = true;
+                dest = Vector3.zero;
                 npcManager.setDocFree();
 
             }
@@ -387,12 +481,21 @@ public class NPCV2 : MonoBehaviour
             if (dest == Vector3.zero)
             {
                 GameObject targetChair = objectManager.bookRandomQueueChair(gameObject);
-                interactionComponent.setTarget(targetChair);
-                interactionComponent.setCurrentChair(interactionComponent.getTarget());
-                // set destination to queue chair
-                dest = interactionComponent.getDestToTargetObjectSide(0, 20.0f);
-                // move to the queue position received
-                moveTo(dest);
+                if(targetChair == null)
+                {
+                    addStateToQueue(3, NPCState.STATE_LEAVE_HOSPITAL);
+                    taskCompleted = true;
+                }
+                else
+                {
+                    interactionComponent.setTarget(targetChair);
+                    interactionComponent.setCurrentChair(interactionComponent.getTarget());
+                    // set destination to queue chair
+                    dest = interactionComponent.getDestToTargetObjectSide(0, 20.0f);
+                    // move to the queue position received
+                    moveTo(dest);
+                }
+
             }
 
             if (arrivedToDestination(10.0f) && !sitting)
@@ -403,13 +506,18 @@ public class NPCV2 : MonoBehaviour
 
             if (sitting)
             {
-                //rotate to look away from the bed so animation will move the player on the bed
-                if (interactionComponent.RotateAwayFrom(interactionComponent.getTarget().transform))
+                if(arrivedToDestination(10.0f))
                 {
-                    agent.GetComponent<IiroAnimBehavior>().sit = true;
+                    if(interactionComponent.getTarget())
+                    {
+                        //rotate to look away from the bed so animation will move the player on the bed
+                        if (interactionComponent.RotateAwayFrom(interactionComponent.getTarget().transform))
+                        {
+                            agent.GetComponent<IiroAnimBehavior>().sit = true;
+                        }
+                    }
 
                 }
-
             }
         }
         else

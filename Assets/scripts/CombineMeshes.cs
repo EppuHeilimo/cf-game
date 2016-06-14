@@ -2,13 +2,15 @@
 using System.Collections;
 [RequireComponent(typeof(MeshFilter))]
 [RequireComponent(typeof(MeshRenderer))]
-public class CombineMeshes : MonoBehaviour {
+public class CombineMeshes : MonoBehaviour
+{
 
     bool combined = false;
-    	
-	// Update is called once per frame
-	void Update () {
-        if(!combined)
+
+    // Update is called once per frame
+    void Update()
+    {
+        if (!combined)
         {
             combineMeshes(gameObject);
         }
@@ -34,7 +36,7 @@ public class CombineMeshes : MonoBehaviour {
                 combine[i].transform = meshFilters[i].transform.localToWorldMatrix;
             }
             meshFilters[i].gameObject.SetActive(false);
-            if(meshFilters[i].gameObject.transform.childCount == 0 )
+            if (meshFilters[i].gameObject.transform.childCount == 0)
             {
                 Destroy(meshFilters[i].gameObject);
             }

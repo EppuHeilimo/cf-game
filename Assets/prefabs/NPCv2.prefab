@@ -1843,7 +1843,6 @@ MonoBehaviour:
   myId: 
   myHp: 50
   myHappiness: 50
-  bedloc: {x: 0, y: 0, z: 0}
   diagnosed: 0
   fatique: 0
   fatiquetimer: 0
@@ -1853,8 +1852,9 @@ MonoBehaviour:
   talking: 0
   sleeping: 0
   cantFindBed: 0
-  oldy: 0
+  myProblems: []
   isLosingHp: 0
+  dest: {x: 0, y: 0, z: 0}
 --- !u!114 &11484282
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1926,7 +1926,7 @@ NavMeshAgent:
   m_AutoRepath: 1
   m_Height: 56
   m_BaseOffset: 0
-  m_WalkableMask: 4294967295
+  m_WalkableMask: 55
   m_ObstacleAvoidanceType: 4
 --- !u!1001 &100100000
 Prefab:

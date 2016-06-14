@@ -11,11 +11,11 @@ NavMeshAreas:
     cost: 1
   - name: Jump
     cost: 2
-  - name: 
+  - name: OnlyPlayerArea
     cost: 1
-  - name: 
+  - name: OnlyNPCArea
     cost: 1
-  - name: 
+  - name: PublicInsideArea
     cost: 1
   - name: 
     cost: 1
