@@ -12,6 +12,7 @@ public class PlayerControl : MonoBehaviour {
     IiroAnimBehavior anim;
     bool sitting = false;
     bool sleeping = false;
+    bool followNpc = false;
     // Use this for initialization
     void Start () {
         interaction = GetComponent<ObjectInteraction>();
@@ -91,6 +92,10 @@ public class PlayerControl : MonoBehaviour {
                 anim.goToSleep = false;
             }
         }
+        if(followNpc)
+        {
+            walkToTarget();
+        }
 
         handleInput();
     }
@@ -117,24 +122,46 @@ public class PlayerControl : MonoBehaviour {
 
             //Layer mask
             LayerMask layerMask = (1 << 8);
-            LayerMask layerMaskTargetableLayer = (1 << 9) | (1 << 10);
+            LayerMask layerMaskNpc = (1 << 9);
+            LayerMask layerMaskTargetableLayer = (1 << 10);
             Ray ray = new Ray();
             //for unity editor
-            #if UNITY_EDITOR || UNITY_STANDALONE_WIN
+#if UNITY_EDITOR || UNITY_STANDALONE_WIN
             ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             //for touch device
-            #elif (UNITY_ANDROID || UNITY_IPHONE || UNITY_WP8)
+#elif (UNITY_ANDROID || UNITY_IPHONE || UNITY_WP8)
             ray = Camera.main.ScreenPointToRay(Input.GetTouch(0).position);     
-            #endif
-            if (Physics.Raycast(ray, out hit, 10000.0f, layerMaskTargetableLayer))
+#endif
+            if (Physics.Raycast(ray, out hit, 10000.0f, layerMaskNpc))
             {
-                #if UNITY_EDITOR || UNITY_STANDALONE_WIN
-                /* Check if click was over UI on PC*/
-                if (!UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject())
-                #elif (UNITY_ANDROID || UNITY_IPHONE || UNITY_WP8)
-                /* Check if touch was over UI on mobile*/
-                if (!UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject(0))
-                #endif
+                if (!isMouseOverUI())
+                {
+                    if (target == hit.transform.gameObject)
+                    {
+                        agent.SetDestination(new Vector3(target.transform.position.x - 16, target.transform.position.y, target.transform.position.z));
+                        followNpc = true;
+                    }
+                    else
+                    {
+                        disableTarget();
+                        target = hit.transform.gameObject;
+                        interaction.setTarget(target);
+                        outlineGameObjectRecursive(target.transform, Shader.Find("Outlined/Silhouetted Diffuse"));
+                    }
+                    if(sitting)
+                    {
+                        sitting = false;
+                    }
+                    if (sleeping)
+                    {
+                        sleeping = false;
+                    }
+                }
+
+            }
+            else if (Physics.Raycast(ray, out hit, 10000.0f, layerMaskTargetableLayer))
+            {
+                if (!isMouseOverUI())
                 {
                     //if object was already targeted act depending on the targetable object
                     if (target == hit.transform.gameObject)
@@ -149,10 +176,6 @@ public class PlayerControl : MonoBehaviour {
                                 disableMoveIndicator();
                             }
 
-                        }
-                        else if (target.tag == "NPC")
-                        {
-                            agent.SetDestination(target.transform.position);
                         }
                         else if (target.tag == "Bed")
                         {
@@ -173,38 +196,31 @@ public class PlayerControl : MonoBehaviour {
                         }
                         /*Disable target*/
                         disableTarget();
+                        //set new target
                         target = hit.transform.gameObject;
                         interaction.setTarget(target);
-                        if (target.tag == "NPC")
-                        {
-                            outlineGameObjectRecursive(target.transform, Shader.Find("Outlined/Silhouetted Diffuse"));
-                        }
-                        else
-                        {
-                            outlineOnlyParent(target.transform, Shader.Find("Outlined/Silhouetted Diffuse"));
-                        }
+                        //outline the object
+                        outlineOnlyParent(target.transform, Shader.Find("Outlined/Silhouetted Diffuse"));
                     }
                 }
             }
             //check if the ray hits floor collider
             else if (Physics.Raycast(ray, out hit, 10000.0f, layerMask))
             {
-                #if UNITY_EDITOR || UNITY_STANDALONE_WIN
-                /* Check if click was over UI on PC*/
-                if (!UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject())
-                #elif (UNITY_ANDROID || UNITY_IPHONE || UNITY_WP8)
-                /* Check if touch was over UI on mobile*/
-                if (!UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject(0))
-                #endif
+                if(!isMouseOverUI())
                 {
-                 //get position of hit and move there
+                    //get position of hit and move there
                     Vector3 pos = new Vector3(hit.point.x, 0, hit.point.z);
                     enableMoveIndicator(pos);
                     agent.SetDestination(pos);
-                    if(sitting == true)
+                    if (sitting == true)
                     {
                         sitting = false;
                         objManager.unbookObject(target);
+                    }
+                    if(followNpc)
+                    {
+                        followNpc = false;
                     }
                 }
             }
@@ -224,6 +240,18 @@ public class PlayerControl : MonoBehaviour {
         }
     }
 
+    bool walkToTarget()
+    {
+        if (Vector3.Distance(transform.position, target.transform.position) < 50.0f)
+        {
+            return true;
+        }
+        else
+        {
+            agent.SetDestination(new Vector3(target.transform.position.x - 20, target.transform.position.y, target.transform.position.z));
+            return false;
+        }
+    }
     void disableTarget()
     {
         if (target != null)
@@ -231,13 +259,30 @@ public class PlayerControl : MonoBehaviour {
             if (target.tag == "NPC")
             {
                 outlineGameObjectRecursive(target.transform, Shader.Find("Standard"));
+                followNpc = false;
             }
             else
             {
                 outlineOnlyParent(target.transform, Shader.Find("Standard"));
+                followNpc = false;
             }
         }
         target = null;
+    }
+
+    bool isMouseOverUI()
+    {
+        #if UNITY_EDITOR || UNITY_STANDALONE_WIN
+        /* Check if click was over UI on PC*/
+        if (!UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject())
+        #elif (UNITY_ANDROID || UNITY_IPHONE || UNITY_WP8)
+        /* Check if touch was over UI on mobile*/
+        if (!UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject(0))
+        #endif
+        {
+            return false;
+        }
+        return true;
     }
 
     void disableMoveIndicator()

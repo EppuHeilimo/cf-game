@@ -16,16 +16,17 @@ public class IiroAnimBehavior : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        if( goToSleep || sit )
+
+        if(goToSleep || sit)
         {
-            rbody.detectCollisions = false;
+            agent.obstacleAvoidanceType = ObstacleAvoidanceType.NoObstacleAvoidance;
         }
         else
         {
-            rbody.detectCollisions = true;
+            agent.obstacleAvoidanceType = ObstacleAvoidanceType.HighQualityObstacleAvoidance;
         }
-        transform.FindChild("Iiro").GetComponent<Animator>().SetBool("IsWalking", isWalking);
         transform.FindChild("Iiro").GetComponent<Animator>().SetBool("sleep", goToSleep);
+        transform.FindChild("Iiro").GetComponent<Animator>().SetBool("IsWalking", isWalking);
         transform.FindChild("Iiro").GetComponent<Animator>().SetBool("sit", sit);
         if (agent.velocity.magnitude < 30.0f)
         {

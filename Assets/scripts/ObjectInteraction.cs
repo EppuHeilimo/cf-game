@@ -83,68 +83,72 @@ public class ObjectInteraction : MonoBehaviour {
     public Vector3 getDestToTargetObjectSide(int side, float offset)
     {
         Vector3 destination = Vector3.zero;
-        float targetroty = target.transform.eulerAngles.y;
-        switch (side)
+        if(target != null)
         {
-            case 0:
-                if (approx(targetroty, 0.0f, 0.1f))
-                    destination = new Vector3(target.transform.position.x, transform.position.y, target.transform.position.z - offset);
-                else if (approx(targetroty, 90.0f, 0.1f))
-                    destination = new Vector3(target.transform.position.x - offset, transform.position.y, target.transform.position.z);
-                else if (approx(targetroty, 180.0f, 0.1f))
-                    destination = new Vector3(target.transform.position.x, transform.position.y, target.transform.position.z + offset);
-                else if (approx(targetroty, 270.0f, 0.1f))
-                    destination = new Vector3(target.transform.position.x + offset, transform.position.y, target.transform.position.z);
-                else
-                {
-                    print("Target unreachable! Target name: " + target.name);
-                }
-                break;
-            case 1:
-                if (approx(targetroty, 0.0f, 0.1f))
-                    destination = new Vector3(target.transform.position.x, transform.position.y, target.transform.position.z + offset);
-                else if (approx(targetroty, 90.0f, 0.1f))
-                    destination = new Vector3(target.transform.position.x - offset, transform.position.y, target.transform.position.z);
-                else if (approx(targetroty, 180.0f, 0.1f))
-                    destination = new Vector3(target.transform.position.x, transform.position.y, target.transform.position.z - offset);
-                else if (approx(targetroty, 270.0f, 0.1f))
-                    destination = new Vector3(target.transform.position.x + offset, transform.position.y, target.transform.position.z);
-                else
-                {
-                    print("Target unreachable! Target name: " + target.name);
-                }
-                break;
-            case 2:
-                if (approx(targetroty, 0.0f, 0.1f))
-                    destination = new Vector3(target.transform.position.x, transform.position.y, target.transform.position.z + offset);
-                else if (approx(targetroty, 90.0f, 0.1f))
-                    destination = new Vector3(target.transform.position.x - offset, transform.position.y, target.transform.position.z);
-                else if (approx(targetroty, 180.0f, 0.1f))
-                    destination = new Vector3(target.transform.position.x, transform.position.y, target.transform.position.z - offset);
-                else if (approx(targetroty, 270.0f, 0.1f))
-                    destination = new Vector3(target.transform.position.x + offset, transform.position.y, target.transform.position.z);
-                else
-                {
-                    print("Target unreachable! Target name: " + target.name);
-                }
-                break;
-            case 3:
-                if (approx(targetroty, 0.0f, 0.1f))
-                    destination = new Vector3(target.transform.position.x, transform.position.y, target.transform.position.z + offset);
-                else if (approx(targetroty, 90.0f, 0.1f))
-                    destination = new Vector3(target.transform.position.x - offset, transform.position.y, target.transform.position.z);
-                else if (approx(targetroty, 180.0f, 0.1f))
-                    destination = new Vector3(target.transform.position.x, transform.position.y, target.transform.position.z - offset);
-                else if (approx(targetroty, 270.0f, 0.1f))
-                    destination = new Vector3(target.transform.position.x + offset, transform.position.y, target.transform.position.z);
-                else
-                {
-                    print("Target unreachable! Target name: " + target.name);
-                }
-                break;
+            float targetroty = target.transform.eulerAngles.y;
+            switch (side)
+            {
+                case 0:
+                    if (approx(targetroty, 0.0f, 0.1f))
+                        destination = new Vector3(target.transform.position.x, transform.position.y, target.transform.position.z - offset);
+                    else if (approx(targetroty, 90.0f, 0.1f))
+                        destination = new Vector3(target.transform.position.x - offset, transform.position.y, target.transform.position.z);
+                    else if (approx(targetroty, 180.0f, 0.1f))
+                        destination = new Vector3(target.transform.position.x, transform.position.y, target.transform.position.z + offset);
+                    else if (approx(targetroty, 270.0f, 0.1f))
+                        destination = new Vector3(target.transform.position.x + offset, transform.position.y, target.transform.position.z);
+                    else
+                    {
+                        print("Target unreachable! Target name: " + target.name);
+                    }
+                    break;
+                case 1:
+                    if (approx(targetroty, 0.0f, 0.1f))
+                        destination = new Vector3(target.transform.position.x, transform.position.y, target.transform.position.z + offset);
+                    else if (approx(targetroty, 90.0f, 0.1f))
+                        destination = new Vector3(target.transform.position.x - offset, transform.position.y, target.transform.position.z);
+                    else if (approx(targetroty, 180.0f, 0.1f))
+                        destination = new Vector3(target.transform.position.x, transform.position.y, target.transform.position.z - offset);
+                    else if (approx(targetroty, 270.0f, 0.1f))
+                        destination = new Vector3(target.transform.position.x + offset, transform.position.y, target.transform.position.z);
+                    else
+                    {
+                        print("Target unreachable! Target name: " + target.name);
+                    }
+                    break;
+                case 2:
+                    if (approx(targetroty, 0.0f, 0.1f))
+                        destination = new Vector3(target.transform.position.x, transform.position.y, target.transform.position.z + offset);
+                    else if (approx(targetroty, 90.0f, 0.1f))
+                        destination = new Vector3(target.transform.position.x - offset, transform.position.y, target.transform.position.z);
+                    else if (approx(targetroty, 180.0f, 0.1f))
+                        destination = new Vector3(target.transform.position.x, transform.position.y, target.transform.position.z - offset);
+                    else if (approx(targetroty, 270.0f, 0.1f))
+                        destination = new Vector3(target.transform.position.x + offset, transform.position.y, target.transform.position.z);
+                    else
+                    {
+                        print("Target unreachable! Target name: " + target.name);
+                    }
+                    break;
+                case 3:
+                    if (approx(targetroty, 0.0f, 0.1f))
+                        destination = new Vector3(target.transform.position.x, transform.position.y, target.transform.position.z + offset);
+                    else if (approx(targetroty, 90.0f, 0.1f))
+                        destination = new Vector3(target.transform.position.x - offset, transform.position.y, target.transform.position.z);
+                    else if (approx(targetroty, 180.0f, 0.1f))
+                        destination = new Vector3(target.transform.position.x, transform.position.y, target.transform.position.z - offset);
+                    else if (approx(targetroty, 270.0f, 0.1f))
+                        destination = new Vector3(target.transform.position.x + offset, transform.position.y, target.transform.position.z);
+                    else
+                    {
+                        print("Target unreachable! Target name: " + target.name);
+                    }
+                    break;
 
-            
+
+            }
         }
+        
         return destination;
     }
 
