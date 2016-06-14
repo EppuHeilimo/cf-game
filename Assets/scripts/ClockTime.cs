@@ -64,8 +64,7 @@ public class ClockTime : MonoBehaviour {
             day++;
         }
         string timeString = getTimeString();
-        currentText = timeString + " Day " + day + "\n" + currentDayTime.ToString();
-
+        currentText = timeString; // + " Day " + day + "\n" + currentDayTime.ToString();
         // Medicine checks four times a day
         if (timeString == MORNING_CHECK)
             doMorningCheck();
