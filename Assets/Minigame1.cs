@@ -18,6 +18,8 @@ public class Minigame1 : MonoBehaviour {
     GameObject npcManagerObj;
     NPCManagerV2 npcManager;
     List<GameObject> npcList;
+    int currNpc;
+    bool kasiDesi;
    
     /* med card stuff */
     public GameObject medCardPanel = null;
@@ -62,6 +64,11 @@ public class Minigame1 : MonoBehaviour {
         uiManager.pause(true);
         player.GetComponent<PlayerControl>().enabled = false;
         npcList = npcManager.npcList;
+        currNpc = 0;
+        GameObject npcObj = npcList[currNpc];
+        NPCV2 npc = npcObj.GetComponent<NPCV2>();
+        showMedCard(npc.myName, npc.myId, npc.morningMed.title, npc.afternoonMed.title, npc.eveningMed.title, npc.nightMed.title);
+        kasiDesi = false;
     }
 
     public void quitMinigame()
@@ -74,12 +81,43 @@ public class Minigame1 : MonoBehaviour {
 
     public void nextNPC()
     {
-        
+        GameObject npcObj;
+        // if reached end of npc list, go to beginning
+        if (currNpc == npcList.Count - 1)
+        {
+            currNpc = 0;
+            npcObj = npcList[currNpc];
+        }           
+        else
+        {
+            currNpc++;
+            npcObj = npcList[currNpc];
+        }            
+        NPCV2 npc = npcObj.GetComponent<NPCV2>();
+        showMedCard(npc.myName, npc.myId, npc.morningMed.title, npc.afternoonMed.title, npc.eveningMed.title, npc.nightMed.title);
     }
 
     public void prevNPC()
     {
+        GameObject npcObj;
+        // if reached beginning of npc list, go to end
+        if (currNpc == 0)
+        {
+            currNpc = npcList.Count - 1;
+            npcObj = npcList[currNpc];
+        }     
+        else
+        {
+            currNpc--;
+            npcObj = npcList[currNpc];
+        }           
+        NPCV2 npc = npcObj.GetComponent<NPCV2>();
+        showMedCard(npc.myName, npc.myId, npc.morningMed.title, npc.afternoonMed.title, npc.eveningMed.title, npc.nightMed.title);
+    }
 
+    public void kasiVitunDesi()
+    {
+        kasiDesi = true;
     }
 
     public void showMedCard(string myName, string myId, string morningMed, string afternoonMed, string eveningMed, string nightMed)
