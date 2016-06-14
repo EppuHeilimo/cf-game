@@ -94,7 +94,17 @@ public class PlayerControl : MonoBehaviour {
         }
         if(followNpc)
         {
-            walkToTarget();
+            if(arrivedToDestination(20.0f))
+            {
+                if(agent.hasPath)
+                    agent.ResetPath();
+                interaction.RotateTowards(target.transform);
+            }
+            else
+            {
+                walkToTarget();
+            }
+            
         }
 
         handleInput();
@@ -117,13 +127,12 @@ public class PlayerControl : MonoBehaviour {
         }
         if ((Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began) || (Input.GetMouseButtonDown(0)))
         {
-            RaycastHit hit;
+            RaycastHit hit2;
             //Create a Ray on the tapped / clicked position
 
             //Layer mask
             LayerMask layerMask = (1 << 8);
-            LayerMask layerMaskNpc = (1 << 9);
-            LayerMask layerMaskTargetableLayer = (1 << 10);
+            LayerMask layerMaskNpc = (1 << 9) | (1 << 10);
             Ray ray = new Ray();
             //for unity editor
 #if UNITY_EDITOR || UNITY_STANDALONE_WIN
@@ -132,85 +141,125 @@ public class PlayerControl : MonoBehaviour {
 #elif (UNITY_ANDROID || UNITY_IPHONE || UNITY_WP8)
             ray = Camera.main.ScreenPointToRay(Input.GetTouch(0).position);     
 #endif
-            if (Physics.Raycast(ray, out hit, 10000.0f, layerMaskNpc))
+            /*
+             * Prioritize raycast hit on npc, so that when npc is sitting 
+             * or sleeping you hit the npc instead of the object they are on 
+            */
+            RaycastHit[] rays;
+            rays = Physics.RaycastAll(ray, 10000.0f, layerMaskNpc);
+            List<RaycastHit> hits = new List<RaycastHit>();
+            bool npcwashit = false;
+            if (rays.Length > 0)
             {
                 if (!isMouseOverUI())
                 {
-                    if (target == hit.transform.gameObject)
+                    foreach (RaycastHit hit in rays)
                     {
-                        agent.SetDestination(new Vector3(target.transform.position.x - 16, target.transform.position.y, target.transform.position.z));
-                        followNpc = true;
-                    }
-                    else
-                    {
-                        disableTarget();
-                        target = hit.transform.gameObject;
-                        interaction.setTarget(target);
-                        outlineGameObjectRecursive(target.transform, Shader.Find("Outlined/Silhouetted Diffuse"));
-                    }
-                    if(sitting)
-                    {
-                        sitting = false;
-                    }
-                    if (sleeping)
-                    {
-                        sleeping = false;
-                    }
-                }
-
-            }
-            else if (Physics.Raycast(ray, out hit, 10000.0f, layerMaskTargetableLayer))
-            {
-                if (!isMouseOverUI())
-                {
-                    //if object was already targeted act depending on the targetable object
-                    if (target == hit.transform.gameObject)
-                    {
-                        if (target.tag == "Chair" || target.tag == "QueueChair")
+                        //object who booked the object. 
+                        GameObject temp = objManager.isObjectBooked(hit.transform.gameObject);
+                        if (hit.transform.tag != "NPC" && temp == null)
                         {
-                            if (objManager.bookTargetObject(target, gameObject))
+                            hits.Add(hit);
+                            continue;
+                        }
+                        else
+                        { 
+                            npcwashit = true;
+                            if ((target == hit.transform.gameObject) || (temp != null && target == temp))
                             {
-                                interaction.setCurrentChair(interaction.getTarget());
-                                agent.SetDestination(interaction.getDestToTargetObjectSide(0, 16.0f));
-                                sitting = true;
+                                agent.SetDestination(new Vector3(target.transform.position.x, target.transform.position.y, target.transform.position.z));
+                                followNpc = true;
+                            }
+                            else
+                            {
+                                disableTarget();
+                                if(temp != null)
+                                {
+                                    target = temp;
+                                }
+                                else
+                                {
+                                    target = hit.transform.gameObject;
+                                }
+                                
+                                interaction.setTarget(target);
+                                outlineGameObjectRecursive(target.transform, Shader.Find("Outlined/Silhouetted Diffuse"));
+                            }
+                            if (sitting)
+                            {
+                                sitting = false;
+                            }
+                            if (sleeping)
+                            {
+                                sleeping = false;
+                            }
+                        }
+                    }
+                    //if ther was now npc's hit, take the first hit object
+                    if(!npcwashit)
+                    {
+                        hit2 = hits[0];
+                        if (target == hit2.transform.gameObject)
+                        {
+                            if (target.tag == "Chair" || target.tag == "QueueChair")
+                            {
+                                if (objManager.bookTargetObject(target, gameObject))
+                                {
+                                    interaction.setCurrentChair(interaction.getTarget());
+                                    agent.SetDestination(interaction.getDestToTargetObjectSide(0, 16.0f));
+                                    sitting = true;
+                                    disableMoveIndicator();
+                                }
+
+                            }
+                            else if (target.tag == "Bed")
+                            {
+                                objManager.bookTargetObject(target, gameObject);
+                                interaction.setBookedBed(interaction.getTarget());
+                                agent.SetDestination(interaction.getDestToTargetObjectSide(1, 16.0f));
+                                sleeping = true;
                                 disableMoveIndicator();
                             }
-
                         }
-                        else if (target.tag == "Bed")
+                        else
                         {
-                            objManager.bookTargetObject(target, gameObject);
-                            interaction.setBookedBed(interaction.getTarget());
-                            agent.SetDestination(interaction.getDestToTargetObjectSide(1, 16.0f));
-                            sleeping = true;
-                            disableMoveIndicator();
+                            
+                            if (sitting)
+                            {
+                                sitting = false;
+                                objManager.unbookObject(target);
+                            }
+                            if (sleeping)
+                            {
+                                sleeping = false;
+                                objManager.unbookObject(target);
+                            }
+                            /*Disable target*/
+                            disableTarget();
+                            GameObject temp = objManager.isObjectBooked(hit2.transform.gameObject);
+                            if (temp != null)
+                            {
+                                target = temp;
+                            }
+                            else
+                            {
+                                //set new target
+                                target = hit2.transform.gameObject;
+                            }
+                            interaction.setTarget(target);
+                            //outline the object
+                            outlineOnlyParent(target.transform, Shader.Find("Outlined/Silhouetted Diffuse"));
                         }
-                    }
-                    else
-                    {
-
-                        if (sitting)
-                        {
-                            sitting = false;
-                            objManager.unbookObject(target);
-                        }
-                        /*Disable target*/
-                        disableTarget();
-                        //set new target
-                        target = hit.transform.gameObject;
-                        interaction.setTarget(target);
-                        //outline the object
-                        outlineOnlyParent(target.transform, Shader.Find("Outlined/Silhouetted Diffuse"));
                     }
                 }
             }
             //check if the ray hits floor collider
-            else if (Physics.Raycast(ray, out hit, 10000.0f, layerMask))
+            else if (Physics.Raycast(ray, out hit2, 10000.0f, layerMask))
             {
                 if(!isMouseOverUI())
                 {
                     //get position of hit and move there
-                    Vector3 pos = new Vector3(hit.point.x, 0, hit.point.z);
+                    Vector3 pos = new Vector3(hit2.point.x, 0, hit2.point.z);
                     enableMoveIndicator(pos);
                     agent.SetDestination(pos);
                     if (sitting == true)

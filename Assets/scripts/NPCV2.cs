@@ -28,8 +28,6 @@ public class NPCV2 : MonoBehaviour
     public string myId;
     public int myHp = 50;
     public int myHappiness = 50;
-
-
     int currentTaskPriority = 0;
     int prevTaskPriority = 0;
     /* Reference to player */
@@ -113,6 +111,11 @@ public class NPCV2 : MonoBehaviour
         player = GameObject.FindGameObjectWithTag("Player");
         stateQueue = new Dictionary<int, Queue<NPCState>>();
         agent = GetComponent<NavMeshAgent>();
+
+        //Set npc speed randomly
+        agent.speed = Random.Range(60f, 100f);
+        //Set animation speed to match the walk speed.
+        GetComponent<IiroAnimBehavior>().setWalkAnimSpeed(agent.speed);
         npcManager = GameObject.Find("NPCManager").GetComponent<NPCManagerV2>();
         dest = Vector3.zero;
         stateQueue.Add(1, new Queue<NPCState>());
@@ -185,8 +188,7 @@ public class NPCV2 : MonoBehaviour
             }
         }
 
-        if(taskCompleted)
-            setMyStateFromQueue();
+        setMyStateFromQueue();
         actAccordingToState();
 
     }
@@ -321,7 +323,6 @@ public class NPCV2 : MonoBehaviour
                 if(r > 1)
                 {
                     addStateToQueue(2, NPCState.STATE_MOVE_TO_WARD_AREA);
-                    addStateToQueue(2, NPCState.STATE_IDLE);
                     diagnosed = true;
                 }
                 else
@@ -598,7 +599,14 @@ public class NPCV2 : MonoBehaviour
         interactionComponent.RotateTowards(player.transform);
         if (!dialogZone.GetComponent<DialogV2>().playerInZone)
         {
-            myState = prevState;
+            if(prevState != NPCState.STATE_TALK_TO_PLAYER)
+            {
+                myState = prevState;
+            }
+            else
+            {
+                taskCompleted = true;
+            }
             agent.Resume();
         }
     }
@@ -612,7 +620,7 @@ public class NPCV2 : MonoBehaviour
         }
 
         //check if at target & set destination
-        if  (target.tag == "NPC" && target != null && walkToTarget())
+        if  (target != null && target.tag == "NPC" && walkToTarget())
         {
             //set both npc's to talking
             target.GetComponent<NPCV2>().talking = true;
@@ -674,10 +682,16 @@ public class NPCV2 : MonoBehaviour
         List<GameObject> idlenpcs = new List<GameObject>();
         foreach (GameObject npc in npcs)
         {
-            //Check that the npc is not self and is idle
-            if (npc.gameObject != gameObject && npc.GetComponent<NPCV2>().isIdle() && !npc.GetComponent<NPCV2>().talking)
+            if (npc.gameObject != gameObject)
             {
-                idlenpcs.Add(npc.gameObject);
+                NPCV2 script = npc.GetComponent<NPCV2>();
+                if (script.isIdle())
+                {
+                    if(!script.talking)
+                    {
+                        idlenpcs.Add(npc.gameObject);
+                    }
+                }
             }
         }
         if(idlenpcs.Count > 0)
@@ -697,7 +711,7 @@ public class NPCV2 : MonoBehaviour
     }
     public bool isIdle()
     {
-        if (myState == NPCState.STATE_IDLE || myState == NPCState.STATE_TALK_TO_OTHER_NPC)
+        if (myState == NPCState.STATE_IDLE)
         {
             return true;
         }
@@ -824,6 +838,7 @@ public class NPCV2 : MonoBehaviour
     {
         this.myName = myName;
         this.myId = myId;
+        
     }
 
     public void rePath()
