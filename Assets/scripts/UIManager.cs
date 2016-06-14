@@ -7,6 +7,7 @@ public class UIManager : MonoBehaviour {
     GameObject target;
     GameObject inv;
     bool showInventory = true;
+    bool paused = false;
 
 	// Use this for initialization
 	void Start () {
@@ -38,5 +39,19 @@ public class UIManager : MonoBehaviour {
     public void quitGame()
     {
         Application.Quit();
+    }
+
+    public void pauseGame()
+    {
+        paused = !paused;
+        pause(paused);
+    }
+
+    public void pause(bool pause)
+    {
+        if (pause)
+            Time.timeScale = 0;
+        else
+            Time.timeScale = 1;
     }
 }

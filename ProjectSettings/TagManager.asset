@@ -18,6 +18,12 @@ TagManager:
   - Clock
   - MedCabinetPanel
   - TextBoxManager
+  - Minigame1
+  - UIManager
+  - UICanvas
+  - Minigame1
+  - Minigame1Canvas
+  - NPCManager
   layers:
   - Default
   - TransparentFX
