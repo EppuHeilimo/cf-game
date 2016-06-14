@@ -5,36 +5,20 @@ using UnityEngine.UI;
 
 public class MedCabinet : MonoBehaviour
 {
-    GameObject invObj;
-    public Text input;
-    Inventory playerInv;
-    GameObject inventoryPanel;
-    ItemDatabase database;
-    string title;
+    GameObject miniGame;  
 
     void Start()
     {
-        invObj = GameObject.Find("Inventory");
-        playerInv = invObj.GetComponent<Inventory>();
-        database = invObj.GetComponent<ItemDatabase>();
-        inventoryPanel = GameObject.Find("Med Cabinet Panel");
-        inventoryPanel.SetActive(false);
+        miniGame = GameObject.FindGameObjectWithTag("Minigame1");
     }
 
     void OnTriggerEnter(Collider other)
     {
-        inventoryPanel.SetActive(true);
-        //TODO: check if player is close enough to the cabinet
-    }
-
-    void OnTriggerExit(Collider other)
-    {
         if (other.tag == "Player")
-        {
-            inventoryPanel.SetActive(false);
-        }
+            miniGame.GetComponent<Minigame1>().startMinigame();
     }
 
+    /*
     public void AddItem()
     {
         title = input.text.ToString();
@@ -46,4 +30,5 @@ public class MedCabinet : MonoBehaviour
         }
         playerInv.AddItem(itemToAdd.ID);
     }
+    */
 }
