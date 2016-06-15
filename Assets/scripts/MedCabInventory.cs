@@ -13,11 +13,11 @@ public class MedCabInventory : MonoBehaviour {
     public List<Item> items = new List<Item>();
     public List<GameObject> slots = new List<GameObject>();
 
-    void Start()
+    public void Init()
     {
         database = GameObject.Find("Inventory").GetComponent<ItemDatabase>();
         inventoryPanel = GameObject.Find("MedCabPanel");
-        slotPanel = inventoryPanel.transform.FindChild("MedCabSlotPanel").gameObject;
+        slotPanel = GameObject.Find("MedCabSlotPanel");
         for (int i = 0; i < database.database.Count; i++)
         {
             items.Add(new Item());

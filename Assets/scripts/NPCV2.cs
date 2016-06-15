@@ -72,6 +72,11 @@ public class NPCV2 : MonoBehaviour
     public Medicine afternoonMed;
     public Medicine eveningMed;
     public Medicine nightMed;
+    /* dosages */
+    public int morningDos;
+    public int afternoonDos;
+    public int eveningDos;
+    public int nightDos;
     /* if correct med is not active at the correct time of the day, start losing hp */
     public bool isLosingHp = false;
 
@@ -837,8 +842,7 @@ public class NPCV2 : MonoBehaviour
     public void Init(string myName, string myId)
     {
         this.myName = myName;
-        this.myId = myId;
-        
+        this.myId = myId;    
     }
 
     public void rePath()
@@ -866,38 +870,101 @@ public class NPCV2 : MonoBehaviour
             }       
         }
 
-        // assign meds to different times of day
+        // assign meds to different times of day and randomize one of three dosages
         if (myMedication[0] != null)
+        {
             morningMed.title = myMedication[0].Title;
+            int rnd = Random.Range(1, 4);
+            switch (rnd)
+            {
+                case 1:
+                    morningDos = myMedication[0].SmallDosage;
+                    break;
+                case 2:
+                    morningDos = myMedication[0].MediumDosage;
+                    break;
+                case 3:
+                    morningDos = myMedication[0].HighDosage;
+                    break;
+            }
+        }
         morningMed.isActive = false;
+
         if (myMedication[1] != null)
+        {
             afternoonMed.title = myMedication[1].Title;
+            int rnd = Random.Range(1, 4);
+            switch (rnd)
+            {
+                case 1:
+                    afternoonDos = myMedication[0].SmallDosage;
+                    break;
+                case 2:
+                    afternoonDos = myMedication[0].MediumDosage;
+                    break;
+                case 3:
+                    afternoonDos = myMedication[0].HighDosage;
+                    break;
+            }
+        }
         afternoonMed.isActive = false;
+
         if (myMedication[2] != null)
+        {
             eveningMed.title = myMedication[2].Title;
+            int rnd = Random.Range(1, 4);
+            switch (rnd)
+            {
+                case 1:
+                    eveningDos = myMedication[0].SmallDosage;
+                    break;
+                case 2:
+                    eveningDos = myMedication[0].MediumDosage;
+                    break;
+                case 3:
+                    eveningDos = myMedication[0].HighDosage;
+                    break;
+            }
+        }
         eveningMed.isActive = false;
+
         if (myMedication[3] != null)
+        {
             nightMed.title = myMedication[3].Title;
+            int rnd = Random.Range(1, 4);
+            switch (rnd)
+            {
+                case 1:
+                    nightDos = myMedication[0].SmallDosage;
+                    break;
+                case 2:
+                    nightDos = myMedication[0].MediumDosage;
+                    break;
+                case 3:
+                    nightDos = myMedication[0].HighDosage;
+                    break;
+            }
+        }
         nightMed.isActive = false;
-        /*
+
         // print 'em (temporary)
         if (myMedication[0] != null)
-            print("aamu: " + morningMed.title + " -- " + myMedication[0].Title + " -- " + myMedication[0].Usage);
+            print("aamu: " + morningMed.title + " -- " + morningDos + " -- " + myMedication[0].Usage);
         else
             print("aamu: N/A");
         if (myMedication[1] != null)
-            print("päivä: " + afternoonMed.title + " -- " + myMedication[1].Title + " -- " + myMedication[1].Usage);
+            print("päivä: " + afternoonMed.title + " -- " + afternoonDos + " -- " + myMedication[1].Usage);
         else
             print("päivä: N/A");
         if (myMedication[2] != null)
-            print("ilta: " + eveningMed.title + " -- " + myMedication[2].Title + " -- " + myMedication[2].Usage);
+            print("ilta: " + eveningMed.title + " -- " + eveningDos + " -- " + myMedication[2].Usage);
         else
             print("ilta: N/A");
         if (myMedication[3] != null)
-            print("yö: " + nightMed.title + " -- " + myMedication[3].Title + " -- " + myMedication[3].Usage);
+            print("yö: " + nightMed.title + " -- " + nightDos + " -- " + myMedication[3].Usage);
         else
             print("yö: N/A");
-        */
+
     }
     public void moveTo(Vector3 dest)
     {

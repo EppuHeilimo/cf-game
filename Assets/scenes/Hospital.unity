@@ -10244,7 +10244,7 @@ GameObject:
   - 114: {fileID: 295214003}
   m_Layer: 0
   m_Name: Minigame1
-  m_TagString: Minigame1
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -72615,7 +72615,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 295214001}
-        m_MethodName: prevNPC
+        m_MethodName: kasiVitunDesi
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

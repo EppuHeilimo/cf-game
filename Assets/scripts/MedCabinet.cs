@@ -9,7 +9,7 @@ public class MedCabinet : MonoBehaviour
 
     void Start()
     {
-        miniGame = GameObject.FindGameObjectWithTag("Minigame1");
+        miniGame = GameObject.Find("Minigame1");
     }
 
     void OnTriggerEnter(Collider other)

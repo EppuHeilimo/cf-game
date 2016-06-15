@@ -18,7 +18,6 @@ TagManager:
   - Clock
   - MedCabinetPanel
   - TextBoxManager
-  - Minigame1
   - UIManager
   - UICanvas
   - Minigame1

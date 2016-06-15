@@ -69,6 +69,7 @@ public class Minigame1 : MonoBehaviour {
         NPCV2 npc = npcObj.GetComponent<NPCV2>();
         showMedCard(npc.myName, npc.myId, npc.morningMed.title, npc.afternoonMed.title, npc.eveningMed.title, npc.nightMed.title);
         kasiDesi = false;
+        GetComponent<MedCabInventory>().Init();
     }
 
     public void quitMinigame()
