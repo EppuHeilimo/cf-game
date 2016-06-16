@@ -67,7 +67,7 @@ public class Minigame1 : MonoBehaviour {
         currNpc = 0;
         GameObject npcObj = npcList[currNpc];
         NPCV2 npc = npcObj.GetComponent<NPCV2>();
-        showMedCard(npc.myName, npc.myId, npc.morningMed.title, npc.afternoonMed.title, npc.eveningMed.title, npc.nightMed.title);
+        showMedCard(npc.myName, npc.myId, npc.morningMed.title, npc.afternoonMed.title, npc.eveningMed.title, npc.nightMed.title, npc.morningDos, npc.afternoonDos, npc.eveningDos, npc.nightDos);
         kasiDesi = false;
         GetComponent<MedCabInventory>().Init();
     }
@@ -95,7 +95,7 @@ public class Minigame1 : MonoBehaviour {
             npcObj = npcList[currNpc];
         }            
         NPCV2 npc = npcObj.GetComponent<NPCV2>();
-        showMedCard(npc.myName, npc.myId, npc.morningMed.title, npc.afternoonMed.title, npc.eveningMed.title, npc.nightMed.title);
+        showMedCard(npc.myName, npc.myId, npc.morningMed.title, npc.afternoonMed.title, npc.eveningMed.title, npc.nightMed.title, npc.morningDos, npc.afternoonDos, npc.eveningDos, npc.nightDos);
     }
 
     public void prevNPC()
@@ -113,7 +113,7 @@ public class Minigame1 : MonoBehaviour {
             npcObj = npcList[currNpc];
         }           
         NPCV2 npc = npcObj.GetComponent<NPCV2>();
-        showMedCard(npc.myName, npc.myId, npc.morningMed.title, npc.afternoonMed.title, npc.eveningMed.title, npc.nightMed.title);
+        showMedCard(npc.myName, npc.myId, npc.morningMed.title, npc.afternoonMed.title, npc.eveningMed.title, npc.nightMed.title, npc.morningDos, npc.afternoonDos, npc.eveningDos, npc.nightDos);
     }
 
     public void kasiVitunDesi()
@@ -121,7 +121,7 @@ public class Minigame1 : MonoBehaviour {
         kasiDesi = true;
     }
 
-    public void showMedCard(string myName, string myId, string morningMed, string afternoonMed, string eveningMed, string nightMed)
+    public void showMedCard(string myName, string myId, string morningMed, string afternoonMed, string eveningMed, string nightMed, int morningDos, int afternoonDos, int eveningDos, int nightDos)
     {
         medCardPanel.SetActive(true);
         patientInfo.text = myName + " (" + myId + ")";
@@ -133,7 +133,7 @@ public class Minigame1 : MonoBehaviour {
         else
         {
             morningInfo.text = morningMed;
-            morningX.text = "X";
+            morningX.text = morningDos.ToString();
         }
 
         if (string.IsNullOrEmpty(afternoonMed))
@@ -144,7 +144,7 @@ public class Minigame1 : MonoBehaviour {
         else
         {
             afternoonInfo.text = afternoonMed;
-            afternoonX.text = "X";
+            afternoonX.text = afternoonDos.ToString();
         }
 
         if (string.IsNullOrEmpty(eveningMed))
@@ -155,7 +155,7 @@ public class Minigame1 : MonoBehaviour {
         else
         {
             eveningInfo.text = eveningMed;
-            eveningX.text = "X";
+            eveningX.text = eveningDos.ToString();
         }
 
         if (string.IsNullOrEmpty(nightMed))
@@ -166,7 +166,7 @@ public class Minigame1 : MonoBehaviour {
         else
         {
             nightInfo.text = nightMed;
-            nightX.text = "X";
+            nightX.text = nightDos.ToString();
         }
     }
 

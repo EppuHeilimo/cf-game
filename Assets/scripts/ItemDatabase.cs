@@ -54,8 +54,8 @@ public class ItemDatabase : MonoBehaviour {
     {
         for (int i = 0; i < itemData.Count; i++)
         {
-            database.Add(new Item((int)itemData[i]["id"], itemData[i]["title"].ToString(), itemData[i]["desc"].ToString(), itemData[i]["substance"].ToString(), itemData[i]["usage"].ToString(),
-                                  (int)itemData[i]["dosages"]["small"], (int)itemData[i]["dosages"]["medium"], (int)itemData[i]["dosages"]["high"]));
+            database.Add(new Item((int)itemData[i]["id"], itemData[i]["title"].ToString(), itemData[i]["desc"].ToString(), itemData[i]["usage"].ToString(),
+                                  (int)itemData[i]["dosages"]["small"], (int)itemData[i]["dosages"]["medium"], (int)itemData[i]["dosages"]["high"], (int)itemData[i]["defaultDos"]));
         }
     }
 }
@@ -65,19 +65,18 @@ public class Item
     public int ID { get; set; }
     public string Title { get; set; }
     public string Desc { get; set; }
-    public string Substance { get; set; }
     public Sprite Sprite { get; set; }
     public string Usage { get; set; }
     public int SmallDosage { get; set; }
     public int MediumDosage { get; set; }
     public int HighDosage { get; set; }
+    public int DefaultDosage { get; set; }
 
-    public Item(int id, string title, string desc, string substance, string usage, int smallDosage, int mediumDosage, int highDosage)
+    public Item(int id, string title, string desc, string usage, int smallDosage, int mediumDosage, int highDosage, int defaultDosage)
     {
         this.ID = id;
         this.Title = title;
         this.Desc = desc;
-        this.Substance = substance;
         this.Sprite = Resources.Load<Sprite>("Sprites/Items/" + title); // name the sprites same as titles!
         if (this.Sprite == null)
         {
@@ -87,6 +86,7 @@ public class Item
         this.SmallDosage = smallDosage;
         this.MediumDosage = mediumDosage;
         this.HighDosage = highDosage;
+        this.DefaultDosage = defaultDosage;
     }
 
     public Item()

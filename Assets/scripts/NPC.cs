@@ -85,7 +85,7 @@ public class NPC : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(dialogZone.GetComponent<Dialog>().playerInZone)
+        if(dialogZone.GetComponent<DialogV2>().playerInZone)
         {
             myState = NPCState.STATE_TALK_TO_PLAYER;
         }
@@ -358,7 +358,7 @@ public class NPC : MonoBehaviour
     {
         agent.Stop();
         RotateTowards(GameObject.FindGameObjectWithTag("Player").transform);
-        if (!dialogZone.GetComponent<Dialog>().playerInZone)
+        if (!dialogZone.GetComponent<DialogV2>().playerInZone)
         {
             myState = prevState;
             agent.Resume();
@@ -595,7 +595,7 @@ public class NPC : MonoBehaviour
 
     public bool giveMed(string med)
     {
-        if (diagnosed && dialogZone.GetComponent<Dialog>().playerInZone)
+        if (diagnosed && dialogZone.GetComponent<DialogV2>().playerInZone)
         { 
             if (string.Equals(med, myMedicine, System.StringComparison.CurrentCultureIgnoreCase))
             {
