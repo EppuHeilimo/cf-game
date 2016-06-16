@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class NPCV2 : MonoBehaviour
-{
+{   
     /* states */
     public enum NPCState
     {
@@ -18,11 +18,13 @@ public class NPCV2 : MonoBehaviour
         STATE_GO_TO_DOC,
         STATE_LEAVE_HOSPITAL,
         STATE_MOVE_TO_WARD_AREA,
-        STATE_TRY_UNSTUCK
+        STATE_TRY_UNSTUCK,
+        STATE_GO_WC,
+        STATE_IDLE_SIT
     }
 
     /* basic stuff */
-   
+    ClockTime clock;
     LineRenderer DebugPath;
     public string myName;
     public string myId;
@@ -36,6 +38,9 @@ public class NPCV2 : MonoBehaviour
     public bool diagnosed = false;
     //how tired the npc is
     public float fatique = 0;
+    //float to indicate the need to go pee
+    public float callofnature = 0;
+    public float callofnaturetimer = 0;
     public float fatiquetimer = 0;
     public NPCState prevState;
     public NPCState myState;
@@ -50,7 +55,7 @@ public class NPCV2 : MonoBehaviour
     public bool sleeping = false;
     private bool sitting = false;
     public bool cantFindBed = false;
-
+    private bool wcqueued = false;
     bool prevStateUncompleted = false;
 
     private bool sleepingqueued = false;
@@ -96,6 +101,7 @@ public class NPCV2 : MonoBehaviour
     const int WALK_RADIUS = 500;
     const float SLEEP_TIME = 10f;
     const float AT_DOC = 2f;
+    const float IN_WC = 10f;
 
     //stuck testing
     const float STUCK = 5f;
@@ -116,7 +122,6 @@ public class NPCV2 : MonoBehaviour
         player = GameObject.FindGameObjectWithTag("Player");
         stateQueue = new Dictionary<int, Queue<NPCState>>();
         agent = GetComponent<NavMeshAgent>();
-
         //Set npc speed randomly
         agent.speed = Random.Range(60f, 100f);
         //Set animation speed to match the walk speed.
@@ -130,6 +135,7 @@ public class NPCV2 : MonoBehaviour
         interactionComponent = GetComponent<ObjectInteraction>();
         lastdisttodest = 0;
         objectManager = GameObject.FindGameObjectWithTag("ObjectManager").GetComponent<ObjectManager>();
+        clock = GameObject.FindGameObjectWithTag("Clock").GetComponent<ClockTime>();
     }
     // Update is called once per frame
     void Update()
@@ -168,6 +174,11 @@ public class NPCV2 : MonoBehaviour
         {
             //check medication every update if player is diagnosed
             checkMed();
+            if(!sleepingqueued && clock.currentDayTime == ClockTime.DayTime.NIGHT)
+            {
+                addStateToQueue(2, NPCState.STATE_SLEEP);
+                sleepingqueued = true;
+            }
             //Increase fatigue every x seconds if state is not sleep
             if (!sleepingqueued)
             {
@@ -189,8 +200,21 @@ public class NPCV2 : MonoBehaviour
                     addStateToQueue(2, NPCState.STATE_SLEEP);
                     sleepingqueued = true;
                 }
-
             }
+            if(!wcqueued)
+            {
+                callofnaturetimer += Time.deltaTime;
+                if(callofnaturetimer > 5.0f)
+                {
+                    callofnature += 1;
+                }
+                if(callofnature > 10.0f)
+                {
+                    addStateToQueue(2, NPCState.STATE_GO_WC);
+                    wcqueued = true;
+                }
+            }
+
         }
 
         setMyStateFromQueue();
@@ -238,6 +262,123 @@ public class NPCV2 : MonoBehaviour
             case NPCState.STATE_TRY_UNSTUCK:
                 tryUnstuck();
                 break;
+            case NPCState.STATE_GO_WC:
+                goWC();
+                break;
+            case NPCState.STATE_IDLE_SIT:
+                idleSit();
+                break;
+        }
+    }
+
+    void idleSit()
+    {
+        if (dest == Vector3.zero)
+        {
+            GameObject targetChair = objectManager.bookRandomChair(gameObject);
+            if (targetChair == null)
+            {
+                taskCompleted = true;
+            }
+            else
+            {
+                interactionComponent.setTarget(targetChair);
+                interactionComponent.setCurrentChair(interactionComponent.getTarget());
+                // set destination to queue chair
+                dest = interactionComponent.getDestToTargetObjectSide(0, 20.0f);
+                // move to the queue position received
+                moveTo(dest);
+            }
+
+        }
+
+        if (arrivedToDestination(10.0f) && !sitting)
+        {
+            agent.Stop();
+            sitting = true;
+        }
+
+        if (sitting)
+        {
+            if (arrivedToDestination(10.0f))
+            {
+                if (interactionComponent.getTarget())
+                {
+                    //rotate to look away from the bed so animation will move the player on the bed
+                    if (interactionComponent.RotateAwayFrom(interactionComponent.getTarget().transform))
+                    {
+                        agent.GetComponent<IiroAnimBehavior>().sit = true;
+                    }
+                }
+
+            }  
+            if(sitting)
+            {
+                GetComponent<IiroAnimBehavior>().sit = false;
+            }
+
+            taskCompleted = true;
+            if((interactionComponent.getCurrentChair() != null))
+                objectManager.unbookObject(interactionComponent.getCurrentChair());
+            sitting = false;
+            agent.Resume();
+        }
+    }
+    void goWC()
+    {
+        if (dest == Vector3.zero)
+        {
+            GameObject targetToilet = objectManager.bookRandomPublicToilet(gameObject);
+            if (targetToilet == null)
+            {
+                taskCompleted = true;
+                wcqueued = false;
+                callofnature = 0;
+            }
+            else
+            {
+                interactionComponent.setTarget(targetToilet);
+                interactionComponent.setCurrentToilet(interactionComponent.getTarget());
+                // set destination to queue chair
+                dest = interactionComponent.getDestToTargetObjectSide(2, 20.0f);
+                GameObject.FindGameObjectWithTag("Player").transform.position = dest;
+                // move to the queue position received
+                moveTo(dest);
+            }
+         }
+        if (arrivedToDestination(10.0f) && !sitting)
+        {
+            agent.Stop();
+            sitting = true;
+        }
+
+        if (sitting)
+        {
+            if (arrivedToDestination(20.0f))
+            {
+                if (interactionComponent.getTarget())
+                {
+                    //rotate to look away from the bed so animation will move the player on the bed
+                    if (interactionComponent.RotateAwayFrom(interactionComponent.getTarget().transform))
+                    {
+                        agent.GetComponent<IiroAnimBehavior>().sit = true;
+                        timer += Time.deltaTime;
+                        if (timer > IN_WC)
+                        {
+                            GetComponent<IiroAnimBehavior>().sit = false;
+                            taskCompleted = true;
+                            if ((interactionComponent.getCurrentChair() != null))
+                            {
+                                objectManager.unbookObject(interactionComponent.getCurrentChair());
+                            }  
+                            sitting = false;
+                            agent.Resume();
+                            wcqueued = false;
+                            callofnature = 0;
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -443,15 +584,36 @@ public class NPCV2 : MonoBehaviour
             timer += Time.deltaTime;
             if (timer > SLEEP_TIME)
             {
-                //stop animation
-                GetComponent<IiroAnimBehavior>().goToSleep = false;
-                sleeping = false;
-                taskCompleted = true;
-                timer = 0;
-                fatique = 0;
-                //resume agent movement
-                agent.Resume();
-                sleepingqueued = false;
+                if(clock.currentDayTime == ClockTime.DayTime.NIGHT)
+                {
+                    timer = 0;
+                    //randomly wake some people up
+                    if(Random.Range(0, 100) > 90)
+                    {
+                        //stop animation
+                        GetComponent<IiroAnimBehavior>().goToSleep = false;
+                        sleeping = false;
+                        taskCompleted = true;
+                        timer = 0;
+                        fatique = 0;
+                        //resume agent movement
+                        agent.Resume();
+                        sleepingqueued = false;
+                    }
+                }
+                else
+                {
+                    //stop animation
+                    GetComponent<IiroAnimBehavior>().goToSleep = false;
+                    sleeping = false;
+                    taskCompleted = true;
+                    timer = 0;
+                    fatique = 0;
+                    //resume agent movement
+                    agent.Resume();
+                    sleepingqueued = false;
+                }
+
             }
         }
     }
@@ -577,10 +739,15 @@ public class NPCV2 : MonoBehaviour
                 Vector3 finalPosition = hit.position;
                 dest = new Vector3(finalPosition.x, 0, finalPosition.z);
                 moveTo(dest);
-                if (Random.Range(0f, 1f) > 0.9f)
+                if (Random.Range(0f, 1f) > 0.99f)
                 {
                     if (!talking)
                         addStateToQueue(2, NPCState.STATE_TALK_TO_OTHER_NPC);
+                }
+                if (Random.Range(0f, 1f) > 0.9f)
+                {
+                    if (!talking && sitting)
+                        addStateToQueue(2, NPCState.STATE_IDLE_SIT);
                 }
             }
 
