@@ -112,11 +112,11 @@ public class ObjectInteraction : MonoBehaviour {
                     if (approx(targetroty, 0.0f, 0.1f))
                         destination = new Vector3(target.transform.position.x, transform.position.y, target.transform.position.z + offset);
                     else if (approx(targetroty, 90.0f, 0.1f))
-                        destination = new Vector3(target.transform.position.x - offset, transform.position.y, target.transform.position.z);
+                        destination = new Vector3(target.transform.position.x , transform.position.y, target.transform.position.z + offset);
                     else if (approx(targetroty, 180.0f, 0.1f))
                         destination = new Vector3(target.transform.position.x, transform.position.y, target.transform.position.z - offset);
                     else if (approx(targetroty, 270.0f, 0.1f))
-                        destination = new Vector3(target.transform.position.x + offset, transform.position.y, target.transform.position.z);
+                        destination = new Vector3(target.transform.position.x, transform.position.y, target.transform.position.z - offset);
                     else
                     {
                         print("Target unreachable! Target name: " + target.name);

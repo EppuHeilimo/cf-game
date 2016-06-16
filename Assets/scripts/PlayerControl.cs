@@ -10,6 +10,7 @@ public class PlayerControl : MonoBehaviour {
     ObjectInteraction interaction;
     ObjectManager objManager;
     IiroAnimBehavior anim;
+
     bool sitting = false;
     bool sleeping = false;
     bool followNpc = false;
@@ -41,10 +42,22 @@ public class PlayerControl : MonoBehaviour {
                 {
                     if (interaction.RotateAwayFrom(target.transform))
                     {
-                        if (anim.sit != true)
+                        if(target.tag == "Chair2")
                         {
-                            anim.sit = true;
+                            if (anim.sitwithrotation != true)
+                            {
+                                anim.sitwithrotation = true;
+                            }
                         }
+                        else
+                        {
+                            if (anim.sit != true)
+                            {
+                                anim.sit = true;
+                            }
+
+                        }
+
                     }
                 }
                 else
@@ -57,7 +70,11 @@ public class PlayerControl : MonoBehaviour {
         }
         else
         {
-            if(anim.sit == true)
+            if (anim.sitwithrotation == true)
+            {
+                anim.sitwithrotation = false;
+            }
+            if (anim.sit == true)
             {
                 anim.sit = false;
             }
@@ -201,12 +218,19 @@ public class PlayerControl : MonoBehaviour {
                         hit2 = hits[0];
                         if (target == hit2.transform.gameObject)
                         {
-                            if (target.tag == "Chair" || target.tag == "QueueChair")
+                            if (target.tag == "Chair" || target.tag == "QueueChair" || target.tag == "Chair2")
                             {
                                 if (objManager.bookTargetObject(target, gameObject))
                                 {
                                     interaction.setCurrentChair(interaction.getTarget());
-                                    agent.SetDestination(interaction.getDestToTargetObjectSide(0, 16.0f));
+                                    if(target.tag == "Chair2")
+                                    {
+                                        agent.SetDestination(interaction.getDestToTargetObjectSide(1, 16.0f));
+                                    }
+                                    else
+                                    {
+                                        agent.SetDestination(interaction.getDestToTargetObjectSide(0, 16.0f));
+                                    }
                                     sitting = true;
                                     disableMoveIndicator();
                                 }
@@ -267,7 +291,12 @@ public class PlayerControl : MonoBehaviour {
                         sitting = false;
                         objManager.unbookObject(target);
                     }
-                    if(followNpc)
+                    if (sleeping == true)
+                    {
+                        sleeping = false;
+                        objManager.unbookObject(target);
+                    }
+                    if (followNpc)
                     {
                         followNpc = false;
                     }

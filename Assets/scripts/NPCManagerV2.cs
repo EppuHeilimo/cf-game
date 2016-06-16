@@ -11,6 +11,11 @@ public class NPCManagerV2 : MonoBehaviour
     // list to keep track of the NPC instances in the scene
     public List<GameObject> npcList;
 
+    //List of npc which are player's responsibility
+    public List<GameObject> responsibilityNpcs;
+    //how many patients should player have
+    int targetResponsibilityLevel = 3;
+
     // total amount of NPCs in the scene currently
     int npcCount;
 
@@ -26,7 +31,7 @@ public class NPCManagerV2 : MonoBehaviour
     // hard-coded pool for names, probably changed later
     string[] namePool = { "Aleksi", "Pekka", "Matti", "Kalle", "Jorma" };
 
-    const int MAX_NPCS = 5; // ** MUST BE SAME AS MAX_QUE IN QUE MANAGER! **
+    const int MAX_NPCS = 50; // ** MUST BE SAME AS MAX_QUE IN QUE MANAGER! **
 
     List<string> usedIds; // IDs already used
 
@@ -43,8 +48,9 @@ public class NPCManagerV2 : MonoBehaviour
     void Start()
     {
         npcList = new List<GameObject>();
+        responsibilityNpcs = new List<GameObject>();
         spawnPoint = new Vector3(-331, 0, -5);
-        spawnTime = 1; //Random.Range(5, 20); // spawn new NPC somewhere between 5 and 20 seconds
+        spawnTime = 5; //Random.Range(5, 20); // spawn new NPC somewhere between 5 and 20 seconds
         usedIds = new List<string>();
         invObj = GameObject.Find("Inventory");
         database = invObj.GetComponent<ItemDatabase>();
@@ -84,7 +90,7 @@ public class NPCManagerV2 : MonoBehaviour
             if (timeSinceLastSpawn > spawnTime)
             {
                 timeSinceLastSpawn = 0;
-                spawnTime = 1;
+                spawnTime = 5;
                 spawnNPC();
             }
         }
@@ -114,6 +120,28 @@ public class NPCManagerV2 : MonoBehaviour
         newNpc.GetComponent<NPCV2>().InitMedication(randMeds);
         newNpc.GetComponent<HeadChange>().ChangeToRandomHead();
         npcList.Add(newNpc);
+    }
+
+    public void addNpcToPlayersResponsibilities(GameObject go)
+    {
+        if(responsibilityNpcs.Count < targetResponsibilityLevel)
+        {
+            responsibilityNpcs.Add(go);
+        }
+    }
+
+    public void removeNpcFromPlayersResponsibilities(GameObject go)
+    {
+        responsibilityNpcs.Remove(go);
+    }
+
+    public bool isPlayerResponsibilityLevelFulfilled()
+    {
+        if (responsibilityNpcs.Count < targetResponsibilityLevel)
+        {
+            return false;
+        }
+        return true;
     }
 
     private Item RandomItem(Item[] randMeds)
