@@ -33,7 +33,7 @@ public class TextBoxManager : MonoBehaviour {
         DisableTextBox();
     }
 
-    public void EnableTextBox(string myName, string myId, int myHp, int myHappiness, string morningMed, string afternoonMed, string eveningMed, string nightMed, string[] myProblems)
+    public void EnableTextBox(string myName, string myId, int myHp, int myHappiness, string morningMed, string afternoonMed, string eveningMed, string nightMed, string[] myProblems, int morningDos, int afternoonDos, int eveningDos, int nightDos)
     {
         myNameText.text = myName;
         myIdText.text = myId;
@@ -58,7 +58,7 @@ public class TextBoxManager : MonoBehaviour {
         else
         {
             morningInfo.text = morningMed;
-            morningX.text = "X";
+            morningX.text = morningDos.ToString();
         }
 
         if (string.IsNullOrEmpty(afternoonMed))
@@ -69,7 +69,7 @@ public class TextBoxManager : MonoBehaviour {
         else
         {
             afternoonInfo.text = afternoonMed;
-            afternoonX.text = "X";
+            afternoonX.text = afternoonDos.ToString();
         }
 
         if (string.IsNullOrEmpty(eveningMed))
@@ -80,7 +80,7 @@ public class TextBoxManager : MonoBehaviour {
         else
         {
             eveningInfo.text = eveningMed;
-            eveningX.text = "X";
+            eveningX.text = eveningDos.ToString();
         }
 
         if (string.IsNullOrEmpty(nightMed))
@@ -91,9 +91,8 @@ public class TextBoxManager : MonoBehaviour {
         else
         {
             nightInfo.text = nightMed;
-            nightX.text = "X";
+            nightX.text = nightDos.ToString();
         }
-
     }
 
     public void DisableTextBox()

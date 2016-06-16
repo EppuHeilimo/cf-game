@@ -6,6 +6,7 @@ using System;
 public class ItemData : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerDownHandler, IPointerEnterHandler, IPointerExitHandler {
     public Item item;
     public int slot;
+    public int amount;
 
     Inventory inv;
     Tooltip tooltip;

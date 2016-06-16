@@ -1,10 +1,10 @@
 [
 	{
 		"id": 0,
-		"title": "Burana",
+		"title": "Ibuprofeeni",
 		"desc": "Särkylääke",
-		"substance": "ibuprofeeni",
 		"usage": "kuume",
+		"defaultDos": 400,
 		"dosages": {
 			"small": 200,
 			"medium": 400,
@@ -13,10 +13,10 @@
 	},
 	{
 		"id": 1,
-		"title": "Marevan",
+		"title": "Varfariini",
 		"desc": "Kuvaus tähän",
-		"substance": "varfariini",
 		"usage": "laskimotukos",
+		"defaultDos": 400,
 		"dosages": {
 			"small": 200,
 			"medium": 400,
@@ -25,10 +25,10 @@
 	},
 	{
 		"id": 2,
-		"title": "Selexid",
+		"title": "Pivmesillinaami",
 		"desc": "Kuvaus",
-		"substance": "pivmesillinaami",
 		"usage": "virtsainfektio",
+		"defaultDos": 400,
 		"dosages": {
 			"small": 200,
 			"medium": 400,
@@ -37,10 +37,10 @@
 	},
 	{
 		"id": 3,
-		"title": "Amorion",
+		"title": "Amoksisilliini",
 		"desc": "Kuvaus",
-		"substance": "amoksisilliini",
 		"usage": "keuhkoputkitulehdus",
+		"defaultDos": 400,
 		"dosages": {
 			"small": 200,
 			"medium": 400,
@@ -49,10 +49,10 @@
 	},
 	{
 		"id": 4,
-		"title": "Metforem",
+		"title": "Metformiini",
 		"desc": "Kuvaus",
-		"substance": "metformiini",
 		"usage": "diabetes",
+		"defaultDos": 400,
 		"dosages": {
 			"small": 200,
 			"medium": 400,
@@ -61,10 +61,10 @@
 	},
 	{
 		"id": 5,
-		"title": "Heinix",
+		"title": "Setiritsiini",
 		"desc": "Kuvaus",
-		"substance": "setiritsiini",
 		"usage": "allergia",
+		"defaultDos": 400,
 		"dosages": {
 			"small": 200,
 			"medium": 400,
@@ -73,10 +73,10 @@
 	},
 	{
 		"id": 6,
-		"title": "Simvastatin",
+		"title": "Simvastatiini",
 		"desc": "Kuvaus",
-		"substance": "simvastatiini",
 		"usage": "korkea veren kolesteroli",
+		"defaultDos": 400,
 		"dosages": {
 			"small": 200,
 			"medium": 400,
