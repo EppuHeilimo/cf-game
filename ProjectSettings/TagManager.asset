@@ -24,6 +24,7 @@ TagManager:
   - Minigame1
   - Minigame1Canvas
   - NPCManager
+  - Toilet
   layers:
   - Default
   - TransparentFX

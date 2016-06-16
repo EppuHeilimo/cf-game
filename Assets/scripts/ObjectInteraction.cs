@@ -12,6 +12,7 @@ public class ObjectInteraction : MonoBehaviour {
     //reserved objects booked for this object
     GameObject currentChair;
     GameObject bookedBed;
+    GameObject currentToilet;
 
     void Start () {
         currentChair = null;
@@ -34,6 +35,11 @@ public class ObjectInteraction : MonoBehaviour {
     public void setCurrentChair(GameObject go)
     {
         currentChair = go;
+    }
+
+    public void setCurrentToilet(GameObject go)
+    {
+        currentToilet = go;
     }
 
     public void setBookedBed(GameObject go)

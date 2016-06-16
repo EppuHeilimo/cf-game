@@ -90,6 +90,27 @@ public class ObjectManager : MonoBehaviour {
         return null;
     }
 
+    public GameObject bookRandomPublicToilet(GameObject reserver)
+    {
+        List<KeyValuePair<GameObject, GameObject>> temp = new List<KeyValuePair<GameObject, GameObject>>();
+        foreach (KeyValuePair<GameObject, GameObject> obj in bookableObjects)
+        {
+            if (obj.Key.tag == "Toilet" && bookableObjects[obj.Key] == null)
+            {
+                temp.Add(obj);
+            }
+        }
+        if (temp.Count > 0)
+        {
+            System.Random rnd = new System.Random();
+            int rand = rnd.Next(0, temp.Count);
+            GameObject key = temp[rand].Key;
+            bookableObjects[key] = reserver;
+            return key;
+        }
+        return null;
+    }
+
 
     public bool bookTargetObject(GameObject target, GameObject targetee)
     {
