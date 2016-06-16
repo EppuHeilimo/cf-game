@@ -4,48 +4,83 @@
 		"title": "Burana",
 		"desc": "Särkylääke",
 		"substance": "ibuprofeeni",
-		"usage": "kuume"
+		"usage": "kuume",
+		"dosages": {
+			"small": 200,
+			"medium": 400,
+			"high": 800
+		}
 	},
 	{
 		"id": 1,
 		"title": "Marevan",
 		"desc": "Kuvaus tähän",
 		"substance": "varfariini",
-		"usage": "laskimotukos"
+		"usage": "laskimotukos",
+		"dosages": {
+			"small": 200,
+			"medium": 400,
+			"high": 800
+		}
 	},
 	{
 		"id": 2,
 		"title": "Selexid",
 		"desc": "Kuvaus",
 		"substance": "pivmesillinaami",
-		"usage": "virtsainfektio"
+		"usage": "virtsainfektio",
+		"dosages": {
+			"small": 200,
+			"medium": 400,
+			"high": 800
+		}
 	},
 	{
 		"id": 3,
 		"title": "Amorion",
 		"desc": "Kuvaus",
 		"substance": "amoksisilliini",
-		"usage": "keuhkoputkitulehdus"
+		"usage": "keuhkoputkitulehdus",
+		"dosages": {
+			"small": 200,
+			"medium": 400,
+			"high": 800
+		}
 	},
 	{
 		"id": 4,
 		"title": "Metforem",
 		"desc": "Kuvaus",
 		"substance": "metformiini",
-		"usage": "diabetes"
+		"usage": "diabetes",
+		"dosages": {
+			"small": 200,
+			"medium": 400,
+			"high": 800
+		}
 	},
 	{
 		"id": 5,
 		"title": "Heinix",
 		"desc": "Kuvaus",
 		"substance": "setiritsiini",
-		"usage": "allergia"
+		"usage": "allergia",
+		"dosages": {
+			"small": 200,
+			"medium": 400,
+			"high": 800
+		}
 	},
 	{
 		"id": 6,
 		"title": "Simvastatin",
 		"desc": "Kuvaus",
 		"substance": "simvastatiini",
-		"usage": "korkea veren kolesteroli"
+		"usage": "korkea veren kolesteroli",
+		"dosages": {
+			"small": 200,
+			"medium": 400,
+			"high": 800
+		}
 	}
 ]

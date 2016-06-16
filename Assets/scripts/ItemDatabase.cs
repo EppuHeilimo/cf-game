@@ -54,7 +54,8 @@ public class ItemDatabase : MonoBehaviour {
     {
         for (int i = 0; i < itemData.Count; i++)
         {
-            database.Add(new Item((int)itemData[i]["id"], itemData[i]["title"].ToString(), itemData[i]["desc"].ToString(), itemData[i]["substance"].ToString(), itemData[i]["usage"].ToString()));
+            database.Add(new Item((int)itemData[i]["id"], itemData[i]["title"].ToString(), itemData[i]["desc"].ToString(), itemData[i]["substance"].ToString(), itemData[i]["usage"].ToString(),
+                                  (int)itemData[i]["dosages"]["small"], (int)itemData[i]["dosages"]["medium"], (int)itemData[i]["dosages"]["high"]));
         }
     }
 }
@@ -67,19 +68,25 @@ public class Item
     public string Substance { get; set; }
     public Sprite Sprite { get; set; }
     public string Usage { get; set; }
+    public int SmallDosage { get; set; }
+    public int MediumDosage { get; set; }
+    public int HighDosage { get; set; }
 
-    public Item(int id, string title, string desc, string substance, string usage)
+    public Item(int id, string title, string desc, string substance, string usage, int smallDosage, int mediumDosage, int highDosage)
     {
         this.ID = id;
         this.Title = title;
         this.Desc = desc;
         this.Substance = substance;
         this.Sprite = Resources.Load<Sprite>("Sprites/Items/" + title); // name the sprites same as titles!
-        if (Sprite == null)
+        if (this.Sprite == null)
         {
             this.Sprite = Resources.Load<Sprite>("Sprites/Items/null");
         }
         this.Usage = usage;
+        this.SmallDosage = smallDosage;
+        this.MediumDosage = mediumDosage;
+        this.HighDosage = highDosage;
     }
 
     public Item()
