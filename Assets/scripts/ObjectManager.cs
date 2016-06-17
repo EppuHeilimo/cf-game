@@ -53,7 +53,7 @@ public class ObjectManager : MonoBehaviour {
         List<KeyValuePair<GameObject, GameObject>> temp = new List<KeyValuePair<GameObject, GameObject>>();
         foreach (KeyValuePair<GameObject, GameObject> obj in bookableObjects)
         {
-            if( (obj.Key.tag == "Chair" || obj.Key.tag == "QueueChair") && bookableObjects[obj.Key] == null )
+            if( (obj.Key.tag == "Chair2" || obj.Key.tag == "Chair" || obj.Key.tag == "QueueChair") && bookableObjects[obj.Key] == null )
             {
                 temp.Add(obj);
             }

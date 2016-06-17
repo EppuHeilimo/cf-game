@@ -34,6 +34,7 @@ public class NPCV2 : MonoBehaviour
     int prevTaskPriority = 0;
     /* Reference to player */
     private GameObject player;
+    public GameObject responsibilityIndicator;
     //has the npc visited the doctor
     public bool diagnosed = false;
     //how tired the npc is
@@ -57,7 +58,7 @@ public class NPCV2 : MonoBehaviour
     public bool cantFindBed = false;
     private bool wcqueued = false;
     bool prevStateUncompleted = false;
-
+    bool playersResponsibility = false;
     private bool sleepingqueued = false;
 
     /* NEW MEDICINE SYSTEM */
@@ -90,18 +91,18 @@ public class NPCV2 : MonoBehaviour
     NavMeshAgent agent;
     NPCManagerV2 npcManager;
     Vector3 receptionPos = new Vector3(49, 0, 124); // position of reception
-    const float QUE_POS_Y = 130; // y-position of queue
 
     /* timing stuff */
     float timer; // time NPC has been in the current state
-    const float RECEPTION_WAITING_TIME = 2f;
+    const float RECEPTION_WAITING_TIME = 3f;
     const float QUE_WAITING_TIME = 10f;
-    const float IDLE_IN_THIS_PLACE_TIME = 2f;
-    const float MAX_TIME_TALK_TO_OTHER = 5f;
+    const float IDLE_IN_THIS_PLACE_TIME = 5f;
+    const float MAX_TIME_TALK_TO_OTHER = 10f;
     const int WALK_RADIUS = 500;
     const float SLEEP_TIME = 10f;
-    const float AT_DOC = 2f;
+    const float AT_DOC = 5f;
     const float IN_WC = 10f;
+    const float STAY_ON_FLOOR_ON_FALL = 10.0f;
 
     //stuck testing
     const float STUCK = 5f;
@@ -140,86 +141,17 @@ public class NPCV2 : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        //stuck test
-        stucktimer += Time.deltaTime;
-        //test every STUCK seconds if npc hasn't moved towards it's dest
-        if(stucktimer > STUCK && !arrivedToDestination(10.0f) && myState != NPCState.STATE_TRY_UNSTUCK)
+        if(playersResponsibility)
         {
-            stucktimer = 0;
-            currentdisttodest = Vector3.Distance(transform.position, dest);
-            if(lastdisttodest == 0)
-            {
-                lastdisttodest = currentdisttodest;
-            }
-            else
-            {
-                float sub = currentdisttodest - lastdisttodest;
-                if (Mathf.Abs(sub) < 40.0f)
-                {
-                    lastdisttodest = 0;
-                    addStateToQueue(3, NPCState.STATE_TRY_UNSTUCK);
-                    taskCompleted = true;
-                }
-            }
-
+            responsibilityIndicator.transform.position = new Vector3(transform.position.x, transform.position.y + 64, transform.position.z);
         }
-
-        if (dialogZone.GetComponent<DialogV2>().playerInZone && !sleeping && !sitting)
-        {
-            myState = NPCState.STATE_TALK_TO_PLAYER;
-        }
-
-        //check status only if has visited the doctor
-        if (diagnosed)
-        {
-            //check medication every update if player is diagnosed
-            checkMed();
-            if(!sleepingqueued && clock.currentDayTime == ClockTime.DayTime.NIGHT)
-            {
-                addStateToQueue(2, NPCState.STATE_SLEEP);
-                sleepingqueued = true;
-            }
-            //Increase fatigue every x seconds if state is not sleep
-            if (!sleepingqueued)
-            {
-                fatiquetimer += Time.deltaTime;
-                if (fatiquetimer > 5.0f)
-                {
-                    fatique += 3f;
-                    fatiquetimer = 0;
-                }
-                //if fatigue is too high and can't find bed, lose happiness, reset fatique
-                if (fatique > 30.0f && cantFindBed)
-                {
-                    myHappiness -= 10;
-                    fatique = 0;
-                }
-                //if has bed and fatique over x, queue sleep task
-                if (fatique > 10.0f && !cantFindBed)
-                {
-                    addStateToQueue(2, NPCState.STATE_SLEEP);
-                    sleepingqueued = true;
-                }
-            }
-            if(!wcqueued)
-            {
-                callofnaturetimer += Time.deltaTime;
-                if(callofnaturetimer > 5.0f)
-                {
-                    callofnature += 1;
-                }
-                if(callofnature > 10.0f)
-                {
-                    addStateToQueue(2, NPCState.STATE_GO_WC);
-                    wcqueued = true;
-                }
-            }
-
-        }
-
+        //check if there are some natural needs, or unstucking needs
+        checkNeeds();
+        //Set current state to highest priority currently queued
+        //if higher priority job compared to current state is found, current state will be paused
         setMyStateFromQueue();
+        //Act according to the myState (Current state)
         actAccordingToState();
-
     }
     private void actAccordingToState()
     {
@@ -271,6 +203,88 @@ public class NPCV2 : MonoBehaviour
         }
     }
 
+    void checkNeeds()
+    {
+        //stuck test
+        stucktimer += Time.deltaTime;
+        //test every STUCK seconds if npc hasn't moved towards it's dest
+        if (stucktimer > STUCK && !arrivedToDestination(10.0f) && myState != NPCState.STATE_TRY_UNSTUCK)
+        {
+            stucktimer = 0;
+            currentdisttodest = Vector3.Distance(transform.position, dest);
+            if (lastdisttodest == 0)
+            {
+                lastdisttodest = currentdisttodest;
+            }
+            else
+            {
+                float sub = currentdisttodest - lastdisttodest;
+                if (Mathf.Abs(sub) < 40.0f)
+                {
+                    lastdisttodest = 0;
+                    addStateToQueue(3, NPCState.STATE_TRY_UNSTUCK);
+                    taskCompleted = true;
+                }
+            }
+
+        }
+
+        if (dialogZone.GetComponent<DialogV2>().playerInZone && !sleeping && !sitting)
+        {
+            myState = NPCState.STATE_TALK_TO_PLAYER;
+        }
+
+        //check status only if has visited the doctor
+        if (diagnosed)
+        {
+            //check medication every update if player is diagnosed
+            checkMed();
+            if (!sleepingqueued && clock.currentDayTime == ClockTime.DayTime.NIGHT)
+            {
+                addStateToQueue(2, NPCState.STATE_SLEEP);
+                sleepingqueued = true;
+            }
+            //Increase fatigue every x seconds if state is not sleep
+            //if sleeping already queued, just skip
+            if (!sleepingqueued)
+            {
+                fatiquetimer += Time.deltaTime;
+                if (fatiquetimer > 5.0f)
+                {
+                    fatique += 3f;
+                    fatiquetimer = 0;
+                }
+                //if fatigue is too high and can't find bed, lose happiness, reset fatique
+                if (fatique > 30.0f && cantFindBed)
+                {
+                    myHappiness -= 10;
+                    fatique = 0;
+                }
+                //if has bed and fatique over x, queue sleep task
+                if (fatique > 10.0f && !cantFindBed)
+                {
+                    addStateToQueue(2, NPCState.STATE_SLEEP);
+                    sleepingqueued = true;
+                }
+            }
+            //Don't test need to go to wc if already queued
+            if (!wcqueued)
+            {
+                callofnaturetimer += Time.deltaTime;
+                if (callofnaturetimer > 5.0f)
+                {
+                    callofnature += 1;
+                }
+                if (callofnature > 10.0f)
+                {
+                    addStateToQueue(2, NPCState.STATE_GO_WC);
+                    wcqueued = true;
+                }
+            }
+
+        }
+    }
+
     void idleSit()
     {
         if (dest == Vector3.zero)
@@ -285,7 +299,15 @@ public class NPCV2 : MonoBehaviour
                 interactionComponent.setTarget(targetChair);
                 interactionComponent.setCurrentChair(interactionComponent.getTarget());
                 // set destination to queue chair
-                dest = interactionComponent.getDestToTargetObjectSide(0, 20.0f);
+                if(targetChair.tag == "Chair2")
+                {
+                    dest = interactionComponent.getDestToTargetObjectSide(1, 20.0f);
+                }
+                else
+                {
+                    dest = interactionComponent.getDestToTargetObjectSide(0, 20.0f);
+                }
+                
                 // move to the queue position received
                 moveTo(dest);
             }
@@ -307,21 +329,37 @@ public class NPCV2 : MonoBehaviour
                     //rotate to look away from the bed so animation will move the player on the bed
                     if (interactionComponent.RotateAwayFrom(interactionComponent.getTarget().transform))
                     {
-                        agent.GetComponent<IiroAnimBehavior>().sit = true;
+                        if (interactionComponent.getTarget().tag == "Chair2")
+                        {
+                            agent.GetComponent<IiroAnimBehavior>().sitwithrotation = true;
+                        }
+                        else
+                        {
+                            agent.GetComponent<IiroAnimBehavior>().sit = true;
+                        }
+                            
                     }
                 }
 
-            }  
-            if(sitting)
-            {
-                GetComponent<IiroAnimBehavior>().sit = false;
             }
-
-            taskCompleted = true;
-            if((interactionComponent.getCurrentChair() != null))
-                objectManager.unbookObject(interactionComponent.getCurrentChair());
-            sitting = false;
-            agent.Resume();
+            timer += Time.deltaTime;
+            if(timer > 2 * IDLE_IN_THIS_PLACE_TIME)
+            {
+                if(interactionComponent.getCurrentChair().tag == "Chair2")
+                {
+                    GetComponent<IiroAnimBehavior>().sitwithrotation = false;
+                }
+                else
+                {
+                    GetComponent<IiroAnimBehavior>().sit = false;
+                }
+                
+                taskCompleted = true;
+                if ((interactionComponent.getCurrentChair() != null))
+                    objectManager.unbookObject(interactionComponent.getCurrentChair());
+                sitting = false;
+                agent.Resume();
+            }
         }
     }
     void goWC()
@@ -341,7 +379,6 @@ public class NPCV2 : MonoBehaviour
                 interactionComponent.setCurrentToilet(interactionComponent.getTarget());
                 // set destination to queue chair
                 dest = interactionComponent.getDestToTargetObjectSide(2, 20.0f);
-                GameObject.FindGameObjectWithTag("Player").transform.position = dest;
                 // move to the queue position received
                 moveTo(dest);
             }
@@ -470,6 +507,12 @@ public class NPCV2 : MonoBehaviour
                 {
                     addStateToQueue(2, NPCState.STATE_MOVE_TO_WARD_AREA);
                     diagnosed = true;
+                    if(!npcManager.isPlayerResponsibilityLevelFulfilled())
+                    {
+                        npcManager.addNpcToPlayersResponsibilities(gameObject);
+                        playersResponsibility = true;
+                        responsibilityIndicator = (GameObject)Instantiate(responsibilityIndicator, transform.position, new Quaternion(0, 0, 0, 0));
+                    }
                 }
                 else
                 {
@@ -708,7 +751,6 @@ public class NPCV2 : MonoBehaviour
     private void idle()
     {
         //check if there's something else to do
-        setMyStateFromQueue();
         timer += Time.deltaTime;
         GameObject target = interactionComponent.getTarget();
         if (target != null && talking)
@@ -718,7 +760,7 @@ public class NPCV2 : MonoBehaviour
         }
         else
         {
-            if (arrivedToDestination(30))
+            if (arrivedToDestination(30.0f))
             {
                 // move to idle at random position
                 Vector3 randomDirection = Random.insideUnitSphere * WALK_RADIUS;
@@ -739,12 +781,14 @@ public class NPCV2 : MonoBehaviour
                 Vector3 finalPosition = hit.position;
                 dest = new Vector3(finalPosition.x, 0, finalPosition.z);
                 moveTo(dest);
-                if (Random.Range(0f, 1f) > 0.99f)
+
+                //10% chance every IDLE_IN_THIS_PLACE_TIME to start talking to somoene or go sit
+                if (Random.Range(0f, 1f) > 0.90f)
                 {
                     if (!talking)
                         addStateToQueue(2, NPCState.STATE_TALK_TO_OTHER_NPC);
                 }
-                if (Random.Range(0f, 1f) > 0.9f)
+                if (Random.Range(0f, 1f) > 0.90f)
                 {
                     if (!talking && sitting)
                         addStateToQueue(2, NPCState.STATE_IDLE_SIT);
@@ -754,15 +798,26 @@ public class NPCV2 : MonoBehaviour
         }
     }
     private void die()
-    {      
-        List<GameObject> npcList = GameObject.Find("NPCManager").GetComponent<NPCManagerV2>().npcList;
-        npcList.Remove(gameObject);
-        if(player.GetComponent<PlayerControl>().getTarget() == gameObject)
+    {
+        timer += Time.deltaTime;
+        if(!agent.GetComponent<IiroAnimBehavior>().fall)
         {
-            GameObject.FindGameObjectWithTag("TextBoxManager").GetComponent<TextBoxManager>().DisableTextBox();
+            agent.GetComponent<IiroAnimBehavior>().fall = true;
         }
-        Destroy(gameObject);
-        print(myName + " lähti teho-osastolle...");
+        if (timer > STAY_ON_FLOOR_ON_FALL)
+        {
+            List<GameObject> npcList = GameObject.Find("NPCManager").GetComponent<NPCManagerV2>().npcList;
+            npcList.Remove(gameObject);
+            if (player.GetComponent<PlayerControl>().getTarget() == gameObject)
+            {
+                GameObject.FindGameObjectWithTag("TextBoxManager").GetComponent<TextBoxManager>().DisableTextBox();
+            }
+            npcManager.removeNpcFromPlayersResponsibilities(gameObject);
+            Destroy(gameObject);
+            print(myName + " lähti teho-osastolle...");
+        }
+        
+
     }
     //if player is close and player has target on this npc, talk to player
     private void talkToPlayer()
@@ -813,6 +868,7 @@ public class NPCV2 : MonoBehaviour
 
             }
         }
+        //fail proof
         if(target == null || target.tag != "NPC")
         {
             stopTalking();
@@ -970,7 +1026,6 @@ public class NPCV2 : MonoBehaviour
                     }
                 }
             }
-            
         }
         else
         {

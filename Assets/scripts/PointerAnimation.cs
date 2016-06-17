@@ -6,7 +6,7 @@ public class PointerAnimation : MonoBehaviour {
     float animSpeed = 5.1f;
     float ypos;
     float x = 0.0f;
-    float maxpos = 10.0f;
+    float maxpos = 15.0f;
     // Use this for initialization
     void Start () {
         defPos = transform.position;

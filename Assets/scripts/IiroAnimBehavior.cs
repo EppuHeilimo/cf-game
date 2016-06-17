@@ -9,6 +9,8 @@ public class IiroAnimBehavior : MonoBehaviour {
     public bool isWalking = false;
     public bool goToSleep = false;
     public bool sit = false;
+    public bool sitwithrotation = false;
+    public bool fall = false;
     Animator animator;
     float walkspeed = 1f;
     void Start () {
@@ -20,7 +22,7 @@ public class IiroAnimBehavior : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 
-        if(goToSleep || sit)
+        if(goToSleep || sit || sitwithrotation)
         {
             agent.obstacleAvoidanceType = ObstacleAvoidanceType.NoObstacleAvoidance;
         }
@@ -31,6 +33,8 @@ public class IiroAnimBehavior : MonoBehaviour {
         animator.SetBool("sleep", goToSleep);
         animator.SetBool("IsWalking", isWalking);
         animator.SetBool("sit", sit);
+        animator.SetBool("fall", fall);
+        animator.SetBool("sitAndRotate", sitwithrotation);
         if (agent.velocity.magnitude < 10.0f)
         {
             isWalking = false;
