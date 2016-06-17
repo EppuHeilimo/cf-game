@@ -11,6 +11,7 @@ public class IiroAnimBehavior : MonoBehaviour {
     public bool sit = false;
     public bool sitwithrotation = false;
     public bool fall = false;
+    public bool pickup = false;
     Animator animator;
     float walkspeed = 1f;
     void Start () {
@@ -35,6 +36,7 @@ public class IiroAnimBehavior : MonoBehaviour {
         animator.SetBool("sit", sit);
         animator.SetBool("fall", fall);
         animator.SetBool("sitAndRotate", sitwithrotation);
+        animator.SetBool("pickup", pickup);
         if (agent.velocity.magnitude < 10.0f)
         {
             isWalking = false;

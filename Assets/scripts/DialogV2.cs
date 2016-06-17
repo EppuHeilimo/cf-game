@@ -33,14 +33,7 @@ public class DialogV2 : MonoBehaviour
             target = other.GetComponent<PlayerControl>().getTarget();
             if (target == transform.parent.gameObject)
             {
-                textBoxManager.EnableTextBox(parent.GetComponent<NPCV2>().myName, parent.GetComponent<NPCV2>().myId, 
-                                             parent.GetComponent<NPCV2>().myHp, parent.GetComponent<NPCV2>().myHappiness,
-                                             parent.GetComponent<NPCV2>().morningMed.title, parent.GetComponent<NPCV2>().afternoonMed.title,
-                                             parent.GetComponent<NPCV2>().eveningMed.title, parent.GetComponent<NPCV2>().nightMed.title,
-                                             parent.GetComponent<NPCV2>().myProblems, parent.GetComponent<NPCV2>().morningDos,
-                                             parent.GetComponent<NPCV2>().afternoonDos, parent.GetComponent<NPCV2>().eveningDos,
-                                             parent.GetComponent<NPCV2>().nightDos
-                                             );
+                textBoxManager.EnableTextBox(parent.GetComponent<NPCV2>());
                 playerInZone = true;
             }
         }
@@ -71,14 +64,7 @@ public class DialogV2 : MonoBehaviour
             {
                 if (parent != null)
                 {
-                    textBoxManager.EnableTextBox(parent.GetComponent<NPCV2>().myName, parent.GetComponent<NPCV2>().myId,
-                             parent.GetComponent<NPCV2>().myHp, parent.GetComponent<NPCV2>().myHappiness,
-                             parent.GetComponent<NPCV2>().morningMed.title, parent.GetComponent<NPCV2>().afternoonMed.title,
-                             parent.GetComponent<NPCV2>().eveningMed.title, parent.GetComponent<NPCV2>().nightMed.title,
-                             parent.GetComponent<NPCV2>().myProblems, parent.GetComponent<NPCV2>().morningDos,
-                             parent.GetComponent<NPCV2>().afternoonDos, parent.GetComponent<NPCV2>().eveningDos,
-                             parent.GetComponent<NPCV2>().nightDos
-                             );
+                    textBoxManager.EnableTextBox(parent.GetComponent<NPCV2>());
                     playerInZone = true;
                 }
                 else

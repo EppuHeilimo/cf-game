@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.UI;
 
 public class NPCManagerV2 : MonoBehaviour
 {
@@ -13,6 +14,7 @@ public class NPCManagerV2 : MonoBehaviour
 
     //List of npc which are player's responsibility
     public List<GameObject> responsibilityNpcs;
+
     //how many patients should player have
     int targetResponsibilityLevel = 3;
 
@@ -76,8 +78,6 @@ public class NPCManagerV2 : MonoBehaviour
         docBusy = false;
     }
 
-
-
     // Update is called once per frame
     void Update()
     {
@@ -118,7 +118,11 @@ public class NPCManagerV2 : MonoBehaviour
         }
         newNpc.GetComponent<NPCV2>().Init(myName, myId); // initialize the npc
         newNpc.GetComponent<NPCV2>().InitMedication(randMeds);
-        newNpc.GetComponent<HeadChange>().ChangeToRandomHead();
+        //change to random head
+        string headname = newNpc.GetComponent<HeadChange>().ChangeToRandomHead();
+        //set the file name of the 2d sprite of the head
+        newNpc.GetComponent<NPCV2>().myHead2d = Resources.Load<Sprite>("Sprites/heads/" + headname + ".2d");
+        
         npcList.Add(newNpc);
     }
 
