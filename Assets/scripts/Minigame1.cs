@@ -169,18 +169,4 @@ public class Minigame1 : MonoBehaviour {
             nightX.text = nightDos.ToString();
         }
     }
-
-    /*
-    public void AddItem()
-    {
-        title = input.text.ToString();
-        Item itemToAdd = database.FetchItemByTitle(title);
-        if (itemToAdd == null)
-        {
-            print(title + " nimistä lääkettä ei ole olemassa.");
-            return;
-        }
-        playerInv.AddItem(itemToAdd.ID);
-    }
-    */
 }
