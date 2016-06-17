@@ -235,6 +235,17 @@ public class PlayerControl : MonoBehaviour {
                         hit2 = hits[0];
                         if (target == hit2.transform.gameObject)
                         {
+                            if (sitting)
+                            {
+                                sitting = false;
+                                objManager.unbookObject(interaction.getCurrentChair());
+                            }
+                            if (sleeping)
+                            {
+                                sleeping = false;
+                                objManager.unbookObject(interaction.getBed());
+                            }
+
                             if (target.tag == "Chair" || target.tag == "QueueChair" || target.tag == "Chair2")
                             {
                                 if (objManager.bookTargetObject(target, gameObject))
@@ -273,15 +284,15 @@ public class PlayerControl : MonoBehaviour {
                         else
                         {
                             
-                            if (sitting)
+                            if (sitting || interaction.getCurrentChair() != null)
                             {
                                 sitting = false;
-                                objManager.unbookObject(target);
+                                objManager.unbookObject(interaction.getCurrentChair());
                             }
-                            if (sleeping)
+                            if (sleeping || interaction.getBed() != null)
                             {
                                 sleeping = false;
-                                objManager.unbookObject(target);
+                                objManager.unbookObject(interaction.getBed());
                             }
                             /*Disable target*/
                             disableTarget();
@@ -307,6 +318,14 @@ public class PlayerControl : MonoBehaviour {
             {
                 if(!isMouseOverUI())
                 {
+                    if(interaction.getCurrentChair() != null)
+                    {
+                        objManager.unbookObject(interaction.getCurrentChair());
+                    }
+                    if(interaction.getBed() != null)
+                    {
+                        objManager.unbookObject(interaction.getBed());
+                    }
                     //get position of hit and move there
                     Vector3 pos = new Vector3(hit2.point.x, 0, hit2.point.z);
                     enableMoveIndicator(pos);
