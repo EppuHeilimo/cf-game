@@ -33,13 +33,14 @@ public class NPCManagerV2 : MonoBehaviour
     // hard-coded pool for names, probably changed later
     string[] namePool = { "Aleksi", "Pekka", "Matti", "Kalle", "Jorma" };
 
-    const int MAX_NPCS = 50; // ** MUST BE SAME AS MAX_QUE IN QUE MANAGER! **
+    const int MAX_NPCS = 50; 
 
     List<string> usedIds; // IDs already used
 
     // for generating random problem to patient from database
     GameObject invObj;
     ItemDatabase database;
+    ClockTime clock;
 
     Queue<GameObject> docQueue = new Queue<GameObject>();
 
@@ -56,6 +57,7 @@ public class NPCManagerV2 : MonoBehaviour
         usedIds = new List<string>();
         invObj = GameObject.Find("Inventory");
         database = invObj.GetComponent<ItemDatabase>();
+        clock = GameObject.FindGameObjectWithTag("Clock").GetComponent<ClockTime>();
     }
 
     public void deleteNpcFromList(GameObject go)
@@ -85,7 +87,7 @@ public class NPCManagerV2 : MonoBehaviour
         timeSinceLastSpawn += Time.deltaTime;
         npcCount = npcList.Count;
 
-        if (npcCount < MAX_NPCS)
+        if (npcCount < MAX_NPCS && (clock.currentDayTime == ClockTime.DayTime.MORNING || clock.currentDayTime == ClockTime.DayTime.AFTERNOON))
         {
             if (timeSinceLastSpawn > spawnTime)
             {

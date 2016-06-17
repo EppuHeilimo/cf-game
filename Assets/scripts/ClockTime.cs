@@ -17,7 +17,7 @@ public class ClockTime : MonoBehaviour {
 
     float dayLength;
     //day start hour (0-24)
-    int startHour = 0; 
+    int startHour = 7; 
     Text textref;
     string currentText;
 

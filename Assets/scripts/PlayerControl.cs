@@ -99,7 +99,7 @@ public class PlayerControl : MonoBehaviour {
         {
             if (arrivedToDestination(10.0f))
             {
-                if(target != null)
+                if(target != null || target.tag == "Bed")
                 {
                     if (interaction.RotateAwayFrom(target.transform))
                     {
@@ -112,7 +112,7 @@ public class PlayerControl : MonoBehaviour {
                 else
                 {
                     sleeping = false;
-                    objManager.unbookObject(target);
+                    objManager.unbookObject(interaction.getBed());
                 }
 
             }
@@ -208,7 +208,7 @@ public class PlayerControl : MonoBehaviour {
                             else
                             {
                                 disableTarget();
-                                if(temp != null)
+                                if(temp != null && temp != gameObject)
                                 {
                                     target = temp;
                                 }
@@ -216,7 +216,6 @@ public class PlayerControl : MonoBehaviour {
                                 {
                                     target = hit.transform.gameObject;
                                 }
-                                
                                 interaction.setTarget(target);
                                 outlineGameObjectRecursive(target.transform, Shader.Find("Outlined/Silhouetted Diffuse"));
                             }
@@ -256,11 +255,13 @@ public class PlayerControl : MonoBehaviour {
                             }
                             else if (target.tag == "Bed")
                             {
-                                objManager.bookTargetObject(target, gameObject);
-                                interaction.setBookedBed(interaction.getTarget());
-                                agent.SetDestination(interaction.getDestToTargetObjectSide(1, 16.0f));
-                                sleeping = true;
-                                disableMoveIndicator();
+                                if(objManager.bookTargetObject(target, gameObject))
+                                {
+                                    interaction.setBookedBed(interaction.getTarget());
+                                    agent.SetDestination(interaction.getDestToTargetObjectSide(1, 16.0f));
+                                    sleeping = true;
+                                    disableMoveIndicator();
+                                }
                             }
                             else if (target.tag == "PickupItemFloor" || target.tag == "PickupItem")
                             {
