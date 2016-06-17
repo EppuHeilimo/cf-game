@@ -6,6 +6,16 @@ public class BigMedContainer : MonoBehaviour {
 
     string medName;
     int defaultDosage;
+    GameObject invObj;
+    Inventory playerInv;
+    ItemDatabase database;
+
+    void Start()
+    {
+        invObj = GameObject.Find("Inventory");
+        playerInv = invObj.GetComponent<Inventory>();
+        database = invObj.GetComponent<ItemDatabase>();
+    }
 
     public void OpenMed(string medName, int defaultDosage)
     {
@@ -14,8 +24,12 @@ public class BigMedContainer : MonoBehaviour {
         gameObject.GetComponent<Image>().sprite = Resources.Load<Sprite>("Sprites/Items/" + medName + "_cont");
     }
 
-    public void print()
+    public void AddItem()
     {
-        print(medName + defaultDosage);
+        Item itemToAdd = database.FetchItemByTitle(medName);
+        if (itemToAdd != null)
+        {
+            playerInv.AddItem(itemToAdd.ID);
+        }     
     }
 }

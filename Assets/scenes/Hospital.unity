@@ -16278,6 +16278,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   npcPrefab: {fileID: 113848, guid: a9c6c736e05ba9e49a85b732ef091ec7, type: 2}
   npcList: []
+  responsibilityNpcs: []
   docBusy: 0
 --- !u!1 &431348804
 GameObject:
@@ -26707,7 +26708,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 38.9, y: -173.51}
-  m_SizeDelta: {x: 137, y: 35.98858}
+  m_SizeDelta: {x: 137, y: 0}
   m_Pivot: {x: -0.1, y: -0.5}
 --- !u!225 &692481238
 CanvasGroup:
@@ -28173,7 +28174,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 722850218}
-        m_MethodName: print
+        m_MethodName: AddItem
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -49206,10 +49207,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 692481237}
   m_RootOrder: 0
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 68.5, y: -17.99429}
-  m_SizeDelta: {x: 117, y: 15.988579}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1326286959
 MonoBehaviour:
@@ -49836,7 +49837,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1346623821
 MonoBehaviour:
   m_ObjectHideFlags: 0
