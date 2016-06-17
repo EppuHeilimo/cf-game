@@ -37,6 +37,7 @@ public class NPCV2 : MonoBehaviour
     /* Reference to player */
     private GameObject player;
     public GameObject responsibilityIndicator;
+    private GameObject responsibilityIndicatorclone;
     //has the npc visited the doctor
     public bool diagnosed = false;
     //how tired the npc is
@@ -107,7 +108,7 @@ public class NPCV2 : MonoBehaviour
     const float STAY_ON_FLOOR_ON_FALL = 10.0f;
 
     //stuck testing
-    const float STUCK = 2f;
+    const float STUCK = 5f;
     //how long doctor will wait for patient
     const float DOC_WAIT_TIME = 10.0f;
     float doctimer = 0;
@@ -145,7 +146,7 @@ public class NPCV2 : MonoBehaviour
     {
         if(playersResponsibility)
         {
-            responsibilityIndicator.transform.position = new Vector3(transform.position.x, transform.position.y + 64, transform.position.z);
+            responsibilityIndicatorclone.transform.position = new Vector3(transform.position.x, transform.position.y + 64, transform.position.z);
         }
         //check if there are some natural needs, or unstucking needs
         checkNeeds();
@@ -210,7 +211,7 @@ public class NPCV2 : MonoBehaviour
         //stuck test
         stucktimer += Time.deltaTime;
         //test every STUCK seconds if npc hasn't moved towards it's dest
-        if (stucktimer > STUCK && !arrivedToDestination(10.0f) && myState != NPCState.STATE_TRY_UNSTUCK)
+        if (stucktimer > STUCK && dest != Vector3.zero && !arrivedToDestination(10.0f) && myState != NPCState.STATE_TRY_UNSTUCK)
         {
             stucktimer = 0;
             currentdisttodest = Vector3.Distance(transform.position, dest);
@@ -513,7 +514,7 @@ public class NPCV2 : MonoBehaviour
                     {
                         npcManager.addNpcToPlayersResponsibilities(gameObject);
                         playersResponsibility = true;
-                        responsibilityIndicator = (GameObject)Instantiate(responsibilityIndicator, transform.position, new Quaternion(0, 0, 0, 0));
+                        responsibilityIndicatorclone = (GameObject)Instantiate(responsibilityIndicator, transform.position, new Quaternion(0, 0, 0, 0));
                     }
                 }
                 else
@@ -808,7 +809,7 @@ public class NPCV2 : MonoBehaviour
         }
         if (timer > STAY_ON_FLOOR_ON_FALL)
         {
-            Destroy(responsibilityIndicator);
+            Destroy(responsibilityIndicatorclone);
             List<GameObject> npcList = GameObject.Find("NPCManager").GetComponent<NPCManagerV2>().npcList;
             npcList.Remove(gameObject);
             if (player.GetComponent<PlayerControl>().getTarget() == gameObject)
@@ -816,8 +817,8 @@ public class NPCV2 : MonoBehaviour
                 GameObject.FindGameObjectWithTag("TextBoxManager").GetComponent<TextBoxManager>().DisableTextBox();
             }
             npcManager.removeNpcFromPlayersResponsibilities(gameObject);
-            Destroy(gameObject);
             print(myName + " lähti teho-osastolle...");
+            Destroy(gameObject);
         }
         
 

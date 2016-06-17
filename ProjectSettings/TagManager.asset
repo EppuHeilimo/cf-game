@@ -26,6 +26,7 @@ TagManager:
   - Toilet
   - Chair2
   - MyImage
+  - PickupItem
   layers:
   - Default
   - TransparentFX
