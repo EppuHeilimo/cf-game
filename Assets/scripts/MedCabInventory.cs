@@ -23,6 +23,5 @@ public class MedCabInventory : MonoBehaviour {
             medContainer.defaultDos = itemToAdd.DefaultDosage;
             medContainerObj.GetComponentInChildren<Text>().text = itemToAdd.Title;
         }
-
     }
 }

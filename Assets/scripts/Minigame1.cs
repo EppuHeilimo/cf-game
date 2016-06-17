@@ -19,7 +19,7 @@ public class Minigame1 : MonoBehaviour {
     NPCManagerV2 npcManager;
     List<GameObject> npcList;
     int currNpc;
-    bool kasiDesi;
+    public bool kasiDesi;
    
     /* med card stuff */
     public GameObject medCardPanel = null;
@@ -168,20 +168,6 @@ public class Minigame1 : MonoBehaviour {
             nightInfo.text = nightMed;
             nightX.text = nightDos.ToString();
         }
-    }
-
-    public void hideMedCard()
-    {
-        medCardPanel.SetActive(false);
-        patientInfo.text = null;
-        morningInfo.text = null;
-        morningX.text = null;
-        afternoonInfo.text = null;
-        afternoonX.text = null;
-        eveningInfo.text = null;
-        eveningX.text = null;
-        nightInfo.text = null;
-        nightX.text = null;
     }
 
     /*
