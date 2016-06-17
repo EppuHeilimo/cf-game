@@ -15,13 +15,21 @@ public class MedCabInventory : MonoBehaviour {
         slotPanel = GameObject.Find("MedCabSlotPanel");
         for (int i = 0; i < database.database.Count; i++)
         {
-            GameObject medContainerObj =  Instantiate(medContainerPrefab);
+            GameObject medContainerObj = Instantiate(medContainerPrefab);
             MedContainer medContainer = medContainerObj.GetComponent<MedContainer>();
             medContainerObj.transform.SetParent(slotPanel.transform);
             Item itemToAdd = database.FetchItemByID(i);
             medContainer.medName = itemToAdd.Title;
             medContainer.defaultDos = itemToAdd.DefaultDosage;
             medContainerObj.GetComponentInChildren<Text>().text = itemToAdd.Title;
+        }
+    }
+
+    public void Reset()
+    {
+        foreach (Transform t in slotPanel.transform)
+        {
+            Destroy(t.gameObject);
         }
     }
 }
