@@ -60,20 +60,24 @@ public class Minigame1 : MonoBehaviour {
     public void startMinigame()
     {
         active = true;
+        kasiDesi = false;
         minigameCanvas.SetActive(true);
         uiManager.pause(true);
         player.GetComponent<PlayerControl>().enabled = false;
         npcList = npcManager.npcList;
         currNpc = 0;
+        GetComponent<MedCabInventory>().Init();
+        if (npcList.Count == 0)
+            return;
         GameObject npcObj = npcList[currNpc];
         NPCV2 npc = npcObj.GetComponent<NPCV2>();
-        showMedCard(npc.myName, npc.myId, npc.morningMed.title, npc.afternoonMed.title, npc.eveningMed.title, npc.nightMed.title, npc.morningDos, npc.afternoonDos, npc.eveningDos, npc.nightDos);
-        kasiDesi = false;
-        GetComponent<MedCabInventory>().Init();
+        showMedCard(npc.myName, npc.myId, npc.morningMed.title, npc.afternoonMed.title, npc.eveningMed.title, npc.nightMed.title, npc.morningDos, npc.afternoonDos, npc.eveningDos, npc.nightDos);   
+        
     }
 
     public void quitMinigame()
     {
+        GetComponent<MedCabInventory>().Reset();
         active = false;
         minigameCanvas.SetActive(false);
         uiManager.pause(false);
@@ -82,6 +86,8 @@ public class Minigame1 : MonoBehaviour {
 
     public void nextNPC()
     {
+        if (npcList.Count == 0)
+            return;
         GameObject npcObj;
         // if reached end of npc list, go to beginning
         if (currNpc == npcList.Count - 1)
@@ -100,6 +106,8 @@ public class Minigame1 : MonoBehaviour {
 
     public void prevNPC()
     {
+        if (npcList.Count == 0)
+            return;
         GameObject npcObj;
         // if reached beginning of npc list, go to end
         if (currNpc == 0)
