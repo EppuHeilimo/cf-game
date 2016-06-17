@@ -1,11 +1,12 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class HeadChange : MonoBehaviour {
-    public GameObject[] heads = new GameObject[30];
+    private List<GameObject> heads = new List<GameObject>();
     // Use this for initialization
     void Start () {
-	    
+
 	}
 	
 	// Update is called once per frame
@@ -13,9 +14,17 @@ public class HeadChange : MonoBehaviour {
 	
 	}
 
-    public void ChangeToRandomHead()
+    public string ChangeToRandomHead()
     {
-        int rand = UnityEngine.Random.Range(0, 29);
+        if(heads.Count == 0)
+        {
+            Object[] headstemp = Resources.LoadAll("heads");
+            for (int i = 0; i < 48; i++)
+            {
+                heads.Add((GameObject)headstemp[i]);
+            }
+        }
+        int rand = UnityEngine.Random.Range(0, heads.Count - 1);
         Transform iiro = transform.Find("Iiro");
         Transform root = iiro.Find("Root");
         Transform torso = root.Find("Torso");
@@ -26,6 +35,7 @@ public class HeadChange : MonoBehaviour {
         MeshRenderer material = head.GetComponent<MeshRenderer>();
         mesh.sharedMesh = heads[rand].GetComponent<MeshFilter>().sharedMesh;
         material.sharedMaterial = heads[rand].GetComponent<MeshRenderer>().sharedMaterial;
+        return heads[rand].name;
     }
 
 }

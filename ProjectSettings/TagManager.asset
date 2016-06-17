@@ -24,6 +24,8 @@ TagManager:
   - Minigame1Canvas
   - NPCManager
   - Toilet
+  - Chair2
+  - MyImage
   layers:
   - Default
   - TransparentFX

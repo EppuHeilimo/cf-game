@@ -34,6 +34,21 @@ public class PlayerControl : MonoBehaviour {
                 }
             }
         }
+        if(target != null)
+        {
+            if (target.tag == "PickupItem" || target.tag == "PickupItemFloor")
+            {
+                if (arrivedToDestination(40.0f))
+                {
+                    if(interaction.RotateTowards(target.transform))
+                    {
+                        anim.pickup = true;
+                        disableTarget();
+                    }
+                }
+            }
+        }
+
         if(sitting)
         {
             if(arrivedToDestination(10.0f))
@@ -111,17 +126,19 @@ public class PlayerControl : MonoBehaviour {
         }
         if(followNpc)
         {
-            if(arrivedToDestination(20.0f))
+            if(target != null)
             {
-                if(agent.hasPath)
-                    agent.ResetPath();
-                interaction.RotateTowards(target.transform);
-            }
-            else
-            {
-                walkToTarget();
-            }
-            
+                if (arrivedToDestination(20.0f))
+                {
+                    if (agent.hasPath)
+                        agent.ResetPath();
+                    interaction.RotateTowards(target.transform);
+                }
+                else
+                {
+                    walkToTarget();
+                }
+            }  
         }
 
         handleInput();
@@ -144,6 +161,7 @@ public class PlayerControl : MonoBehaviour {
         }
         if ((Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began) || (Input.GetMouseButtonDown(0)))
         {
+            anim.pickup = false;
             RaycastHit hit2;
             //Create a Ray on the tapped / clicked position
 
@@ -223,7 +241,7 @@ public class PlayerControl : MonoBehaviour {
                                 if (objManager.bookTargetObject(target, gameObject))
                                 {
                                     interaction.setCurrentChair(interaction.getTarget());
-                                    if(target.tag == "Chair2")
+                                    if (target.tag == "Chair2")
                                     {
                                         agent.SetDestination(interaction.getDestToTargetObjectSide(1, 16.0f));
                                     }
@@ -242,6 +260,12 @@ public class PlayerControl : MonoBehaviour {
                                 interaction.setBookedBed(interaction.getTarget());
                                 agent.SetDestination(interaction.getDestToTargetObjectSide(1, 16.0f));
                                 sleeping = true;
+                                disableMoveIndicator();
+                            }
+                            else if (target.tag == "PickupItemFloor" || target.tag == "PickupItem")
+                            {
+                                interaction.setTarget(target);
+                                agent.SetDestination(target.transform.position);
                                 disableMoveIndicator();
                             }
                         }
@@ -414,10 +438,7 @@ public class PlayerControl : MonoBehaviour {
                     child.GetComponent<Renderer>().material.SetFloat("_Outline", 0.023f);
                     child.GetComponent<Renderer>().material.SetColor("_OutlineColor", new Color(1.0f, 0.0f, 0.0f));
                 }
-
             }
-                
-
         }
     }
 }

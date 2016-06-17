@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.UI;
 
 public class NPCV2 : MonoBehaviour
 {   
@@ -31,6 +32,7 @@ public class NPCV2 : MonoBehaviour
     public int myHp = 50;
     public int myHappiness = 50;
     int currentTaskPriority = 0;
+    public Sprite myHead2d;
     int prevTaskPriority = 0;
     /* Reference to player */
     private GameObject player;
@@ -105,7 +107,7 @@ public class NPCV2 : MonoBehaviour
     const float STAY_ON_FLOOR_ON_FALL = 10.0f;
 
     //stuck testing
-    const float STUCK = 5f;
+    const float STUCK = 2f;
     //how long doctor will wait for patient
     const float DOC_WAIT_TIME = 10.0f;
     float doctimer = 0;
@@ -790,7 +792,7 @@ public class NPCV2 : MonoBehaviour
                 }
                 if (Random.Range(0f, 1f) > 0.90f)
                 {
-                    if (!talking && sitting)
+                    if (!talking && !sitting)
                         addStateToQueue(2, NPCState.STATE_IDLE_SIT);
                 }
             }
@@ -806,6 +808,7 @@ public class NPCV2 : MonoBehaviour
         }
         if (timer > STAY_ON_FLOOR_ON_FALL)
         {
+            Destroy(responsibilityIndicator);
             List<GameObject> npcList = GameObject.Find("NPCManager").GetComponent<NPCManagerV2>().npcList;
             npcList.Remove(gameObject);
             if (player.GetComponent<PlayerControl>().getTarget() == gameObject)

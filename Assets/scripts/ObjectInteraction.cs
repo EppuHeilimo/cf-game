@@ -63,11 +63,18 @@ public class ObjectInteraction : MonoBehaviour {
     }
 
     //rotates towards a position
-    public void RotateTowards(Transform target)
+    public bool RotateTowards(Transform target)
     {
         Vector3 direction = (target.position - transform.position).normalized;
         Quaternion lookRotation = Quaternion.LookRotation(direction);
-        transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * 10.0f);
+        transform.rotation = Quaternion.RotateTowards(transform.rotation, lookRotation, 5.0f);
+        float transformy = Mathf.Abs(transform.rotation.eulerAngles.y);
+        float looky = Mathf.Abs(lookRotation.eulerAngles.y);
+        if (approx(transformy, looky, 10f))
+        {
+            return true;
+        }
+        return false;
     }
     //same as rotateTowards, but inverse look direction
     public bool RotateAwayFrom(Transform target)

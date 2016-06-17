@@ -23,6 +23,7 @@ public class TextBoxManager : MonoBehaviour {
     GameObject targetPanel;
     GameObject healthBar;
     GameObject happyBar;
+    GameObject MyImage;
 
     // Use this for initialization
     void Start()
@@ -30,9 +31,10 @@ public class TextBoxManager : MonoBehaviour {
         healthBar = GameObject.FindGameObjectWithTag("HpBar");
         happyBar = GameObject.FindGameObjectWithTag("HappyBar");
         targetPanel = GameObject.FindGameObjectWithTag("TargetPanel");
+        MyImage = GameObject.FindGameObjectWithTag("MyImage");
         DisableTextBox();
     }
-
+    /*
     public void EnableTextBox(string myName, string myId, int myHp, int myHappiness, string morningMed, string afternoonMed, string eveningMed, string nightMed, string[] myProblems, int morningDos, int afternoonDos, int eveningDos, int nightDos)
     {
         myNameText.text = myName;
@@ -48,6 +50,7 @@ public class TextBoxManager : MonoBehaviour {
         healthBar.SetActive(true);
         happyBar.SetActive(true);
         medCardPanel.SetActive(true);
+        MyImage.SetActive(true);
 
         patientInfo.text = myName + " (" + myId + ")";
         if (string.IsNullOrEmpty(morningMed))
@@ -92,6 +95,70 @@ public class TextBoxManager : MonoBehaviour {
         {
             nightInfo.text = nightMed;
             nightX.text = nightDos.ToString();
+        }
+    }
+    */
+    public void EnableTextBox(NPCV2 npc)
+    {
+        myNameText.text = npc.myName;
+        myIdText.text = npc.myId;
+        myProblemText.text = null;
+        foreach (string s in npc.myProblems)
+        {
+            myProblemText.text += s + "\n";
+        }
+        SetHealthBar(npc.myHp);
+        SetHappyBar(npc.myHappiness);
+        targetPanel.SetActive(true);
+        healthBar.SetActive(true);
+        happyBar.SetActive(true);
+        medCardPanel.SetActive(true);
+        MyImage.SetActive(true);
+        MyImage.GetComponent<Image>().sprite = npc.myHead2d;
+
+        patientInfo.text = npc.myName + " (" + npc.myId + ")";
+        if (string.IsNullOrEmpty(npc.morningMed.title))
+        {
+            morningInfo.text = null;
+            morningX.text = null;
+        }
+        else
+        {
+            morningInfo.text = npc.morningMed.title;
+            morningX.text = npc.morningDos.ToString();
+        }
+
+        if (string.IsNullOrEmpty(npc.afternoonMed.title))
+        {
+            afternoonInfo.text = null;
+            afternoonX.text = null;
+        }
+        else
+        {
+            afternoonInfo.text = npc.afternoonMed.title;
+            afternoonX.text = npc.afternoonDos.ToString();
+        }
+
+        if (string.IsNullOrEmpty(npc.eveningMed.title))
+        {
+            eveningInfo.text = null;
+            eveningX.text = null;
+        }
+        else
+        {
+            eveningInfo.text = npc.eveningMed.title;
+            eveningX.text = npc.eveningDos.ToString();
+        }
+
+        if (string.IsNullOrEmpty(npc.nightMed.title))
+        {
+            nightInfo.text = null;
+            nightX.text = null;
+        }
+        else
+        {
+            nightInfo.text = npc.nightMed.title;
+            nightX.text = npc.nightDos.ToString();
         }
     }
 
