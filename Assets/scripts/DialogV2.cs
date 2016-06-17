@@ -83,12 +83,8 @@ public class DialogV2 : MonoBehaviour
         GameObject target;
         if (other.tag == "Player")
         {
-            target = other.GetComponent<PlayerControl>().getTarget();
-            if (target == transform.parent.gameObject)
-            {
-                textBoxManager.DisableTextBox();
-                playerInZone = false;
-            }
+            textBoxManager.DisableTextBox();
+            playerInZone = false;
         }
 
         if (other.tag == "NPC")
