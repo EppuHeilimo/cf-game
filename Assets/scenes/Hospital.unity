@@ -26955,6 +26955,22 @@ Prefab:
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: a41482302c98c6d49befd016ad3943f2, type: 2}
   m_IsPrefabParent: 0
+--- !u!1 &697873355 stripped
+GameObject:
+  m_PrefabParentObject: {fileID: 100002, guid: 9c38f5cfa7e6d534d8b87fbe6783ab54, type: 3}
+  m_PrefabInternal: {fileID: 2020336532}
+--- !u!65 &697873359
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 697873355}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 10, y: 9, z: 7}
+  m_Center: {x: 0, y: 4.5, z: 0}
 --- !u!1 &698504559
 GameObject:
   m_ObjectHideFlags: 0
@@ -73005,6 +73021,18 @@ Prefab:
     - target: {fileID: 400000, guid: 9c38f5cfa7e6d534d8b87fbe6783ab54, type: 3}
       propertyPath: m_LocalScale.z
       value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 100000, guid: 9c38f5cfa7e6d534d8b87fbe6783ab54, type: 3}
+      propertyPath: m_TagString
+      value: PickupItem
+      objectReference: {fileID: 0}
+    - target: {fileID: 100002, guid: 9c38f5cfa7e6d534d8b87fbe6783ab54, type: 3}
+      propertyPath: m_TagString
+      value: PickupItem
+      objectReference: {fileID: 0}
+    - target: {fileID: 100002, guid: 9c38f5cfa7e6d534d8b87fbe6783ab54, type: 3}
+      propertyPath: m_Layer
+      value: 10
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 9c38f5cfa7e6d534d8b87fbe6783ab54, type: 3}

@@ -14,6 +14,7 @@ public class PlayerControl : MonoBehaviour {
     bool sitting = false;
     bool sleeping = false;
     bool followNpc = false;
+    bool pickingup = false;
     // Use this for initialization
     void Start () {
         interaction = GetComponent<ObjectInteraction>();
@@ -34,11 +35,11 @@ public class PlayerControl : MonoBehaviour {
                 }
             }
         }
-        if(target != null)
+        if(pickingup)
         {
-            if (target.tag == "PickupItem" || target.tag == "PickupItemFloor")
+            if (target != null)
             {
-                if (arrivedToDestination(40.0f))
+                if (arrivedToDestination(50.0f))
                 {
                     if(interaction.RotateTowards(target.transform))
                     {
@@ -162,6 +163,7 @@ public class PlayerControl : MonoBehaviour {
         if ((Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began) || (Input.GetMouseButtonDown(0)))
         {
             anim.pickup = false;
+            
             RaycastHit hit2;
             //Create a Ray on the tapped / clicked position
 
@@ -186,8 +188,10 @@ public class PlayerControl : MonoBehaviour {
             bool npcwashit = false;
             if (rays.Length > 0)
             {
+                
                 if (!isMouseOverUI())
                 {
+                    pickingup = false;
                     foreach (RaycastHit hit in rays)
                     {
                         //object who booked the object. 
@@ -277,6 +281,7 @@ public class PlayerControl : MonoBehaviour {
                             else if (target.tag == "PickupItemFloor" || target.tag == "PickupItem")
                             {
                                 interaction.setTarget(target);
+                                pickingup = true;
                                 agent.SetDestination(target.transform.position);
                                 disableMoveIndicator();
                             }
@@ -316,9 +321,11 @@ public class PlayerControl : MonoBehaviour {
             //check if the ray hits floor collider
             else if (Physics.Raycast(ray, out hit2, 10000.0f, layerMask))
             {
-                if(!isMouseOverUI())
+                
+                if (!isMouseOverUI())
                 {
-                    if(interaction.getCurrentChair() != null)
+                    pickingup = false;
+                    if (interaction.getCurrentChair() != null)
                     {
                         objManager.unbookObject(interaction.getCurrentChair());
                     }
