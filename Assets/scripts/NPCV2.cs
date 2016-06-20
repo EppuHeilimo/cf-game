@@ -147,6 +147,7 @@ public class NPCV2 : MonoBehaviour
         if(playersResponsibility)
         {
             responsibilityIndicatorclone.transform.position = new Vector3(transform.position.x, transform.position.y + 64, transform.position.z);
+            responsibilityIndicatorclone.transform.rotation = transform.rotation;
         }
         //check if there are some natural needs, or unstucking needs
         checkNeeds();
@@ -359,7 +360,11 @@ public class NPCV2 : MonoBehaviour
                 
                 taskCompleted = true;
                 if ((interactionComponent.getCurrentChair() != null))
+                {
+                    interactionComponent.setCurrentChair(null);
                     objectManager.unbookObject(interactionComponent.getCurrentChair());
+                }
+                    
                 sitting = false;
                 agent.Resume();
             }
@@ -485,12 +490,6 @@ public class NPCV2 : MonoBehaviour
     private void goToDoc()
     {
         doctimer += Time.deltaTime;
-        if (doctimer > DOC_WAIT_TIME)
-        {
-            addStateToQueue(3, NPCState.STATE_TRY_UNSTUCK);
-            taskCompleted = true;
-            doctimer = 0;
-        }
         if (dest == Vector3.zero)
         {
             dest = new Vector3(-50.0f, transform.position.y, 393.0f);
@@ -802,13 +801,16 @@ public class NPCV2 : MonoBehaviour
     }
     private void die()
     {
+        
         timer += Time.deltaTime;
         if(!agent.GetComponent<IiroAnimBehavior>().fall)
         {
+            agent.Stop();
             agent.GetComponent<IiroAnimBehavior>().fall = true;
         }
         if (timer > STAY_ON_FLOOR_ON_FALL)
         {
+            
             Destroy(responsibilityIndicatorclone);
             List<GameObject> npcList = GameObject.Find("NPCManager").GetComponent<NPCManagerV2>().npcList;
             npcList.Remove(gameObject);
@@ -965,13 +967,25 @@ public class NPCV2 : MonoBehaviour
         stateQueue.TryGetValue(priority, out queue);
         queue.Enqueue(state);
     }
+
+    void unbookAllMyObjects()
+    {
+        
+    }
+
     //finds the highest priority task and selects it as current stage
     //called only when task is completed
     public void setMyStateFromQueue()
     {
         if(taskCompleted)
         {
-            if(prevStateUncompleted)
+            if(interactionComponent.getCurrentChair() != null)
+            {
+                objectManager.unbookObject(interactionComponent.getCurrentChair());
+                interactionComponent.setCurrentChair(null);
+            }
+
+            if (prevStateUncompleted)
             {
                 prevStateUncompleted = false;
                 myState = prevState;

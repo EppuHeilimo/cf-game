@@ -137,6 +137,7 @@ public class ObjectManager : MonoBehaviour {
 
     public void unbookObject(GameObject go)
     {
-        bookableObjects[go] = null;
+        if(go != null)
+            bookableObjects[go] = null;
     }
 }

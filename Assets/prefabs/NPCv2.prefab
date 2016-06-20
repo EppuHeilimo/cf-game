@@ -1861,7 +1861,7 @@ MonoBehaviour:
   myHp: 50
   myHappiness: 50
   myHead2d: {fileID: 0}
-  responsibilityIndicator: {fileID: 131138, guid: d539bd61c375b6e4d8756f6abc6c96d4,
+  responsibilityIndicator: {fileID: 155746, guid: 3f3d5b2224a40ab4ba7c91e9362d165b,
     type: 2}
   diagnosed: 0
   fatique: 0
@@ -1897,6 +1897,7 @@ MonoBehaviour:
   sit: 0
   sitwithrotation: 0
   fall: 0
+  pickup: 0
 --- !u!120 &12050100
 LineRenderer:
   m_ObjectHideFlags: 1
