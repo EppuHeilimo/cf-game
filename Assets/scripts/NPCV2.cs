@@ -360,7 +360,11 @@ public class NPCV2 : MonoBehaviour
                 
                 taskCompleted = true;
                 if ((interactionComponent.getCurrentChair() != null))
+                {
+                    interactionComponent.setCurrentChair(null);
                     objectManager.unbookObject(interactionComponent.getCurrentChair());
+                }
+                    
                 sitting = false;
                 agent.Resume();
             }
@@ -963,13 +967,25 @@ public class NPCV2 : MonoBehaviour
         stateQueue.TryGetValue(priority, out queue);
         queue.Enqueue(state);
     }
+
+    void unbookAllMyObjects()
+    {
+        
+    }
+
     //finds the highest priority task and selects it as current stage
     //called only when task is completed
     public void setMyStateFromQueue()
     {
         if(taskCompleted)
         {
-            if(prevStateUncompleted)
+            if(interactionComponent.getCurrentChair() != null)
+            {
+                objectManager.unbookObject(interactionComponent.getCurrentChair());
+                interactionComponent.setCurrentChair(null);
+            }
+
+            if (prevStateUncompleted)
             {
                 prevStateUncompleted = false;
                 myState = prevState;
