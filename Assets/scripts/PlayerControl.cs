@@ -124,7 +124,7 @@ public class PlayerControl : MonoBehaviour {
         {
             if (anim.sleeping)
             {
-                anim.sleep();
+                anim.stopSleep();
             }
         }
         if(followNpc)
