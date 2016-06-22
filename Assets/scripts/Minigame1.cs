@@ -3,7 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 
-public class Minigame1 : MonoBehaviour {
+public class Minigame1 : MonoBehaviour
+{
 
     bool active = false;
     GameObject invObj;
@@ -20,18 +21,36 @@ public class Minigame1 : MonoBehaviour {
     List<GameObject> npcList;
     int currNpc;
     public bool kasiDesi;
-   
+
     /* med card stuff */
     public GameObject medCardPanel = null;
     public Text patientInfo = null;
-    public Text morningInfo = null;
-    public Text morningX = null;
-    public Text afternoonInfo = null;
+    public Text med1 = null;
+    public Text med2 = null;
     public Text afternoonX = null;
-    public Text eveningInfo = null;
-    public Text eveningX = null;
-    public Text nightInfo = null;
-    public Text nightX = null;
+    public Text med3 = null;
+    public Text med4 = null;
+
+    public Text morning1 = null;
+    public Text night1 = null;
+    public Text evening1 = null;
+    public Text afternoon1 = null;
+
+    public Text morning2 = null;
+    public Text night2 = null;
+    public Text evening2 = null;
+    public Text afternoon2 = null;
+
+    public Text morning3 = null;
+    public Text night3 = null;
+    public Text evening3 = null;
+    public Text afternoon3 = null;
+
+    public Text morning4 = null;
+    public Text night4 = null;
+    public Text evening4 = null;
+    public Text afternoon4 = null;
+
 
     void Start()
     {
@@ -64,6 +83,13 @@ public class Minigame1 : MonoBehaviour {
         minigameCanvas.SetActive(true);
         uiManager.pause(true);
         player.GetComponent<PlayerControl>().enabled = false;
+        foreach(GameObject n in npcManager.npcList)
+        {
+            if(n.GetComponent<NPCV2>().diagnosed)
+            {
+                npcList.Add(n);
+            }
+        }
         npcList = npcManager.npcList;
         currNpc = 0;
         GetComponent<MedCabInventory>().Init();
@@ -71,8 +97,7 @@ public class Minigame1 : MonoBehaviour {
             return;
         GameObject npcObj = npcList[currNpc];
         NPCV2 npc = npcObj.GetComponent<NPCV2>();
-        showMedCard(npc.myName, npc.myId, npc.morningMed.title, npc.afternoonMed.title, npc.eveningMed.title, npc.nightMed.title, npc.morningDos, npc.afternoonDos, npc.eveningDos, npc.nightDos);   
-        
+        showMedCard(npc);
     }
 
     public void quitMinigame()
@@ -82,6 +107,7 @@ public class Minigame1 : MonoBehaviour {
         minigameCanvas.SetActive(false);
         uiManager.pause(false);
         player.GetComponent<PlayerControl>().enabled = true;
+        npcList.Clear();
     }
 
     public void nextNPC()
@@ -94,14 +120,14 @@ public class Minigame1 : MonoBehaviour {
         {
             currNpc = 0;
             npcObj = npcList[currNpc];
-        }           
+        }
         else
         {
             currNpc++;
             npcObj = npcList[currNpc];
-        }            
+        }
         NPCV2 npc = npcObj.GetComponent<NPCV2>();
-        showMedCard(npc.myName, npc.myId, npc.morningMed.title, npc.afternoonMed.title, npc.eveningMed.title, npc.nightMed.title, npc.morningDos, npc.afternoonDos, npc.eveningDos, npc.nightDos);
+        showMedCard(npc);
     }
 
     public void prevNPC()
@@ -114,14 +140,14 @@ public class Minigame1 : MonoBehaviour {
         {
             currNpc = npcList.Count - 1;
             npcObj = npcList[currNpc];
-        }     
+        }
         else
         {
             currNpc--;
             npcObj = npcList[currNpc];
-        }           
+        }
         NPCV2 npc = npcObj.GetComponent<NPCV2>();
-        showMedCard(npc.myName, npc.myId, npc.morningMed.title, npc.afternoonMed.title, npc.eveningMed.title, npc.nightMed.title, npc.morningDos, npc.afternoonDos, npc.eveningDos, npc.nightDos);
+        showMedCard(npc);
     }
 
     public void kasiVitunDesi()
@@ -129,52 +155,184 @@ public class Minigame1 : MonoBehaviour {
         kasiDesi = true;
     }
 
-    public void showMedCard(string myName, string myId, string morningMed, string afternoonMed, string eveningMed, string nightMed, int morningDos, int afternoonDos, int eveningDos, int nightDos)
+    public void showMedCard(NPCV2 npc)
     {
         medCardPanel.SetActive(true);
-        patientInfo.text = myName + " (" + myId + ")";
-        if (string.IsNullOrEmpty(morningMed))
+        patientInfo.text = npc.myName + " (" + npc.myId + ")";
+        for (int i = 0; i < npc.myMedication.Length; i++)
         {
-            morningInfo.text = null;
-            morningX.text = null;
+            switch (i)
+            {
+                case 0:
+                    med1.text = npc.myMedication[i].Title;
+                    break;
+                case 1:
+                    med2.text = npc.myMedication[i].Title;
+                    break;
+                case 2:
+                    med3.text = npc.myMedication[i].Title;
+                    break;
+                case 3:
+                    med4.text = npc.myMedication[i].Title;
+                    break;
+            }
         }
-        else
+        for (int i = 0; i < npc.morningMed.Length; i++)
         {
-            morningInfo.text = morningMed;
-            morningX.text = morningDos.ToString();
-        }
+            if (string.IsNullOrEmpty(npc.morningMed[i].title))
+            {
+                switch (i)
+                {
+                    case 0:
+                        morning1.text = null;
+                        break;
+                    case 1:
+                        morning2.text = null;
+                        break;
+                    case 2:
+                        morning3.text = null;
+                        break;
+                    case 3:
+                        morning4.text = null;
+                        break;
+                }
+            }
+            else
+            {
+                switch (i)
+                {
+                    case 0:
+                        morning1.text = npc.morningMed[i].dosage.ToString();
+                        break;
+                    case 1:
+                        morning2.text = npc.morningMed[i].dosage.ToString();
+                        break;
+                    case 2:
+                        morning3.text = npc.morningMed[i].dosage.ToString();
+                        break;
+                    case 3:
+                        morning4.text = npc.morningMed[i].dosage.ToString();
+                        break;
+                }
+            }
 
-        if (string.IsNullOrEmpty(afternoonMed))
-        {
-            afternoonInfo.text = null;
-            afternoonX.text = null;
         }
-        else
+        for (int i = 0; i < npc.afternoonMed.Length; i++)
         {
-            afternoonInfo.text = afternoonMed;
-            afternoonX.text = afternoonDos.ToString();
+            if (string.IsNullOrEmpty(npc.afternoonMed[i].title))
+            {
+                switch (i)
+                {
+                    case 0:
+                        afternoon1.text = null;
+                        break;
+                    case 1:
+                        afternoon2.text = null;
+                        break;
+                    case 2:
+                        afternoon3.text = null;
+                        break;
+                    case 3:
+                        afternoon4.text = null;
+                        break;
+                }
+            }
+            else
+            {
+                switch (i)
+                {
+                    case 0:
+                        afternoon1.text = npc.afternoonMed[i].dosage.ToString();
+                        break;
+                    case 1:
+                        afternoon2.text = npc.afternoonMed[i].dosage.ToString();
+                        break;
+                    case 2:
+                        afternoon3.text = npc.afternoonMed[i].dosage.ToString();
+                        break;
+                    case 3:
+                        afternoon4.text = npc.afternoonMed[i].dosage.ToString();
+                        break;
+                }
+            }
         }
-
-        if (string.IsNullOrEmpty(eveningMed))
+        for (int i = 0; i < npc.eveningMed.Length; i++)
         {
-            eveningInfo.text = null;
-            eveningX.text = null;
+            if (string.IsNullOrEmpty(npc.eveningMed[i].title))
+            {
+                switch (i)
+                {
+                    case 0:
+                        evening1.text = null;
+                        break;
+                    case 1:
+                        evening2.text = null;
+                        break;
+                    case 2:
+                        evening3.text = null;
+                        break;
+                    case 3:
+                        evening4.text = null;
+                        break;
+                }
+            }
+            else
+            {
+                switch (i)
+                {
+                    case 0:
+                        evening1.text = npc.eveningMed[i].dosage.ToString();
+                        break;
+                    case 1:
+                        evening2.text = npc.eveningMed[i].dosage.ToString();
+                        break;
+                    case 2:
+                        evening3.text = npc.eveningMed[i].dosage.ToString();
+                        break;
+                    case 3:
+                        evening4.text = npc.eveningMed[i].dosage.ToString();
+                        break;
+                }
+            }
         }
-        else
+        for (int i = 0; i < npc.nightMed.Length; i++)
         {
-            eveningInfo.text = eveningMed;
-            eveningX.text = eveningDos.ToString();
-        }
-
-        if (string.IsNullOrEmpty(nightMed))
-        {
-            nightInfo.text = null;
-            nightX.text = null;
-        }
-        else
-        {
-            nightInfo.text = nightMed;
-            nightX.text = nightDos.ToString();
+            if (string.IsNullOrEmpty(npc.nightMed[i].title))
+            {
+                switch (i)
+                {
+                    case 0:
+                        night1.text = null;
+                        break;
+                    case 1:
+                        night2.text = null;
+                        break;
+                    case 2:
+                        night3.text = null;
+                        break;
+                    case 3:
+                        night4.text = null;
+                        break;
+                }
+            }
+            else
+            {
+                switch (i)
+                {
+                    case 0:
+                        night1.text = npc.nightMed[i].dosage.ToString();
+                        break;
+                    case 1:
+                        night2.text = npc.nightMed[i].dosage.ToString();
+                        break;
+                    case 2:
+                        night3.text = npc.nightMed[i].dosage.ToString();
+                        break;
+                    case 3:
+                        night4.text = npc.nightMed[i].dosage.ToString();
+                        break;
+                }
+            }
         }
     }
 }

@@ -1,86 +1,184 @@
 [
 	{
 		"id": 0,
-		"title": "Ibuprofeeni",
-		"desc": "Särkylääke",
-		"usage": "kuume",
+		"title": "Ibuprofen",
+		"desc": "Painkiller",
+		"usage": "Fever",
 		"defaultDos": 400,
 		"dosages": {
 			"small": 200,
 			"medium": 400,
 			"high": 800
-		}
+		},
+        "dosagesPerDay": 0
 	},
 	{
 		"id": 1,
-		"title": "Varfariini",
-		"desc": "Kuvaus tähän",
-		"usage": "laskimotukos",
-		"defaultDos": 400,
+		"title": "Warfarin",
+		"desc": "Anticoagulant",
+		"usage": "Blood clot", 
+		"defaultDos": 3,
 		"dosages": {
-			"small": 200,
-			"medium": 400,
-			"high": 800
-		}
+			"small": 2,
+			"medium": 3,
+			"high": 4
+		},
+        "dosagesPerDay": 1
 	},
 	{
 		"id": 2,
-		"title": "Pivmesillinaami",
-		"desc": "Kuvaus",
-		"usage": "virtsainfektio",
-		"defaultDos": 400,
+		"title": "Pivmecillinam",
+		"desc": "Antimicrobial/Antibacterial",
+		"usage": "Urinary tract infection",
+		"defaultDos": 200,
 		"dosages": {
 			"small": 200,
 			"medium": 400,
-			"high": 800
-		}
+			"high": 600
+		},
+        "dosagesPerDay": 2
 	},
 	{
 		"id": 3,
-		"title": "Amoksisilliini",
-		"desc": "Kuvaus",
-		"usage": "keuhkoputkitulehdus",
-		"defaultDos": 400,
+		"title": "Amoxicillin",
+		"desc": "Antimicrobial/Antibacterial",
+		"usage": "Otitis media",
+		"defaultDos": 250,
 		"dosages": {
-			"small": 200,
-			"medium": 400,
-			"high": 800
-		}
+			"small": 250,
+			"medium": 375,
+			"high": 500
+		},
+        "dosagesPerDay": 3
 	},
-	{
+    {
 		"id": 4,
-		"title": "Metformiini",
-		"desc": "Kuvaus",
-		"usage": "diabetes",
-		"defaultDos": 400,
+		"title": "Amoxicillin",
+		"desc": "Antimicrobial/Antibacterial",
+		"usage": "Bronchitis",
+		"defaultDos": 250,
 		"dosages": {
-			"small": 200,
-			"medium": 400,
-			"high": 800
-		}
+			"small": 250,
+			"medium": 375,
+			"high": 500
+		},
+        "dosagesPerDay": 3
 	},
 	{
 		"id": 5,
-		"title": "Setiritsiini",
-		"desc": "Kuvaus",
-		"usage": "allergia",
-		"defaultDos": 400,
+		"title": "V-Penicillin",
+		"desc": "Antimicrobial/Antibacterial",
+		"usage": "Upper respiratory tract infection",
+		"defaultDos": 660,
 		"dosages": {
-			"small": 200,
-			"medium": 400,
-			"high": 800
-		}
+			"small": 660,
+			"medium": 660,
+			"high": 660
+		},
+        "dosagesPerDay": 3
 	},
 	{
 		"id": 6,
-		"title": "Simvastatiini",
-		"desc": "Kuvaus",
-		"usage": "korkea veren kolesteroli",
-		"defaultDos": 400,
+		"title": "Simvastatin",
+		"desc": "Cardiovascular agent",
+		"usage": "Dyslipidemia",
+		"defaultDos": 10,
 		"dosages": {
-			"small": 200,
-			"medium": 400,
-			"high": 800
-		}
+			"small": 10,
+			"medium": 20,
+			"high": 40
+		},
+        "dosagesPerDay": 1
+	},
+    {
+		"id": 7,
+		"title": "Levothyroxine",
+		"desc": "Hormones",
+		"usage": "Hypothyroidism",
+		"defaultDos": 1,
+		"dosages": {
+			"small": 1,
+			"medium": 1,
+			"high": 1
+		},
+        "dosagesPerDay": 1
+	},
+    {
+		"id": 8,
+		"title": "Cetirizine",
+		"desc": "Respiratory agent",
+		"usage": "Allergic rhinitis",
+		"defaultDos": 10,
+		"dosages": {
+			"small": 5,
+			"medium": 5,
+			"high": 10
+		},
+        "dosagesPerDay": 1
+	},
+    {
+		"id": 9,
+		"title": "Esomeprazole",
+		"desc": "Gastrointestinal agent",
+		"usage": "Gastroesophageal reflux disease",
+		"defaultDos": 20,
+		"dosages": {
+			"small": 20,
+			"medium": 20,
+			"high": 20
+		},
+        "dosagesPerDay": 1
+	},
+    {
+		"id": 10,
+		"title": "Lisinopril",
+		"desc": "Cardiovascular agent",
+		"usage": "Hypertension",
+		"defaultDos": 10,
+		"dosages": {
+			"small": 10,
+			"medium": 20,
+			"high": 40
+		},
+        "dosagesPerDay": 1
+	},
+    {
+		"id": 11,
+		"title": "Furosemide",
+		"desc": "Cardiovascular agent",
+		"usage": "Hypertension",
+		"defaultDos": 40,
+		"dosages": {
+			"small": 20,
+			"medium": 40,
+			"high": 80
+		},
+        "dosagesPerDay": 2
+	},
+    {
+		"id": 12,
+		"title": "Metformin",
+		"desc": "Medicines for diabetes",
+		"usage": "Diabetes type 2",
+		"defaultDos": 500,
+		"dosages": {
+			"small": 500,
+			"medium": 500,
+			"high": 500
+		},
+        "dosagesPerDay": 2
+	},
+    {
+		"id": 13,
+		"title": "Prednisone",
+		"desc": "Hormones",
+		"usage": "Asthma",
+		"defaultDos": 5,
+		"dosages": {
+			"small": 10,
+			"medium": 20,
+			"high": 30
+		},
+        "dosagesPerDay": 2
 	}
 ]

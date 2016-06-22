@@ -10,6 +10,7 @@ public class PlayerControl : MonoBehaviour {
     ObjectInteraction interaction;
     ObjectManager objManager;
     IiroAnimBehavior anim;
+    Tooltip tooltip;
 
     bool sitting = false;
     bool sleeping = false;
@@ -21,13 +22,14 @@ public class PlayerControl : MonoBehaviour {
         anim = GetComponent<IiroAnimBehavior>();
         objManager = GameObject.FindGameObjectWithTag("ObjectManager").GetComponent<ObjectManager>();
         agent = GetComponent<NavMeshAgent>();
+        tooltip = GameObject.Find("Inventory").GetComponent<Tooltip>();
     }
 	
 	// Update is called once per frame
 	void Update () {
         if (!agent.pathPending)
         {
-            if (agent.remainingDistance <= agent.stoppingDistance)
+            if (agent.enabled && agent.remainingDistance <= agent.stoppingDistance)
             {
                 if (!agent.hasPath || agent.velocity.sqrMagnitude == 0f)
                 {
@@ -43,7 +45,7 @@ public class PlayerControl : MonoBehaviour {
                 {
                     if(interaction.RotateTowards(target.transform))
                     {
-                        anim.pickup = true;
+                        anim.pickup();
                         disableTarget();
                     }
                 }
@@ -60,16 +62,16 @@ public class PlayerControl : MonoBehaviour {
                     {
                         if(target.tag == "Chair2")
                         {
-                            if (anim.sitwithrotation != true)
+                            if (agent.enabled)
                             {
-                                anim.sitwithrotation = true;
+                                anim.sitwithrotation();
                             }
                         }
                         else
                         {
-                            if (anim.sit != true)
+                            if (agent.enabled)
                             {
-                                anim.sit = true;
+                                anim.sit();
                             }
 
                         }
@@ -86,13 +88,13 @@ public class PlayerControl : MonoBehaviour {
         }
         else
         {
-            if (anim.sitwithrotation == true)
+            if (anim.sittingwithrotation)
             {
-                anim.sitwithrotation = false;
+                anim.stopSitwithrotation();
             }
-            if (anim.sit == true)
+            if (anim.sitting)
             {
-                anim.sit = false;
+                anim.stopSit();
             }
         }
 
@@ -104,9 +106,9 @@ public class PlayerControl : MonoBehaviour {
                 {
                     if (interaction.RotateAwayFrom(target.transform))
                     {
-                        if (anim.goToSleep != true)
+                        if (!anim.sleeping)
                         {
-                            anim.goToSleep = true;
+                            anim.sleep();
                         }
                     }
                 }
@@ -120,9 +122,9 @@ public class PlayerControl : MonoBehaviour {
         }
         else
         {
-            if (anim.goToSleep == true)
+            if (anim.sleeping)
             {
-                anim.goToSleep = false;
+                anim.sleep();
             }
         }
         if(followNpc)
@@ -162,13 +164,19 @@ public class PlayerControl : MonoBehaviour {
         }
         if ((Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began) || (Input.GetMouseButtonDown(0)))
         {
-            anim.pickup = false;
-            
+            if(!isMouseOverUI())
+            {
+                if(tooltip.enabled)
+                {
+                    tooltip.Deactivate();
+                }
+            }
+            anim.stopPickup();
             RaycastHit hit2;
             //Create a Ray on the tapped / clicked position
 
             //Layer mask
-            LayerMask layerMask = (1 << 8);
+            LayerMask layerMask = (1 << 8) | (1 << 11);
             LayerMask layerMaskNpc = (1 << 9) | (1 << 10);
             Ray ray = new Ray();
             //for unity editor
@@ -226,10 +234,12 @@ public class PlayerControl : MonoBehaviour {
                             if (sitting)
                             {
                                 sitting = false;
+                                objManager.unbookObject(interaction.getCurrentChair());
                             }
                             if (sleeping)
                             {
                                 sleeping = false;
+                                objManager.unbookObject(interaction.getBed());
                             }
                         }
                     }

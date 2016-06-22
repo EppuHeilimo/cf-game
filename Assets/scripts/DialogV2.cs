@@ -6,7 +6,7 @@ public class DialogV2 : MonoBehaviour
 {
 
     TextBoxManager textBoxManager;
-    GameObject parent;
+    NPCV2 parent;
     public bool playerInZone = false;
     public bool npcInZone = false;
     Dictionary<GameObject, float> timers = new Dictionary<GameObject, float>();
@@ -15,8 +15,8 @@ public class DialogV2 : MonoBehaviour
     void Start()
     {
         textBoxManager = FindObjectOfType<TextBoxManager>();
-        parent = transform.parent.gameObject;
-        parent.GetComponent<NPCV2>().initChild();
+        parent = transform.parent.GetComponent<NPCV2>();
+        parent.initChild();
     }
 
     void Update()
@@ -33,8 +33,17 @@ public class DialogV2 : MonoBehaviour
             target = other.GetComponent<PlayerControl>().getTarget();
             if (target == transform.parent.gameObject)
             {
-                textBoxManager.EnableTextBox(parent.GetComponent<NPCV2>());
                 playerInZone = true;
+                if (parent.diagnosed)
+                {
+                    textBoxManager.EnableTextBox(parent);
+                }  
+                else
+                {
+                    textBoxManager.EnableTextBoxNotDiagnozed(parent);
+                }
+                
+
             }
         }
         if (other.tag == "NPC")
@@ -44,7 +53,7 @@ public class DialogV2 : MonoBehaviour
             {
                 if (target.GetComponent<NPCV2>().isIdle())
                 {
-                    parent.GetComponent<NPCV2>().setTarget(other.gameObject);
+                    parent.setTarget(other.gameObject);
                     npcInZone = true;
                 }
 
@@ -62,10 +71,19 @@ public class DialogV2 : MonoBehaviour
             target = other.GetComponent<PlayerControl>().getTarget();
             if (target == transform.parent.gameObject)
             {
+                playerInZone = true;
                 if (parent != null)
                 {
-                    textBoxManager.EnableTextBox(parent.GetComponent<NPCV2>());
-                    playerInZone = true;
+                    if (parent.diagnosed)
+                    {
+                        textBoxManager.EnableTextBox(parent);
+                    } 
+                    else
+                    {
+                        textBoxManager.EnableTextBoxNotDiagnozed(parent);
+                    } 
+                    
+
                 }
                 else
                     textBoxManager.DisableTextBox();
@@ -83,10 +101,16 @@ public class DialogV2 : MonoBehaviour
         GameObject target;
         if (other.tag == "Player")
         {
-            textBoxManager.DisableTextBox();
             playerInZone = false;
+            if (parent.diagnosed)
+            {
+                textBoxManager.DisableTextBox();
+            }  
+            else
+            {
+                textBoxManager.DisableTextBoxNotDiagnozed();
+            }
         }
-
         if (other.tag == "NPC")
         {
             target = other.GetComponent<NPCV2>().getTarget();

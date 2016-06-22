@@ -4,7 +4,7 @@ using System.Collections;
 public class MedContainer : MonoBehaviour {
 
     public string medName;
-    public int defaultDos;
+    public float defaultDos;
     GameObject minigameObj;
     Minigame1 minigame;
     GameObject bigMedContObj;

@@ -27,6 +27,7 @@ TagManager:
   - Chair2
   - MyImage
   - PickupItem
+  - Tooltip
   layers:
   - Default
   - TransparentFX

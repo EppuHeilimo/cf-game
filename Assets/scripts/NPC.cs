@@ -225,7 +225,7 @@ public class NPC : MonoBehaviour
         if (myBed != null && arrivedToDestination(1.0f) && !sleeping)
         {
             agent.Stop();
-            GetComponent<IiroAnimBehavior>().goToSleep = true;
+            GetComponent<IiroAnimBehavior>().sleep();
             sleeping = true;
 
         }
@@ -235,12 +235,12 @@ public class NPC : MonoBehaviour
             fatique = 0;
             //rotate to look away from the bed so animation will move the player on the bed
             RotateAwayFrom(myBed.transform);
-            GetComponent<IiroAnimBehavior>().goToSleep = true;
+            GetComponent<IiroAnimBehavior>().sleep();
             timer += Time.deltaTime;
             if (timer > SLEEP_TIME)
             {
                 //stop animation
-                GetComponent<IiroAnimBehavior>().goToSleep = false;
+                GetComponent<IiroAnimBehavior>().sleep();
                 sleeping = false;
                 taskCompleted = true;
                 dest = Vector3.zero;

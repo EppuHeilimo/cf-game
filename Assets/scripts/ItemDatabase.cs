@@ -60,6 +60,8 @@ public class ItemDatabase : MonoBehaviour {
     }
 }
 
+
+
 public class Item
 {
     public int ID { get; set; }
@@ -71,6 +73,24 @@ public class Item
     public int MediumDosage { get; set; }
     public int HighDosage { get; set; }
     public int DefaultDosage { get; set; }
+    public int timesPerDay { get; set; }
+    public Item(int id, string title, string desc, string usage, int smallDosage, int mediumDosage, int highDosage, int defaultDosage, int timesPerDay)
+    {
+        this.ID = id;
+        this.Title = title;
+        this.Desc = desc;
+        this.Sprite = Resources.Load<Sprite>("Sprites/Items/" + title); // name the sprites same as titles!
+        if (this.Sprite == null)
+        {
+            this.Sprite = Resources.Load<Sprite>("Sprites/Items/null");
+        }
+        this.Usage = usage;
+        this.SmallDosage = smallDosage;
+        this.MediumDosage = mediumDosage;
+        this.HighDosage = highDosage;
+        this.DefaultDosage = defaultDosage;
+        this.timesPerDay = timesPerDay;
+    }
 
     public Item(int id, string title, string desc, string usage, int smallDosage, int mediumDosage, int highDosage, int defaultDosage)
     {
@@ -87,6 +107,7 @@ public class Item
         this.MediumDosage = mediumDosage;
         this.HighDosage = highDosage;
         this.DefaultDosage = defaultDosage;
+        this.timesPerDay = 0;
     }
 
     public Item()

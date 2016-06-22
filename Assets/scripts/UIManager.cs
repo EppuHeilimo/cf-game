@@ -15,13 +15,13 @@ public class UIManager : MonoBehaviour {
         inv = GameObject.FindGameObjectWithTag("Inventory");
 	}
 
-    public bool giveMed(string med)
+    public bool giveMed(string[] med, float[] dosage)
     {
         target = player.GetComponent<PlayerControl>().getTarget();
         if (target == null)
             return false;
         else if (target.tag == "NPC")
-            return(target.GetComponent<NPCV2>().giveMed(med));
+            return(target.GetComponent<NPCV2>().giveMed(med, dosage));
         return false;
     }
 

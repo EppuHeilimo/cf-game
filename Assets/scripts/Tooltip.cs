@@ -3,7 +3,7 @@ using UnityEngine.UI;
 using System.Collections;
 
 public class Tooltip : MonoBehaviour {
-    Item item;
+    ItemContainer item;
     string data;
     GameObject tooltip;
 
@@ -33,7 +33,7 @@ public class Tooltip : MonoBehaviour {
         }
     }
 
-    public void Activate(Item item)
+    public void Activate(ItemContainer item)
     {
         this.item = item;
         ConstructDataString();
@@ -47,7 +47,11 @@ public class Tooltip : MonoBehaviour {
 
     public void ConstructDataString()
     {
-        data = "<color=#0473f0><b>" + item.Title + "</b></color>\n\n" + item.Desc;
+        data = "";
+        foreach(Item it in item.medicine)
+        {
+            data += "<color=#0473f0><b>" + it.Title + "</b></color>\n" + it.Desc + "\n";
+        }
         tooltip.transform.GetChild(0).GetComponent<Text>().text = data;
     }
 }

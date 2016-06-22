@@ -17,7 +17,7 @@ public class ClockTime : MonoBehaviour {
 
     float dayLength;
     //day start hour (0-24)
-    int startHour = 0; 
+    int startHour = 7; 
     Text textref;
     string currentText;
 
@@ -143,52 +143,64 @@ public class ClockTime : MonoBehaviour {
     {
         foreach (GameObject npcObj in NPCManager.npcList)
         {
-            if (npcObj.GetComponent<NPCV2>().morningMed.title != null)
+            NPCV2 npc = npcObj.GetComponent<NPCV2>();
+            for(int i = 0; i < npc.morningMed.Length; i++)
             {
-                if (!npcObj.GetComponent<NPCV2>().morningMed.isActive)
-                    npcObj.GetComponent<NPCV2>().isLosingHp = true;
-            }            
+                if (npc.morningMed[i].title != null)
+                {
+                    if (!npc.morningMed[i].isActive)
+                        npc.isLosingHp = true;
+                }
+            }
         }
-        print("MORNING CHECK!");
     }
 
     void doAfternoonCheck()
     {
         foreach (GameObject npcObj in NPCManager.npcList)
         {
-            if (npcObj.GetComponent<NPCV2>().afternoonMed.title != null)
+            NPCV2 npc = npcObj.GetComponent<NPCV2>();
+            for (int i = 0; i < npc.afternoonMed.Length; i++)
             {
-                if (!npcObj.GetComponent<NPCV2>().afternoonMed.isActive)
-                    npcObj.GetComponent<NPCV2>().isLosingHp = true;
+                if (npc.afternoonMed[i].title != null)
+                {
+                    if (!npc.afternoonMed[i].isActive)
+                        npc.isLosingHp = true;
+                }
             }
         }
-        print("AFTERNOON CHECK!");
     }
 
     void doEveningCheck()
     {
         foreach (GameObject npcObj in NPCManager.npcList)
         {
-            if (npcObj.GetComponent<NPCV2>().eveningMed.title != null)
+            NPCV2 npc = npcObj.GetComponent<NPCV2>();
+            for (int i = 0; i < npc.eveningMed.Length; i++)
             {
-                if (!npcObj.GetComponent<NPCV2>().eveningMed.isActive)
-                    npcObj.GetComponent<NPCV2>().isLosingHp = true;
+                if (npc.eveningMed[i].title != null)
+                {
+                    if (!npc.eveningMed[i].isActive)
+                        npc.isLosingHp = true;
+                }
             }
         }
-        print("EVENING CHECK!");
     }
 
     void doNightCheck()
     {
         foreach (GameObject npcObj in NPCManager.npcList)
         {
-            if (npcObj.GetComponent<NPCV2>().nightMed.title != null)
+            NPCV2 npc = npcObj.GetComponent<NPCV2>();
+            for (int i = 0; i < npc.nightMed.Length; i++)
             {
-                if (!npcObj.GetComponent<NPCV2>().nightMed.isActive)
-                    npcObj.GetComponent<NPCV2>().isLosingHp = true;
+                if (npc.nightMed[i].title != null)
+                {
+                    if (!npc.nightMed[i].isActive)
+                        npc.isLosingHp = true;
+                }
             }
         }
-        print("NIGHT CHECK!");
     }
 
     public void resetMeds()

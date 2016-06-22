@@ -3,10 +3,14 @@ using System.Collections;
 using UnityEngine.EventSystems;
 using System;
 
-public class ItemData : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerDownHandler, IPointerEnterHandler, IPointerExitHandler {
-    public Item item;
+public class ItemData : MonoBehaviour,/* IBeginDragHandler,  IDragHandler, IEndDragHandler,*/ IPointerDownHandler, IPointerEnterHandler, IPointerExitHandler {
+    public ItemContainer item;
     public int slot;
     public int amount;
+
+    float taptimer = 0;
+    bool tapped = false;
+    const float DOUBLE_TAP_TIME = 1f;
 
     Inventory inv;
     Tooltip tooltip;
@@ -19,7 +23,7 @@ public class ItemData : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
         uiManager = GameObject.Find("UIManager").GetComponent<UIManager>();
         tooltip = inv.GetComponent<Tooltip>();
     }
-
+    /*
     public void OnBeginDrag(PointerEventData eventData)
     {
         if (item != null)
@@ -28,9 +32,10 @@ public class ItemData : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
             GetComponent<CanvasGroup>().blocksRaycasts = false;
         }
     }
-
+    
     public void OnDrag(PointerEventData eventData)
     {
+        
         if (item != null)
         {
             this.transform.position = eventData.position - offset;
@@ -43,26 +48,44 @@ public class ItemData : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
         this.transform.position = inv.slots[slot].transform.position;
         GetComponent<CanvasGroup>().blocksRaycasts = true;
     }
-
+    */
     public void OnPointerDown(PointerEventData eventData)
     {
         if (Application.platform == RuntimePlatform.Android)
         {
             if (item != null)
             {
-                tooltip.Activate(item);
-                // give medicine to NPC with second tap
-                for (int i = 0; i < Input.touchCount; ++i)
+                if(!tapped)
                 {
-                    Touch touch = Input.GetTouch(i);
-                    if (touch.phase == TouchPhase.Began)
+                    tapped = true;
+                    tooltip.Activate(item);
+                }
+                else
+                {
+                    tapped = false;
+                    // give medicine to NPC with second tap
+                    for (int i = 0; i < Input.touchCount; ++i)
                     {
-                        // remove medicine from inventory if giving it succeeds
-                        if (uiManager.giveMed(item.Title))
+                        Touch touch = Input.GetTouch(i);
+                        if (touch.phase == TouchPhase.Began)
                         {
-                            inv.RemoveItem(item.ID);
-                            tooltip.Deactivate();
-                            break;
+                            // remove medicine from inventory if giving it succeeds
+                            string[] titles = new string[item.medicine.Count];
+                            float[] dosages = new float[item.medicine.Count];
+                            int j = 0;
+                            foreach (Item it in item.medicine)
+                            {
+                                titles[j] = it.Title;
+                                dosages[j] = it.DefaultDosage;
+                                j++;
+                            }
+
+                            if (uiManager.giveMed(titles, dosages))
+                            {
+                                inv.RemoveItem(item.ID);
+                                tooltip.Deactivate();
+                                break;
+                            }
                         }
                     }
                 }
@@ -72,8 +95,17 @@ public class ItemData : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
         {
             if (item != null)
             {
+                string[] titles = new string[item.medicine.Count];
+                float[] dosages = new float[item.medicine.Count];
+                int j = 0;
+                foreach (Item it in item.medicine)
+                {
+                    titles[j] = it.Title;
+                    dosages[j] = it.DefaultDosage;
+                    j++;
+                }
                 // remove medicine from inventory if giving it succeeds
-                if (uiManager.giveMed(item.Title))
+                if (uiManager.giveMed(titles, dosages))
                 {
                     inv.RemoveItem(item.ID);
                     tooltip.Deactivate();

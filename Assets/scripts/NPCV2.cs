@@ -72,15 +72,17 @@ public class NPCV2 : MonoBehaviour
     {
         public string title;
         public bool isActive;
+        public float dosage;
     };
-
-    public Item[] myMedication = new Item[4]; // all of this NPC's meds, usages etc.
+    
+    public Item[] myMedication; // all of this NPC's meds, usages etc.
     public string[] myProblems;
+    
     /* specific meds for different times of day */
-    public Medicine morningMed;
-    public Medicine afternoonMed;
-    public Medicine eveningMed;
-    public Medicine nightMed;
+    public Medicine[] morningMed = new Medicine[4];
+    public Medicine[] afternoonMed = new Medicine[4];
+    public Medicine[] eveningMed = new Medicine[4];
+    public Medicine[] nightMed = new Medicine[4];
     /* dosages */
     public int morningDos;
     public int afternoonDos;
@@ -108,7 +110,7 @@ public class NPCV2 : MonoBehaviour
     const float STAY_ON_FLOOR_ON_FALL = 10.0f;
 
     //stuck testing
-    const float STUCK = 5f;
+    const float STUCK = 2f;
     //how long doctor will wait for patient
     const float DOC_WAIT_TIME = 10.0f;
     float doctimer = 0;
@@ -212,30 +214,39 @@ public class NPCV2 : MonoBehaviour
         //stuck test
         stucktimer += Time.deltaTime;
         //test every STUCK seconds if npc hasn't moved towards it's dest
-        if (stucktimer > STUCK && dest != Vector3.zero && !arrivedToDestination(10.0f) && myState != NPCState.STATE_TRY_UNSTUCK)
+        if (stucktimer > STUCK && dest != Vector3.zero && !arrivedToDestination(10.0f))
         {
-            stucktimer = 0;
-            currentdisttodest = Vector3.Distance(transform.position, dest);
-            if (lastdisttodest == 0)
+            if(myState != NPCState.STATE_TALK_TO_PLAYER)
             {
-                lastdisttodest = currentdisttodest;
-            }
-            else
-            {
-                float sub = currentdisttodest - lastdisttodest;
-                if (Mathf.Abs(sub) < 40.0f)
+                stucktimer = 0;
+                currentdisttodest = Vector3.Distance(transform.position, dest);
+                if (lastdisttodest == 0)
                 {
+                    lastdisttodest = currentdisttodest;
+                }
+                else
+                {
+                    float sub = currentdisttodest - lastdisttodest;
+                    if (Mathf.Abs(sub) < 40.0f)
+                    {
+                        if (myState != NPCState.STATE_TRY_UNSTUCK)
+                        {
+                            lastdisttodest = 0;
+                            addStateToQueue(3, NPCState.STATE_TRY_UNSTUCK);
+                        }
+                        else
+                        {
+                            dest = Vector3.zero;
+                        }
+                    }
                     lastdisttodest = 0;
-                    addStateToQueue(3, NPCState.STATE_TRY_UNSTUCK);
-                    taskCompleted = true;
                 }
             }
-
         }
 
         if (dialogZone.GetComponent<DialogV2>().playerInZone && !sleeping && !sitting)
         {
-            myState = NPCState.STATE_TALK_TO_PLAYER;
+            addStateToQueue(3, NPCState.STATE_TALK_TO_PLAYER);
         }
 
         //check status only if has visited the doctor
@@ -322,40 +333,39 @@ public class NPCV2 : MonoBehaviour
         {
             agent.Stop();
             sitting = true;
-        }
+            if (interactionComponent.getTarget())
+            {
+                //rotate to look away from the bed so animation will move the player on the bed
+                if (interactionComponent.RotateAwayFrom(interactionComponent.getTarget().transform))
+                {
+                    if (interactionComponent.getTarget().tag == "Chair2")
+                    {
+                        agent.GetComponent<IiroAnimBehavior>().sitwithrotation();
+                    }
+                    else
+                    {
+                        agent.GetComponent<IiroAnimBehavior>().sit();
+                    }
 
+                }
+            }
+            else
+            {
+                taskCompleted = true;
+            }
+        }
         if (sitting)
         {
-            if (arrivedToDestination(10.0f))
-            {
-                if (interactionComponent.getTarget())
-                {
-                    //rotate to look away from the bed so animation will move the player on the bed
-                    if (interactionComponent.RotateAwayFrom(interactionComponent.getTarget().transform))
-                    {
-                        if (interactionComponent.getTarget().tag == "Chair2")
-                        {
-                            agent.GetComponent<IiroAnimBehavior>().sitwithrotation = true;
-                        }
-                        else
-                        {
-                            agent.GetComponent<IiroAnimBehavior>().sit = true;
-                        }
-                            
-                    }
-                }
-
-            }
             timer += Time.deltaTime;
             if(timer > 2 * IDLE_IN_THIS_PLACE_TIME)
             {
                 if(interactionComponent.getCurrentChair().tag == "Chair2")
                 {
-                    GetComponent<IiroAnimBehavior>().sitwithrotation = false;
+                    GetComponent<IiroAnimBehavior>().stopSitwithrotation();
                 }
                 else
                 {
-                    GetComponent<IiroAnimBehavior>().sit = false;
+                    GetComponent<IiroAnimBehavior>().stopSit();
                 }
                 
                 taskCompleted = true;
@@ -366,6 +376,8 @@ public class NPCV2 : MonoBehaviour
                 }
                     
                 sitting = false;
+                if (!agent.enabled)
+                    agent.enabled = true;
                 agent.Resume();
             }
         }
@@ -406,11 +418,11 @@ public class NPCV2 : MonoBehaviour
                     //rotate to look away from the bed so animation will move the player on the bed
                     if (interactionComponent.RotateAwayFrom(interactionComponent.getTarget().transform))
                     {
-                        agent.GetComponent<IiroAnimBehavior>().sit = true;
+                        agent.GetComponent<IiroAnimBehavior>().sit();
                         timer += Time.deltaTime;
                         if (timer > IN_WC)
                         {
-                            GetComponent<IiroAnimBehavior>().sit = false;
+                            GetComponent<IiroAnimBehavior>().stopSit();
                             taskCompleted = true;
                             if ((interactionComponent.getCurrentChair() != null))
                             {
@@ -442,6 +454,7 @@ public class NPCV2 : MonoBehaviour
 
     private void tryUnstuck()
     {
+        agent.obstacleAvoidanceType = ObstacleAvoidanceType.NoObstacleAvoidance;
         if (dest == Vector3.zero || isDestInvalid())
         {
             Vector3 randomDirection = Random.insideUnitSphere * 80.0f;
@@ -457,6 +470,7 @@ public class NPCV2 : MonoBehaviour
         {
             taskCompleted = true;
             addStateToQueue(2, prevState);
+            agent.obstacleAvoidanceType = ObstacleAvoidanceType.HighQualityObstacleAvoidance;
         }
     }
 
@@ -507,6 +521,21 @@ public class NPCV2 : MonoBehaviour
                 int r = Random.Range(1, 10);
                 if(r > 1)
                 {
+                    // Randomize 1-4 DIFFERENT problems for the NPC
+                    int numProblems = UnityEngine.Random.Range(1, 5);
+                    Item[] randMeds = new Item[4];
+                    // Fetch random medicine items from database
+                    for (int i = 0; i < randMeds.Length; i++)
+                    {
+                        if (numProblems > 0)
+                        {
+                            randMeds[i] = npcManager.RandomItem(randMeds);
+                            numProblems--;
+                        }
+                        else
+                            randMeds[i] = null;
+                    }
+                    InitMedication(randMeds);
                     addStateToQueue(2, NPCState.STATE_MOVE_TO_WARD_AREA);
                     diagnosed = true;
                     if(!npcManager.isPlayerResponsibilityLevelFulfilled())
@@ -625,7 +654,7 @@ public class NPCV2 : MonoBehaviour
 
         if (sleeping)
         {
-            GetComponent<IiroAnimBehavior>().goToSleep = true;
+            GetComponent<IiroAnimBehavior>().sleep();
             timer += Time.deltaTime;
             if (timer > SLEEP_TIME)
             {
@@ -636,12 +665,14 @@ public class NPCV2 : MonoBehaviour
                     if(Random.Range(0, 100) > 90)
                     {
                         //stop animation
-                        GetComponent<IiroAnimBehavior>().goToSleep = false;
+                        GetComponent<IiroAnimBehavior>().stopSleep();
                         sleeping = false;
                         taskCompleted = true;
                         timer = 0;
                         fatique = 0;
                         //resume agent movement
+                        if (!agent.enabled)
+                            agent.enabled = true;
                         agent.Resume();
                         sleepingqueued = false;
                     }
@@ -649,16 +680,17 @@ public class NPCV2 : MonoBehaviour
                 else
                 {
                     //stop animation
-                    GetComponent<IiroAnimBehavior>().goToSleep = false;
+                    GetComponent<IiroAnimBehavior>().stopSleep();
                     sleeping = false;
                     taskCompleted = true;
                     timer = 0;
                     fatique = 0;
                     //resume agent movement
+                    if (!agent.enabled)
+                        agent.enabled = true;
                     agent.Resume();
                     sleepingqueued = false;
                 }
-
             }
         }
     }
@@ -726,7 +758,7 @@ public class NPCV2 : MonoBehaviour
                         //rotate to look away from the bed so animation will move the player on the bed
                         if (interactionComponent.RotateAwayFrom(interactionComponent.getTarget().transform))
                         {
-                            agent.GetComponent<IiroAnimBehavior>().sit = true;
+                            agent.GetComponent<IiroAnimBehavior>().sit();
                         }
                     }
 
@@ -737,13 +769,15 @@ public class NPCV2 : MonoBehaviour
         {
             if(sitting)
             {
-                GetComponent<IiroAnimBehavior>().sit = false;
+                GetComponent<IiroAnimBehavior>().stopSit();
             }
            
             taskCompleted = true;
             if((interactionComponent.getCurrentChair() != null))
                 objectManager.unbookObject(interactionComponent.getCurrentChair());
             sitting = false;
+            if (!agent.enabled)
+                agent.enabled = true;
             agent.Resume();
             addStateToQueue(3, NPCState.STATE_GO_TO_DOC);
             npcManager.setDocBusy();
@@ -752,6 +786,7 @@ public class NPCV2 : MonoBehaviour
     //just wander around the hospital, if npc has nothing else to do it will go to this state
     private void idle()
     {
+
         //check if there's something else to do
         timer += Time.deltaTime;
         GameObject target = interactionComponent.getTarget();
@@ -760,57 +795,60 @@ public class NPCV2 : MonoBehaviour
             agent.Stop();
             interactionComponent.RotateTowards(target.transform);
         }
+        else if (dest == Vector3.zero)
+        {
+            // move to idle at random position
+            Vector3 randomDirection = Random.insideUnitSphere * WALK_RADIUS;
+            randomDirection += transform.position;
+            NavMeshHit hit;
+            NavMesh.SamplePosition(randomDirection, out hit, WALK_RADIUS, 1);
+            Vector3 finalPosition = hit.position;
+            dest = new Vector3(finalPosition.x, 0, finalPosition.z);
+            moveTo(dest);
+        }
         else
         {
             if (arrivedToDestination(30.0f))
             {
-                // move to idle at random position
-                Vector3 randomDirection = Random.insideUnitSphere * WALK_RADIUS;
-                randomDirection += transform.position;
-                NavMeshHit hit;
-                NavMesh.SamplePosition(randomDirection, out hit, WALK_RADIUS, 1);
-                Vector3 finalPosition = hit.position;
-                dest = new Vector3(finalPosition.x, 0, finalPosition.z);
-                moveTo(dest);
-            }
-            else if (timer > IDLE_IN_THIS_PLACE_TIME)
-            {
-                timer = 0;
-                Vector3 randomDirection = Random.insideUnitSphere * WALK_RADIUS;
-                randomDirection += transform.position;
-                NavMeshHit hit;
-                NavMesh.SamplePosition(randomDirection, out hit, WALK_RADIUS, 1);
-                Vector3 finalPosition = hit.position;
-                dest = new Vector3(finalPosition.x, 0, finalPosition.z);
-                moveTo(dest);
-
-                //10% chance every IDLE_IN_THIS_PLACE_TIME to start talking to somoene or go sit
-                if (Random.Range(0f, 1f) > 0.90f)
+                if((timer > IDLE_IN_THIS_PLACE_TIME))
                 {
-                    if (!talking)
-                        addStateToQueue(2, NPCState.STATE_TALK_TO_OTHER_NPC);
-                }
-                if (Random.Range(0f, 1f) > 0.90f)
-                {
-                    if (!talking && !sitting)
-                        addStateToQueue(2, NPCState.STATE_IDLE_SIT);
+                    timer = 0;
+                    //20% chance every IDLE_IN_THIS_PLACE_TIME to start talking to somoene or go sit
+                    if (Random.Range(0, 10) > 7)
+                    {
+                        if (!talking)
+                            addStateToQueue(2, NPCState.STATE_TALK_TO_OTHER_NPC);
+                    }
+                    else if (Random.Range(0, 10) > 7)
+                    {
+                        if (!talking && !sitting)
+                            addStateToQueue(2, NPCState.STATE_IDLE_SIT);
+                    }
+                    else
+                    {
+                        // move to idle at random position
+                        Vector3 randomDirection = Random.insideUnitSphere * WALK_RADIUS;
+                        randomDirection += transform.position;
+                        NavMeshHit hit;
+                        NavMesh.SamplePosition(randomDirection, out hit, WALK_RADIUS, 1);
+                        Vector3 finalPosition = hit.position;
+                        dest = new Vector3(finalPosition.x, 0, finalPosition.z);
+                        moveTo(dest);
+                    }
                 }
             }
-
         }
     }
     private void die()
     {
-        
         timer += Time.deltaTime;
-        if(!agent.GetComponent<IiroAnimBehavior>().fall)
+        if (agent.enabled)
         {
             agent.Stop();
-            agent.GetComponent<IiroAnimBehavior>().fall = true;
+            agent.GetComponent<IiroAnimBehavior>().fall();
         }
         if (timer > STAY_ON_FLOOR_ON_FALL)
         {
-            
             Destroy(responsibilityIndicatorclone);
             List<GameObject> npcList = GameObject.Find("NPCManager").GetComponent<NPCManagerV2>().npcList;
             npcList.Remove(gameObject);
@@ -832,15 +870,12 @@ public class NPCV2 : MonoBehaviour
         interactionComponent.RotateTowards(player.transform);
         if (!dialogZone.GetComponent<DialogV2>().playerInZone)
         {
-            if(prevState != NPCState.STATE_TALK_TO_PLAYER)
-            {
-                myState = prevState;
-            }
-            else
-            {
-                taskCompleted = true;
-            }
+            taskCompleted = true;
             agent.Resume();
+            if(!diagnosed)
+            {
+                addStateToQueue(2, NPCState.STATE_QUE);
+            }
         }
     }
     private void talkToNPC()
@@ -988,7 +1023,8 @@ public class NPCV2 : MonoBehaviour
             if (prevStateUncompleted)
             {
                 prevStateUncompleted = false;
-                myState = prevState;
+                if(myState != NPCState.STATE_TRY_UNSTUCK)
+                    myState = prevState;
                 dest = Vector3.zero;
                 taskCompleted = false;
                 currentTaskPriority = 3;
@@ -1000,7 +1036,8 @@ public class NPCV2 : MonoBehaviour
                 stateQueue.TryGetValue(3, out queue);
                 if (queue.Count > 0)
                 {
-                    prevState = myState;
+                    if (myState != NPCState.STATE_TRY_UNSTUCK)
+                        prevState = myState;
                     myState = queue.Dequeue();
                     dest = Vector3.zero;
                     taskCompleted = false;
@@ -1012,7 +1049,8 @@ public class NPCV2 : MonoBehaviour
                     stateQueue.TryGetValue(2, out queue);
                     if (queue.Count > 0)
                     {
-                        prevState = myState;
+                        if (myState != NPCState.STATE_TRY_UNSTUCK)
+                            prevState = myState;
                         myState = queue.Dequeue();
                         dest = Vector3.zero;
                         taskCompleted = false;
@@ -1024,7 +1062,8 @@ public class NPCV2 : MonoBehaviour
                         stateQueue.TryGetValue(1, out queue);
                         if (queue.Count > 0)
                         {
-                            prevState = myState;
+                            if (myState != NPCState.STATE_TRY_UNSTUCK)
+                                prevState = myState;
                             myState = queue.Dequeue();
                             dest = Vector3.zero;
                             taskCompleted = false;
@@ -1034,11 +1073,12 @@ public class NPCV2 : MonoBehaviour
                         {
                             if (myState != NPCState.STATE_IDLE)
                             {
-                                prevState = myState;
+                                if (myState != NPCState.STATE_TRY_UNSTUCK)
+                                    prevState = myState;
                                 myState = NPCState.STATE_IDLE;
                                 dest = Vector3.zero;
                                 taskCompleted = false;
-                                currentTaskPriority = 0;
+                                currentTaskPriority = 1;
                             }
                         }
                     }
@@ -1053,7 +1093,8 @@ public class NPCV2 : MonoBehaviour
             if (currentTaskPriority < 3 && queue.Count > 0)
             {
                 //save current state info so it can be done after the prioritized task is complete
-                prevState = myState;
+                if (myState != NPCState.STATE_TRY_UNSTUCK)
+                    prevState = myState;
                 myState = queue.Dequeue();
                 prevStateUncompleted = true;
                 prevTaskPriority = currentTaskPriority;
@@ -1067,7 +1108,8 @@ public class NPCV2 : MonoBehaviour
                 if (currentTaskPriority < 2 && queue.Count > 0)
                 {
                     //save current state info so it can be done after the prioritized task is complete
-                    prevState = myState;
+                    if (myState != NPCState.STATE_TRY_UNSTUCK)
+                        prevState = myState;
                     myState = queue.Dequeue();
                     dest = Vector3.zero;
                     prevStateUncompleted = true;
@@ -1092,123 +1134,212 @@ public class NPCV2 : MonoBehaviour
         agent.SetDestination(temp);
     }
 
+    float getRandomDosage(Item medicine)
+    {
+        float ret = medicine.DefaultDosage;
+        int range = Random.Range(1, 4);
+        switch(range)
+        {
+            case 1:
+                ret = medicine.SmallDosage;
+                break;
+            case 2:
+                ret = medicine.MediumDosage;
+                break;
+            case 3:
+                ret = medicine.HighDosage;
+                break;
+        }
+        return ret;
+    }
+
     // Init 1-4 random problems and their corresponding medicines
     public void InitMedication(Item[] randMeds)
     {
-        myProblems = new string[4];
+        int drugscount = 0;
+        //count how many drugs were generated
+        foreach(Item item in randMeds)
+        {
+            if (item != null)
+            {
+                drugscount++;
+            }
+        }
+        myMedication = new Item[drugscount];
+        myProblems = new string[drugscount];
+        //move drugs to locals
+        for (int i = 0; i < drugscount; i++)
+        {
+            myMedication[i] = randMeds[i];
+            myProblems[i] = randMeds[i].Usage;
+        }
+
         for (int i = 0; i < myMedication.Length; i++)
         {
-            if (randMeds[i] != null)
+            float dosage = getRandomDosage(myMedication[i]);
+            if (myMedication[i].timesPerDay > 0)
             {
-                myMedication[i] = randMeds[i];
-                myProblems[i] = randMeds[i].Usage;
+                List<int> daytimes = new List<int>();
+                daytimes.Add(0);
+                daytimes.Add(1);
+                daytimes.Add(2);
+                daytimes.Add(3);
+                int[] rnddaytimes = new int[myMedication[i].timesPerDay];
+                int n = daytimes.Count;
+                //shuffle daytimes
+                while (n > 1)
+                {
+                    n--;
+                    int k = Random.Range(0, n + 1);
+                    int value = daytimes[k];
+                    daytimes[k] = daytimes[n];
+                    daytimes[n] = value;
+                }
+                for (int r = 0; r < rnddaytimes.Length; r++)
+                {
+                    rnddaytimes[r] = daytimes[r];
+                }
+                for (int r = 0; r < rnddaytimes.Length; r++)
+                {
+                    daytimes.Remove(rnddaytimes[r]);
+                }
+                //add medication to each random daytime array
+                foreach (int daytime in rnddaytimes)
+                {
+                    switch(daytime)
+                    {
+                        case 0:
+                            morningMed[i].title = myMedication[i].Title;
+                            morningMed[i].dosage = dosage;
+                            break;
+                        case 1:
+                            afternoonMed[i].title = myMedication[i].Title;
+                            afternoonMed[i].dosage = dosage;
+                            break;
+                        case 2:
+                            eveningMed[i].title = myMedication[i].Title;
+                            eveningMed[i].dosage = dosage;
+                            break;
+                        case 3:
+                            nightMed[i].title = myMedication[i].Title;
+                            nightMed[i].dosage = dosage;
+                            break;
+                    }
+                }
+                //nullify remaining daytimes for this medicine
+                if(daytimes.Count > 0)
+                {
+                    foreach(int daytime in daytimes)
+                    {
+                        switch (daytime)
+                        {
+                            case 0:
+                                morningMed[i].title = null;
+                                morningMed[i].dosage = 0;
+                                break;
+                            case 1:
+                                afternoonMed[i].title = null;
+                                afternoonMed[i].dosage = 0;
+                                break;
+                            case 2:
+                                eveningMed[i].title = null;
+                                eveningMed[i].dosage = 0;
+                                break;
+                            case 3:
+                                nightMed[i].title = null;
+                                nightMed[i].dosage = 0;
+                                break;
+                        }
+                    }
+                }
             }
             else
             {
-                myMedication[i] = null;
-                myProblems[i] = null;
-            }       
-        }
+                List<int> daytimes = new List<int>();
+                daytimes.Add(0);
+                daytimes.Add(1);
+                daytimes.Add(2);
+                daytimes.Add(3);
+                //randomize how many times this med will be given in a day
+                int rnd = Random.Range(1, 4);
+                //shuffle daytimes
+                int n = daytimes.Count;
+                while (n > 1)
+                {
+                    n--;
+                    int k = Random.Range(0, n + 1);
+                    int value = daytimes[k];
+                    daytimes[k] = daytimes[n];
+                    daytimes[n] = value;
+                }
+                int[] rnddaytimes = new int[rnd];
+                int sub = daytimes.Count - rnd;
+                for(int r = 0; r < rnd; r++)
+                {
+                    rnddaytimes[r] = daytimes[r];
+                }
+                for (int r = 0; r < rnddaytimes.Length; r++)
+                {
+                    daytimes.Remove(rnddaytimes[r]);
+                }
 
-        // assign meds to different times of day and randomize one of three dosages
-        if (myMedication[0] != null)
-        {
-            morningMed.title = myMedication[0].Title;
-            int rnd = Random.Range(1, 4);
-            switch (rnd)
-            {
-                case 1:
-                    morningDos = myMedication[0].SmallDosage;
-                    break;
-                case 2:
-                    morningDos = myMedication[0].MediumDosage;
-                    break;
-                case 3:
-                    morningDos = myMedication[0].HighDosage;
-                    break;
+
+                //add medication to each random daytime array
+                foreach (int daytime in rnddaytimes)
+                {
+                    switch (daytime)
+                    {
+                        case 0:
+                            morningMed[i].title = myMedication[i].Title;
+                            morningMed[i].dosage = dosage;
+                            break;
+                        case 1:
+                            afternoonMed[i].title = myMedication[i].Title;
+                            afternoonMed[i].dosage = dosage;
+                            break;
+                        case 2:
+                            eveningMed[i].title = myMedication[i].Title;
+                            eveningMed[i].dosage = dosage;
+                            break;
+                        case 3:
+                            nightMed[i].title = myMedication[i].Title;
+                            nightMed[i].dosage = dosage;
+                            break;
+                    }
+                }
+                //nullify remaining daytimes for this medicine
+                if (daytimes.Count > 0)
+                {
+                    foreach (int daytime in daytimes)
+                    {
+                        switch (daytime)
+                        {
+                            case 0:
+                                morningMed[i].title = null;
+                                morningMed[i].dosage = 0;
+                                break;
+                            case 1:
+                                afternoonMed[i].title = null;
+                                afternoonMed[i].dosage = 0;
+                                break;
+                            case 2:
+                                eveningMed[i].title = null;
+                                eveningMed[i].dosage = 0;
+                                break;
+                            case 3:
+                                nightMed[i].title = null;
+                                nightMed[i].dosage = 0;
+                                break;
+                        }
+                    }
+                }
             }
         }
-        morningMed.isActive = false;
-
-        if (myMedication[1] != null)
-        {
-            afternoonMed.title = myMedication[1].Title;
-            int rnd = Random.Range(1, 4);
-            switch (rnd)
-            {
-                case 1:
-                    afternoonDos = myMedication[0].SmallDosage;
-                    break;
-                case 2:
-                    afternoonDos = myMedication[0].MediumDosage;
-                    break;
-                case 3:
-                    afternoonDos = myMedication[0].HighDosage;
-                    break;
-            }
-        }
-        afternoonMed.isActive = false;
-
-        if (myMedication[2] != null)
-        {
-            eveningMed.title = myMedication[2].Title;
-            int rnd = Random.Range(1, 4);
-            switch (rnd)
-            {
-                case 1:
-                    eveningDos = myMedication[0].SmallDosage;
-                    break;
-                case 2:
-                    eveningDos = myMedication[0].MediumDosage;
-                    break;
-                case 3:
-                    eveningDos = myMedication[0].HighDosage;
-                    break;
-            }
-        }
-        eveningMed.isActive = false;
-
-        if (myMedication[3] != null)
-        {
-            nightMed.title = myMedication[3].Title;
-            int rnd = Random.Range(1, 4);
-            switch (rnd)
-            {
-                case 1:
-                    nightDos = myMedication[0].SmallDosage;
-                    break;
-                case 2:
-                    nightDos = myMedication[0].MediumDosage;
-                    break;
-                case 3:
-                    nightDos = myMedication[0].HighDosage;
-                    break;
-            }
-        }
-        nightMed.isActive = false;
-
-        // print 'em (temporary)
-        if (myMedication[0] != null)
-            print("aamu: " + morningMed.title + " -- " + morningDos + " -- " + myMedication[0].Usage);
-        else
-            print("aamu: N/A");
-        if (myMedication[1] != null)
-            print("päivä: " + afternoonMed.title + " -- " + afternoonDos + " -- " + myMedication[1].Usage);
-        else
-            print("päivä: N/A");
-        if (myMedication[2] != null)
-            print("ilta: " + eveningMed.title + " -- " + eveningDos + " -- " + myMedication[2].Usage);
-        else
-            print("ilta: N/A");
-        if (myMedication[3] != null)
-            print("yö: " + nightMed.title + " -- " + nightDos + " -- " + myMedication[3].Usage);
-        else
-            print("yö: N/A");
-
     }
     public void moveTo(Vector3 dest)
     {
-        agent.SetDestination(dest);
+        if(agent.enabled)
+            agent.SetDestination(dest);
     }
     void checkMed()
     {
@@ -1228,26 +1359,38 @@ public class NPCV2 : MonoBehaviour
             // MORNING
             if (currTime == ClockTime.DayTime.MORNING)
             {
-                if (morningMed.isActive)
-                    isLosingHp = false;
+                foreach(Medicine med in morningMed)
+                {
+                    if (med.isActive)
+                        isLosingHp = false;
+                }
             }
             // AFTERNOON
             if (currTime == ClockTime.DayTime.AFTERNOON)
             {
-                if (afternoonMed.isActive)
-                    isLosingHp = false;
+                foreach (Medicine med in afternoonMed)
+                {
+                    if (med.isActive)
+                        isLosingHp = false;
+                }
             }
             // EVENING
             if (currTime == ClockTime.DayTime.EVENING)
             {
-                if (eveningMed.isActive)
-                    isLosingHp = false;
+                foreach (Medicine med in eveningMed)
+                {
+                    if (med.isActive)
+                        isLosingHp = false;
+                }
             }
             // NIGHT
             if (currTime == ClockTime.DayTime.NIGHT)
             {
-                if (nightMed.isActive)
-                    isLosingHp = false;
+                foreach (Medicine med in nightMed)
+                {
+                    if (med.isActive)
+                        isLosingHp = false;
+                }
             }
         }
         if (myHp <= 0)
@@ -1256,92 +1399,93 @@ public class NPCV2 : MonoBehaviour
             taskCompleted = true;
         }
     }
-    public bool giveMed(string med)
+    public bool giveMed(string[] med, float[] dosage)
     {
         // make sure the NPC is diagnosed and player is near enough
-        if (diagnosed && dialogZone.GetComponent<DialogV2>().playerInZone)
+        if (diagnosed && dialogZone.GetComponent<DialogV2>().playerInZone && myState != NPCState.STATE_DEAD)
         {
             // check the current time of the day to do the correct comparsion
             ClockTime.DayTime currTime = GameObject.FindGameObjectWithTag("Clock").GetComponent<ClockTime>().currentDayTime;
-
+            //incorrect rating, add 1 for every error
+            int incorrect = 0;
+            Medicine[] meds = new Medicine[2];
             // MORNING
             if (currTime == ClockTime.DayTime.MORNING)
             {
-                if (string.Equals(med, morningMed.title, System.StringComparison.CurrentCultureIgnoreCase))
-                {
-                    morningMed.isActive = true;
-                    myHp = myHp + 20;
-                    print("Correct medicine!");
-                }
-                else
-                {
-                    morningMed.isActive = false;
-                    myHp = myHp - 20;
-                    print("Wrong medicine! " + myName + " lost 20HP!");
-                }
-                return true;
+                meds = (Medicine[])morningMed.Clone();
             }
-            // AFTERNOON
-            else if (currTime == ClockTime.DayTime.AFTERNOON)
+            else if(currTime == ClockTime.DayTime.AFTERNOON)
             {
-                if (string.Equals(med, afternoonMed.title, System.StringComparison.CurrentCultureIgnoreCase))
-                {
-                    afternoonMed.isActive = true;
-                    myHp = myHp + 20;
-                    print("Correct medicine!");
-                }
-                else
-                {
-                    afternoonMed.isActive = false;
-                    myHp = myHp - 20;
-                    print("Wrong medicine! " + myName + " lost 20HP!");
-                }
-                return true;
+                meds = (Medicine[])afternoonMed.Clone();
             }
-            // EVENING
             else if (currTime == ClockTime.DayTime.EVENING)
             {
-                if (string.Equals(med, eveningMed.title, System.StringComparison.CurrentCultureIgnoreCase))
-                {
-                    eveningMed.isActive = true;
-                    myHp = myHp + 20;
-                    print("Correct medicine!");
-                }
-                else
-                {
-                    eveningMed.isActive = false;
-                    myHp = myHp - 20;
-                    print("Wrong medicine! " + myName + " lost 20HP!");
-                }
-                return true;
+                meds = (Medicine[])eveningMed.Clone();
             }
-            // NIGHT
             else if (currTime == ClockTime.DayTime.NIGHT)
             {
-                if (string.Equals(med, nightMed.title, System.StringComparison.CurrentCultureIgnoreCase))
+                meds = (Medicine[])nightMed.Clone();
+            }
+            List<string> wrongmeds = new List<string>();
+            for (int i = 0; i < med.Length; i++)
+            {
+                bool found = false;
+                //iterate through all morning meds
+                for (int j = 0; j < meds.Length; j++)
                 {
-                    nightMed.isActive = true;
-                    myHp = myHp + 20;
-                    print("Correct medicine!");
+                    if (string.Equals(med[i], meds[j].title, System.StringComparison.CurrentCultureIgnoreCase))
+                    {
+                        if (dosage[i] == meds[j].dosage)
+                        {
+                            found = true;
+                            meds[j].isActive = true;
+                            myHp += 5;
+                            print("Correct medicine!");
+                        }
+                    }
+                    if (found)
+                    {
+                        break;
+                    }
                 }
-                else
+                if (!found)
                 {
-                    nightMed.isActive = false;
-                    myHp = myHp - 20;
-                    print("Wrong medicine! " + myName + " lost 20HP!");
+                    wrongmeds.Add(med[i]);
                 }
+            }
+            for (int i = 0; i < wrongmeds.Count; i++)
+            {
+                incorrect++;
+            }
+
+            if (incorrect == 0)
+            {
                 return true;
             }
+            myHp -= incorrect * 20;
+
         }
         return false;
     }
 
     public void disableAllMeds()
     {
-        morningMed.isActive = false;
-        afternoonMed.isActive = false;
-        eveningMed.isActive = false;
-        nightMed.isActive = false;
+        for(int i = 0; i < morningMed.Length; i++)
+        {
+            morningMed[i].isActive = false;
+        }
+        for (int i = 0; i < afternoonMed.Length; i++)
+        {
+            afternoonMed[i].isActive = false;
+        }
+        for (int i = 0; i < eveningMed.Length; i++)
+        {
+            eveningMed[i].isActive = false;
+        }
+        for (int i = 0; i < nightMed.Length; i++)
+        {
+            nightMed[i].isActive = false;
+        }
     }
 
     public void initChild()
@@ -1359,3 +1503,119 @@ public class NPCV2 : MonoBehaviour
 
     }
 }
+
+/* LEGACY INIT MED */
+
+/*
+myProblems = new string[4];
+for (int i = 0; i < myMedication.Length; i++)
+{
+    if (randMeds[i] != null)
+    {
+        myMedication[i] = randMeds[i];
+        myProblems[i] = randMeds[i].Usage;
+        drugscount++;
+    }
+    else
+    {
+        myMedication[i] = null;
+        myProblems[i] = null;
+    }       
+}
+
+
+// assign meds to different times of day and randomize one of three dosages
+if (myMedication[0] != null)
+{
+    morningMed.title = myMedication[0].Title;
+    int rnd = Random.Range(1, 4);
+    switch (rnd)
+    {
+        case 1:
+            morningDos = myMedication[0].SmallDosage;
+            break;
+        case 2:
+            morningDos = myMedication[0].MediumDosage;
+            break;
+        case 3:
+            morningDos = myMedication[0].HighDosage;
+            break;
+    }
+}
+morningMed.isActive = false;
+
+if (myMedication[1] != null)
+{
+    afternoonMed.title = myMedication[1].Title;
+    int rnd = Random.Range(1, 4);
+    switch (rnd)
+    {
+        case 1:
+            afternoonDos = myMedication[0].SmallDosage;
+            break;
+        case 2:
+            afternoonDos = myMedication[0].MediumDosage;
+            break;
+        case 3:
+            afternoonDos = myMedication[0].HighDosage;
+            break;
+    }
+}
+afternoonMed.isActive = false;
+
+if (myMedication[2] != null)
+{
+    eveningMed.title = myMedication[2].Title;
+    int rnd = Random.Range(1, 4);
+    switch (rnd)
+    {
+        case 1:
+            eveningDos = myMedication[0].SmallDosage;
+            break;
+        case 2:
+            eveningDos = myMedication[0].MediumDosage;
+            break;
+        case 3:
+            eveningDos = myMedication[0].HighDosage;
+            break;
+    }
+}
+eveningMed.isActive = false;
+
+if (myMedication[3] != null)
+{
+    nightMed.title = myMedication[3].Title;
+    int rnd = Random.Range(1, 4);
+    switch (rnd)
+    {
+        case 1:
+            nightDos = myMedication[0].SmallDosage;
+            break;
+        case 2:
+            nightDos = myMedication[0].MediumDosage;
+            break;
+        case 3:
+            nightDos = myMedication[0].HighDosage;
+            break;
+    }
+}
+nightMed.isActive = false;
+
+// print 'em (temporary)
+if (myMedication[0] != null)
+    print("aamu: " + morningMed.title + " -- " + morningDos + " -- " + myMedication[0].Usage);
+else
+    print("aamu: N/A");
+if (myMedication[1] != null)
+    print("päivä: " + afternoonMed.title + " -- " + afternoonDos + " -- " + myMedication[1].Usage);
+else
+    print("päivä: N/A");
+if (myMedication[2] != null)
+    print("ilta: " + eveningMed.title + " -- " + eveningDos + " -- " + myMedication[2].Usage);
+else
+    print("ilta: N/A");
+if (myMedication[3] != null)
+    print("yö: " + nightMed.title + " -- " + nightDos + " -- " + myMedication[3].Usage);
+else
+    print("yö: N/A");
+    */

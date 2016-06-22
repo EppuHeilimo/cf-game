@@ -33,7 +33,7 @@ public class NPCManagerV2 : MonoBehaviour
     // hard-coded pool for names, probably changed later
     string[] namePool = { "Aleksi", "Pekka", "Matti", "Kalle", "Jorma" };
 
-    const int MAX_NPCS = 50; 
+    const int MAX_NPCS = 30; 
 
     List<string> usedIds; // IDs already used
 
@@ -53,7 +53,7 @@ public class NPCManagerV2 : MonoBehaviour
         npcList = new List<GameObject>();
         responsibilityNpcs = new List<GameObject>();
         spawnPoint = new Vector3(-331, 0, -5);
-        spawnTime = 5; //Random.Range(5, 20); // spawn new NPC somewhere between 5 and 20 seconds
+        spawnTime = 3; //Random.Range(5, 20); // spawn new NPC somewhere between 5 and 20 seconds
         usedIds = new List<string>();
         invObj = GameObject.Find("Inventory");
         database = invObj.GetComponent<ItemDatabase>();
@@ -92,7 +92,7 @@ public class NPCManagerV2 : MonoBehaviour
             if (timeSinceLastSpawn > spawnTime)
             {
                 timeSinceLastSpawn = 0;
-                spawnTime = 5;
+                spawnTime = 3;
                 spawnNPC();
             }
         }
@@ -104,22 +104,7 @@ public class NPCManagerV2 : MonoBehaviour
         string myName = namePool[nameIndex];
         string myId = RandomString(4);
         GameObject newNpc = Instantiate(npcPrefab, spawnPoint, Quaternion.identity) as GameObject; // the method that copies the prefab object
-        // Randomize 1-4 DIFFERENT problems for the NPC
-        int numProblems = UnityEngine.Random.Range(1, 5);
-        Item[] randMeds = new Item[4];
-        // Fetch random medicine items from database
-        for (int i = 0; i < randMeds.Length; i++)
-        {
-            if (numProblems > 0)
-            {
-                randMeds[i] = RandomItem(randMeds);
-                numProblems--;
-            }
-            else
-                randMeds[i] = null;
-        }
         newNpc.GetComponent<NPCV2>().Init(myName, myId); // initialize the npc
-        newNpc.GetComponent<NPCV2>().InitMedication(randMeds);
         //change to random head
         string headname = newNpc.GetComponent<HeadChange>().ChangeToRandomHead();
         //set the file name of the 2d sprite of the head
@@ -150,7 +135,7 @@ public class NPCManagerV2 : MonoBehaviour
         return true;
     }
 
-    private Item RandomItem(Item[] randMeds)
+    public Item RandomItem(Item[] randMeds)
     {
         Item randItem = database.FetchItemByID(UnityEngine.Random.Range(0, database.database.Count));
         bool found = false;

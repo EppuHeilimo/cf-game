@@ -17,7 +17,7 @@ public class Slot : MonoBehaviour, IDropHandler {
         ItemData droppedItem = eventData.pointerDrag.GetComponent<ItemData>();
         if (inv.items[id].ID == -1)
         {
-            inv.items[droppedItem.slot] = new Item();
+            inv.items[droppedItem.slot] = new ItemContainer();
             inv.items[id] = droppedItem.item;
             droppedItem.slot = id;
         }

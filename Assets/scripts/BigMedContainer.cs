@@ -5,7 +5,7 @@ using UnityEngine.UI;
 public class BigMedContainer : MonoBehaviour {
 
     string medName;
-    int defaultDosage;
+    float defaultDosage;
     GameObject invObj;
     Inventory playerInv;
     ItemDatabase database;
@@ -17,7 +17,7 @@ public class BigMedContainer : MonoBehaviour {
         database = invObj.GetComponent<ItemDatabase>();
     }
 
-    public void OpenMed(string medName, int defaultDosage)
+    public void OpenMed(string medName, float defaultDosage)
     {
         this.medName = medName;
         this.defaultDosage = defaultDosage;
