@@ -30,6 +30,7 @@ public class NPCV2 : MonoBehaviour
     public bool paused = false;
     ClockTime clock;
     LineRenderer DebugPath;
+    IiroAnimBehavior animations;
     public string myName;
     public string myId;
     public int myHp = 50;
@@ -145,6 +146,7 @@ public class NPCV2 : MonoBehaviour
         lastdisttodest = 0;
         objectManager = GameObject.FindGameObjectWithTag("ObjectManager").GetComponent<ObjectManager>();
         clock = GameObject.FindGameObjectWithTag("Clock").GetComponent<ClockTime>();
+        animations = agent.GetComponent<IiroAnimBehavior>();
     }
     // Update is called once per frame
     void Update()
@@ -864,8 +866,11 @@ public class NPCV2 : MonoBehaviour
     {
         lockstate = true;
         timer += Time.deltaTime;
-        agent.Stop();
-        agent.GetComponent<IiroAnimBehavior>().fall();
+        if(!animations.falling)
+        {
+            agent.Stop();
+            agent.GetComponent<IiroAnimBehavior>().fall();
+        }
         if (timer > STAY_ON_FLOOR_ON_FALL)
         {
             Destroy(responsibilityIndicatorclone);

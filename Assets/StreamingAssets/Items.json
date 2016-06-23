@@ -51,21 +51,9 @@
 		},
         "dosagesPerDay": 3
 	},
-    {
-		"id": 4,
-		"title": "Amoxicillin",
-		"desc": "Antimicrobial/Antibacterial",
-		"usage": "Bronchitis",
-		"defaultDos": 250,
-		"dosages": {
-			"small": 250,
-			"medium": 375,
-			"high": 500
-		},
-        "dosagesPerDay": 3
-	},
+
 	{
-		"id": 5,
+		"id": 4,
 		"title": "V-Penicillin",
 		"desc": "Antimicrobial/Antibacterial",
 		"usage": "Upper respiratory tract infection",
@@ -78,7 +66,7 @@
         "dosagesPerDay": 3
 	},
 	{
-		"id": 6,
+		"id": 5,
 		"title": "Simvastatin",
 		"desc": "Cardiovascular agent",
 		"usage": "Dyslipidemia",
@@ -91,7 +79,7 @@
         "dosagesPerDay": 1
 	},
     {
-		"id": 7,
+		"id": 6,
 		"title": "Levothyroxine",
 		"desc": "Hormones",
 		"usage": "Hypothyroidism",
@@ -104,7 +92,7 @@
         "dosagesPerDay": 1
 	},
     {
-		"id": 8,
+		"id": 7,
 		"title": "Cetirizine",
 		"desc": "Respiratory agent",
 		"usage": "Allergic rhinitis",
@@ -117,7 +105,7 @@
         "dosagesPerDay": 1
 	},
     {
-		"id": 9,
+		"id": 8,
 		"title": "Esomeprazole",
 		"desc": "Gastrointestinal agent",
 		"usage": "Gastroesophageal reflux disease",
@@ -130,7 +118,7 @@
         "dosagesPerDay": 1
 	},
     {
-		"id": 10,
+		"id": 9,
 		"title": "Lisinopril",
 		"desc": "Cardiovascular agent",
 		"usage": "Hypertension",
@@ -143,7 +131,7 @@
         "dosagesPerDay": 1
 	},
     {
-		"id": 11,
+		"id": 10,
 		"title": "Furosemide",
 		"desc": "Cardiovascular agent",
 		"usage": "Hypertension",
@@ -156,7 +144,7 @@
         "dosagesPerDay": 2
 	},
     {
-		"id": 12,
+		"id": 11,
 		"title": "Metformin",
 		"desc": "Medicines for diabetes",
 		"usage": "Diabetes type 2",
@@ -169,7 +157,7 @@
         "dosagesPerDay": 2
 	},
     {
-		"id": 13,
+		"id": 12,
 		"title": "Prednisone",
 		"desc": "Hormones",
 		"usage": "Asthma",

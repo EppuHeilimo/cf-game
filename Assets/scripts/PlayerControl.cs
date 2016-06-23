@@ -131,6 +131,7 @@ public class PlayerControl : MonoBehaviour {
         {
             if(target != null)
             {
+                disableMoveIndicator();
                 if (arrivedToDestination(20.0f))
                 {
                     if (agent.hasPath)
@@ -426,7 +427,6 @@ public class PlayerControl : MonoBehaviour {
 
     void disableMoveIndicator()
     {
-        
         if(indicator != null)
         {
             Destroy(indicator);
