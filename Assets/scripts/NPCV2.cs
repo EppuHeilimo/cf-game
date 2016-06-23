@@ -244,7 +244,7 @@ public class NPCV2 : MonoBehaviour
             }
         }
 
-        if (dialogZone.GetComponent<DialogV2>().playerInZone && !sleeping && !sitting)
+        if (dialogZone.GetComponent<DialogV2>().playerInZone && !sleeping && !sitting && myState != NPCState.STATE_DEAD)
         {
             addStateToQueue(3, NPCState.STATE_TALK_TO_PLAYER);
         }
