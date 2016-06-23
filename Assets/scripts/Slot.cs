@@ -5,7 +5,7 @@ using System;
 
 public class Slot : MonoBehaviour, IDropHandler {
     public int id;
-    Inventory inv;
+    public Inventory inv;
 
     void Start()
     {

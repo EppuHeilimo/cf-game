@@ -40,12 +40,7 @@ public class Inventory : MonoBehaviour {
             slots[i].GetComponent<Slot>().id = i;
             slots[i].transform.SetParent(slotPanel.transform);
         }
-        int[] test = { 0, 1, 2, 3 };
-        AddItems(test);
-        AddItem(0);
-        AddItem(0);
-        RemoveItem(0);
-        AddItem(1);
+
 
     }
 
@@ -101,6 +96,49 @@ public class Inventory : MonoBehaviour {
                 items[i].ID = 1;
                 foundEmptySlot = true;
                 for(int j = 0; j < itemsToAdd.Length; j++)
+                {
+                    items[i].medicine.Add(itemsToAdd[j]);
+                }
+                GameObject itemObj = Instantiate(inventoryItem);
+                itemObj.GetComponent<ItemData>().item = items[i];
+                itemObj.GetComponent<ItemData>().slot = i;
+                // make the object child of the corresponding slot
+                itemObj.transform.SetParent(slots[i].transform);
+                //itemObj.transform.position = slots[i].transform.position;
+                itemObj.transform.localScale = Vector3.one;
+                itemObj.GetComponent<RectTransform>().sizeDelta = Vector2.zero;
+                itemObj.GetComponent<RectTransform>().anchoredPosition = Vector2.zero;
+                itemObj.GetComponent<Image>().sprite = items[i].mySprite;
+                break;
+            }
+        }
+        if (!foundEmptySlot)
+        {
+            // no empty slots, show "inventory full" -message
+            Debug.Log("Inventaario on täynnä!");
+        }
+    }
+
+    public void AddItems(List<MedCup.Med> itemsInCup)
+    {
+        Item[] itemsToAdd = new Item[itemsInCup.Count];
+        int i = 0;
+        foreach (MedCup.Med m in itemsInCup)
+        {
+            itemsToAdd[i] = database.FetchItemByTitle(m.name);
+            itemsToAdd[i].currentDosage = m.dosage;
+            i++;
+        }
+        ItemContainer container = new ItemContainer();
+        bool foundEmptySlot = false;
+        for (i = 0; i < items.Count; i++)
+        {
+            // ID -1 = empty slot
+            if (items[i].ID == -1)
+            {
+                items[i].ID = 1;
+                foundEmptySlot = true;
+                for (int j = 0; j < itemsToAdd.Length; j++)
                 {
                     items[i].medicine.Add(itemsToAdd[j]);
                 }

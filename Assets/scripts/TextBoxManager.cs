@@ -83,9 +83,9 @@ public class TextBoxManager : MonoBehaviour {
         MyImage.SetActive(true);
         MyImage.GetComponent<Image>().sprite = npc.myHead2d;
         patientInfo.text = npc.myName + " (" + npc.myId + ")";
-        for(int i = 0; i < npc.myMedication.Length; i++)
+        for (int i = 0; i < npc.myMedication.Length; i++)
         {
-            switch(i)
+            switch (i)
             {
                 case 0:
                     med1.text = npc.myMedication[i].Title;
@@ -101,11 +101,11 @@ public class TextBoxManager : MonoBehaviour {
                     break;
             }
         }
-        for(int i = 0; i < npc.morningMed.Length; i++)
+        for (int i = 0; i < npc.morningMed.Length; i++)
         {
             if (string.IsNullOrEmpty(npc.morningMed[i].title))
             {
-                switch(i)
+                switch (i)
                 {
                     case 0:
                         morning1.text = null;

@@ -4,9 +4,16 @@ using System.Collections;
 public class CameraMovement : MonoBehaviour {
 
     Vector3 defaultPosition;
+    GameObject minigameCamera;
+    GameObject canvas;
+    GameObject minigame1Canvas;
+
 	// Use this for initialization
 	void Start () {
         defaultPosition = transform.position;
+        gameObject.SetActive(true);
+        minigameCamera = GameObject.Find("Minigame Camera");
+        minigameCamera.SetActive(false);
 	}
 	
 	// Update is called once per frame
@@ -18,5 +25,17 @@ public class CameraMovement : MonoBehaviour {
         {
             transform.position = new Vector3(playerPos.x + defaultPosition.x, camPos.y, playerPos.z + defaultPosition.z);
         }
+    }
+
+    public void SwitchToMinigame1Camera()
+    {
+        gameObject.SetActive(false);
+        minigameCamera.SetActive(true);
+    }
+
+    public void SwitchToMainCamera()
+    {
+        gameObject.SetActive(true);
+        minigameCamera.SetActive(false);
     }
 }
