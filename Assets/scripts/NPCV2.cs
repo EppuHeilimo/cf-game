@@ -26,6 +26,7 @@ public class NPCV2 : MonoBehaviour
     }
 
     /* basic stuff */
+    bool lockstate = false;
     public bool paused = false;
     ClockTime clock;
     LineRenderer DebugPath;
@@ -101,7 +102,7 @@ public class NPCV2 : MonoBehaviour
 
     /* timing stuff */
     float timer; // time NPC has been in the current state
-    const float RECEPTION_WAITING_TIME = 3f;
+    const float RECEPTION_WAITING_TIME = 1.5f;
     const float QUE_WAITING_TIME = 10f;
     const float IDLE_IN_THIS_PLACE_TIME = 5f;
     const float MAX_TIME_TALK_TO_OTHER = 10f;
@@ -159,7 +160,8 @@ public class NPCV2 : MonoBehaviour
             checkNeeds();
             //Set current state to highest priority currently queued
             //if higher priority job compared to current state is found, current state will be paused
-            setMyStateFromQueue();
+            if(!lockstate)
+                setMyStateFromQueue();
             //Act according to the myState (Current state)
             actAccordingToState();
         }
@@ -252,7 +254,7 @@ public class NPCV2 : MonoBehaviour
             }
         }
 
-        if (dialogZone.GetComponent<DialogV2>().playerInZone && !sleeping && !sitting && myState != NPCState.STATE_DEAD)
+        if (myState != NPCState.STATE_DEAD && !sleeping && !sitting && dialogZone.GetComponent<DialogV2>().playerInZone)
         {
             addStateToQueue(3, NPCState.STATE_TALK_TO_PLAYER);
         }
@@ -714,7 +716,7 @@ public class NPCV2 : MonoBehaviour
         }
 
         // NPC has arrived at reception
-        if (arrivedToDestination(30))
+        if (arrivedToDestination(50.0f))
         {
             // chill for a while at reception and then move to doctor's queue
             timer += Time.deltaTime;
@@ -860,12 +862,10 @@ public class NPCV2 : MonoBehaviour
     }
     private void die()
     {
+        lockstate = true;
         timer += Time.deltaTime;
-        if (agent.enabled)
-        {
-            agent.Stop();
-            agent.GetComponent<IiroAnimBehavior>().fall();
-        }
+        agent.Stop();
+        agent.GetComponent<IiroAnimBehavior>().fall();
         if (timer > STAY_ON_FLOOR_ON_FALL)
         {
             Destroy(responsibilityIndicatorclone);
@@ -1040,7 +1040,7 @@ public class NPCV2 : MonoBehaviour
                 objectManager.unbookObject(interactionComponent.getCurrentChair());
                 interactionComponent.setCurrentChair(null);
             }
-            if (prevStateUncompleted)
+            if (prevStateUncompleted && prevState != NPCState.STATE_TALK_TO_PLAYER && prevState != NPCState.STATE_TRY_UNSTUCK)
             {
                 prevStateUncompleted = false;
                 addStateToQueue(3, prevState);
