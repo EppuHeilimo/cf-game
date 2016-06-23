@@ -51,10 +51,25 @@ public class UIManager : MonoBehaviour {
     {
         if (pause)
         {
-            Time.timeScale = 0;
-        }
+            NPCManagerV2 npcmanager = GameObject.FindGameObjectWithTag("NPCManager").GetComponent<NPCManagerV2>();
             
+            foreach (GameObject npc in npcmanager.npcList)
+            {
+                npc.GetComponent<NPCV2>().paused = true;
+            }
+            GameObject.FindGameObjectWithTag("Clock").GetComponent<ClockTime>().paused = true;
+            npcmanager.paused = true;
+
+        }
         else
-            Time.timeScale = 1;
+        {
+            NPCManagerV2 npcmanager = GameObject.FindGameObjectWithTag("NPCManager").GetComponent<NPCManagerV2>();
+            npcmanager.paused = false;
+            foreach (GameObject npc in npcmanager.npcList)
+            {
+                npc.GetComponent<NPCV2>().paused = false;
+            }
+            GameObject.FindGameObjectWithTag("Clock").GetComponent<ClockTime>().paused = false;
+        }
     }
 }

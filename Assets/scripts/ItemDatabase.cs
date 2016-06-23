@@ -74,6 +74,7 @@ public class Item
     public int HighDosage { get; set; }
     public int DefaultDosage { get; set; }
     public int timesPerDay { get; set; }
+    public int currentDosage { get; set; }
     public Item(int id, string title, string desc, string usage, int smallDosage, int mediumDosage, int highDosage, int defaultDosage, int timesPerDay)
     {
         this.ID = id;

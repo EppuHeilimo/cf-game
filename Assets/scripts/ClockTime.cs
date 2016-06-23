@@ -11,7 +11,7 @@ public class ClockTime : MonoBehaviour {
 
     //start day
     int day = 1;
-
+    public bool paused = false;
     
     float dayLengthInRealHours = 24;
 
@@ -56,52 +56,57 @@ public class ClockTime : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        currentTime += Time.deltaTime;
-        if (currentTime >= dayLength)
+
+        if(!paused)
         {
-            currentTime = 0;
-            currentHours = 0;
-            day++;
+            currentTime += Time.deltaTime;
+            if (currentTime >= dayLength)
+            {
+                currentTime = 0;
+                currentHours = 0;
+                day++;
+            }
+            string timeString = getTimeString();
+            currentText = timeString; // + " Day " + day + "\n" + currentDayTime.ToString();
+                                      // Medicine checks four times a day
+            if (timeString == MORNING_CHECK)
+                doMorningCheck();
+            else if (timeString == AFTERNOON_CHECK)
+                doAfternoonCheck();
+            else if (timeString == EVENING_CHECK)
+                doEveningCheck();
+            else if (timeString == NIGHT_CHECK)
+                doNightCheck();
+
+            // When daytime changes, reset all NPCs meds
+            if (timeString == MORNING_CHANGE)
+                resetMeds();
+            else if (timeString == AFTERNOON_CHANGE)
+                resetMeds();
+            else if (timeString == EVENING_CHANGE)
+                resetMeds();
+            else if (timeString == NIGHT_CHANGE)
+                resetMeds();
+
+            textref.text = currentText;
+
+            /* Change daytime */
+            /*******************
+                07:00 - 12:59 aamu 
+                13:00 - 14:59 päivä
+                15:00 - 19:59 ilta
+                20:00 - 06:59 yö
+             *******************/
+            if (currentHours > 6 && currentHours < 13)
+                currentDayTime = DayTime.MORNING;
+            else if (currentHours > 12 && currentHours < 15)
+                currentDayTime = DayTime.AFTERNOON;
+            else if (currentHours > 14 && currentHours < 20)
+                currentDayTime = DayTime.EVENING;
+            else
+                currentDayTime = DayTime.NIGHT;
         }
-        string timeString = getTimeString();
-        currentText = timeString; // + " Day " + day + "\n" + currentDayTime.ToString();
-        // Medicine checks four times a day
-        if (timeString == MORNING_CHECK)
-            doMorningCheck();
-        else if (timeString == AFTERNOON_CHECK)
-            doAfternoonCheck();
-        else if (timeString == EVENING_CHECK)
-            doEveningCheck();
-        else if (timeString == NIGHT_CHECK)
-            doNightCheck();
-
-        // When daytime changes, reset all NPCs meds
-        if (timeString == MORNING_CHANGE)
-            resetMeds();
-        else if (timeString == AFTERNOON_CHANGE)
-            resetMeds();
-        else if (timeString == EVENING_CHANGE)
-            resetMeds();
-        else if (timeString == NIGHT_CHANGE)
-            resetMeds();
-
-        textref.text = currentText;
-
-        /* Change daytime */
-        /*******************
-            07:00 - 12:59 aamu 
-            13:00 - 14:59 päivä
-            15:00 - 19:59 ilta
-            20:00 - 06:59 yö
-         *******************/
-        if (currentHours > 6 && currentHours < 13)
-            currentDayTime = DayTime.MORNING;
-        else if (currentHours > 12 && currentHours < 15)
-            currentDayTime = DayTime.AFTERNOON;
-        else if (currentHours > 14 && currentHours < 20)
-            currentDayTime = DayTime.EVENING;
-        else
-            currentDayTime = DayTime.NIGHT;
+       
     }
 
     string getTimeString()

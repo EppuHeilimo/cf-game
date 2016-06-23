@@ -9,6 +9,8 @@ public class NPCManagerV2 : MonoBehaviour
     [SerializeField]
     GameObject npcPrefab;
 
+    public bool paused = false;
+
     // list to keep track of the NPC instances in the scene
     public List<GameObject> npcList;
 
@@ -83,19 +85,23 @@ public class NPCManagerV2 : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        // spawn new NPC
-        timeSinceLastSpawn += Time.deltaTime;
-        npcCount = npcList.Count;
-
-        if (npcCount < MAX_NPCS && (clock.currentDayTime == ClockTime.DayTime.MORNING || clock.currentDayTime == ClockTime.DayTime.AFTERNOON))
+        if(!paused)
         {
-            if (timeSinceLastSpawn > spawnTime)
+            // spawn new NPC
+            timeSinceLastSpawn += Time.deltaTime;
+            npcCount = npcList.Count;
+
+            if (npcCount < MAX_NPCS && (clock.currentDayTime == ClockTime.DayTime.MORNING || clock.currentDayTime == ClockTime.DayTime.AFTERNOON))
             {
-                timeSinceLastSpawn = 0;
-                spawnTime = 3;
-                spawnNPC();
+                if (timeSinceLastSpawn > spawnTime)
+                {
+                    timeSinceLastSpawn = 0;
+                    spawnTime = 3;
+                    spawnNPC();
+                }
             }
         }
+
     }
 
     void spawnNPC()

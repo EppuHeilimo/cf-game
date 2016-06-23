@@ -21,10 +21,12 @@ public class NPCV2 : MonoBehaviour
         STATE_MOVE_TO_WARD_AREA,
         STATE_TRY_UNSTUCK,
         STATE_GO_WC,
-        STATE_IDLE_SIT
+        STATE_IDLE_SIT,
+        STATE_DEFAULT
     }
 
     /* basic stuff */
+    public bool paused = false;
     ClockTime clock;
     LineRenderer DebugPath;
     public string myName;
@@ -146,18 +148,22 @@ public class NPCV2 : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(playersResponsibility)
+        if(!paused)
         {
-            responsibilityIndicatorclone.transform.position = new Vector3(transform.position.x, transform.position.y + 64, transform.position.z);
-            responsibilityIndicatorclone.transform.rotation = transform.rotation;
+            if (playersResponsibility)
+            {
+                responsibilityIndicatorclone.transform.position = new Vector3(transform.position.x, transform.position.y + 64, transform.position.z);
+                responsibilityIndicatorclone.transform.rotation = transform.rotation;
+            }
+            //check if there are some natural needs, or unstucking needs
+            checkNeeds();
+            //Set current state to highest priority currently queued
+            //if higher priority job compared to current state is found, current state will be paused
+            setMyStateFromQueue();
+            //Act according to the myState (Current state)
+            actAccordingToState();
         }
-        //check if there are some natural needs, or unstucking needs
-        checkNeeds();
-        //Set current state to highest priority currently queued
-        //if higher priority job compared to current state is found, current state will be paused
-        setMyStateFromQueue();
-        //Act according to the myState (Current state)
-        actAccordingToState();
+
     }
     private void actAccordingToState()
     {
@@ -205,6 +211,8 @@ public class NPCV2 : MonoBehaviour
                 break;
             case NPCState.STATE_IDLE_SIT:
                 idleSit();
+                break;
+            case NPCState.STATE_DEFAULT:
                 break;
         }
     }
@@ -333,12 +341,12 @@ public class NPCV2 : MonoBehaviour
         {
             agent.Stop();
             sitting = true;
-            if (interactionComponent.getTarget())
+            if (interactionComponent.getCurrentChair())
             {
                 //rotate to look away from the bed so animation will move the player on the bed
-                if (interactionComponent.RotateAwayFrom(interactionComponent.getTarget().transform))
+                if (interactionComponent.RotateAwayFrom(interactionComponent.getCurrentChair().transform))
                 {
-                    if (interactionComponent.getTarget().tag == "Chair2")
+                    if (interactionComponent.getCurrentChair().tag == "Chair2")
                     {
                         agent.GetComponent<IiroAnimBehavior>().sitwithrotation();
                     }
@@ -371,8 +379,8 @@ public class NPCV2 : MonoBehaviour
                 taskCompleted = true;
                 if ((interactionComponent.getCurrentChair() != null))
                 {
-                    interactionComponent.setCurrentChair(null);
                     objectManager.unbookObject(interactionComponent.getCurrentChair());
+                    interactionComponent.setCurrentChair(null);
                 }
                     
                 sitting = false;
@@ -427,6 +435,7 @@ public class NPCV2 : MonoBehaviour
                             if ((interactionComponent.getCurrentChair() != null))
                             {
                                 objectManager.unbookObject(interactionComponent.getCurrentChair());
+                                interactionComponent.setCurrentChair(null);
                             }  
                             sitting = false;
                             agent.Resume();
@@ -494,7 +503,7 @@ public class NPCV2 : MonoBehaviour
             dest = new Vector3(-620, transform.position.y, 0);
             moveTo(dest); 
         }
-        if(arrivedToDestination(30))
+        if(arrivedToDestination(100.0f))
         {
             npcManager.deleteNpcFromList(gameObject);
             Destroy(gameObject);
@@ -517,7 +526,6 @@ public class NPCV2 : MonoBehaviour
             timer += Time.deltaTime;
             if(timer > AT_DOC)
             {
-
                 int r = Random.Range(1, 10);
                 if(r > 1)
                 {
@@ -774,7 +782,11 @@ public class NPCV2 : MonoBehaviour
            
             taskCompleted = true;
             if((interactionComponent.getCurrentChair() != null))
+            {
                 objectManager.unbookObject(interactionComponent.getCurrentChair());
+                interactionComponent.setCurrentChair(null);
+            }
+                
             sitting = false;
             if (!agent.enabled)
                 agent.enabled = true;
@@ -786,7 +798,6 @@ public class NPCV2 : MonoBehaviour
     //just wander around the hospital, if npc has nothing else to do it will go to this state
     private void idle()
     {
-
         //check if there's something else to do
         timer += Time.deltaTime;
         GameObject target = interactionComponent.getTarget();
@@ -797,14 +808,28 @@ public class NPCV2 : MonoBehaviour
         }
         else if (dest == Vector3.zero)
         {
-            // move to idle at random position
-            Vector3 randomDirection = Random.insideUnitSphere * WALK_RADIUS;
-            randomDirection += transform.position;
-            NavMeshHit hit;
-            NavMesh.SamplePosition(randomDirection, out hit, WALK_RADIUS, 1);
-            Vector3 finalPosition = hit.position;
-            dest = new Vector3(finalPosition.x, 0, finalPosition.z);
-            moveTo(dest);
+            
+            if (Random.Range(0, 10) > 7)
+            {
+                if (!talking)
+                    addStateToQueue(2, NPCState.STATE_TALK_TO_OTHER_NPC);
+            }
+            else if (Random.Range(0, 10) > 7)
+            {
+                if (!talking && !sitting)
+                    addStateToQueue(2, NPCState.STATE_IDLE_SIT);
+            }
+            else
+            {
+                // move to idle at random position
+                Vector3 randomDirection = Random.insideUnitSphere * WALK_RADIUS;
+                randomDirection += transform.position;
+                NavMeshHit hit;
+                NavMesh.SamplePosition(randomDirection, out hit, WALK_RADIUS, 1);
+                Vector3 finalPosition = hit.position;
+                dest = new Vector3(finalPosition.x, 0, finalPosition.z);
+                moveTo(dest);
+            }
         }
         else
         {
@@ -826,15 +851,9 @@ public class NPCV2 : MonoBehaviour
                     }
                     else
                     {
-                        // move to idle at random position
-                        Vector3 randomDirection = Random.insideUnitSphere * WALK_RADIUS;
-                        randomDirection += transform.position;
-                        NavMeshHit hit;
-                        NavMesh.SamplePosition(randomDirection, out hit, WALK_RADIUS, 1);
-                        Vector3 finalPosition = hit.position;
-                        dest = new Vector3(finalPosition.x, 0, finalPosition.z);
-                        moveTo(dest);
+                        taskCompleted = true;
                     }
+                    
                 }
             }
         }
@@ -1014,20 +1033,21 @@ public class NPCV2 : MonoBehaviour
     {
         if(taskCompleted)
         {
+            timer = 0;
+            //fool proof
             if(interactionComponent.getCurrentChair() != null)
             {
                 objectManager.unbookObject(interactionComponent.getCurrentChair());
                 interactionComponent.setCurrentChair(null);
             }
-
             if (prevStateUncompleted)
             {
                 prevStateUncompleted = false;
-                if(myState != NPCState.STATE_TRY_UNSTUCK)
-                    myState = prevState;
+                addStateToQueue(3, prevState);
+                myState = NPCState.STATE_DEFAULT;
+                currentTaskPriority = 0;
                 dest = Vector3.zero;
-                taskCompleted = false;
-                currentTaskPriority = 3;
+                taskCompleted = true;
             }
             else
             {
@@ -1036,8 +1056,7 @@ public class NPCV2 : MonoBehaviour
                 stateQueue.TryGetValue(3, out queue);
                 if (queue.Count > 0)
                 {
-                    if (myState != NPCState.STATE_TRY_UNSTUCK)
-                        prevState = myState;
+                    prevState = myState;
                     myState = queue.Dequeue();
                     dest = Vector3.zero;
                     taskCompleted = false;
@@ -1049,8 +1068,7 @@ public class NPCV2 : MonoBehaviour
                     stateQueue.TryGetValue(2, out queue);
                     if (queue.Count > 0)
                     {
-                        if (myState != NPCState.STATE_TRY_UNSTUCK)
-                            prevState = myState;
+                        prevState = myState;
                         myState = queue.Dequeue();
                         dest = Vector3.zero;
                         taskCompleted = false;
@@ -1062,8 +1080,7 @@ public class NPCV2 : MonoBehaviour
                         stateQueue.TryGetValue(1, out queue);
                         if (queue.Count > 0)
                         {
-                            if (myState != NPCState.STATE_TRY_UNSTUCK)
-                                prevState = myState;
+                            prevState = myState;
                             myState = queue.Dequeue();
                             dest = Vector3.zero;
                             taskCompleted = false;
@@ -1073,8 +1090,7 @@ public class NPCV2 : MonoBehaviour
                         {
                             if (myState != NPCState.STATE_IDLE)
                             {
-                                if (myState != NPCState.STATE_TRY_UNSTUCK)
-                                    prevState = myState;
+                                prevState = myState;
                                 myState = NPCState.STATE_IDLE;
                                 dest = Vector3.zero;
                                 taskCompleted = false;
@@ -1085,7 +1101,7 @@ public class NPCV2 : MonoBehaviour
                 }
             }
         }
-        else
+        else if (!prevStateUncompleted)
         {
             Queue<NPCState> queue = new Queue<NPCState>();
             //Dequeue a task from priority 3 queue if it has a task and the current task is less important
@@ -1093,8 +1109,7 @@ public class NPCV2 : MonoBehaviour
             if (currentTaskPriority < 3 && queue.Count > 0)
             {
                 //save current state info so it can be done after the prioritized task is complete
-                if (myState != NPCState.STATE_TRY_UNSTUCK)
-                    prevState = myState;
+                prevState = myState;
                 myState = queue.Dequeue();
                 prevStateUncompleted = true;
                 prevTaskPriority = currentTaskPriority;
@@ -1108,8 +1123,7 @@ public class NPCV2 : MonoBehaviour
                 if (currentTaskPriority < 2 && queue.Count > 0)
                 {
                     //save current state info so it can be done after the prioritized task is complete
-                    if (myState != NPCState.STATE_TRY_UNSTUCK)
-                        prevState = myState;
+                    prevState = myState;
                     myState = queue.Dequeue();
                     dest = Vector3.zero;
                     prevStateUncompleted = true;
@@ -1117,8 +1131,7 @@ public class NPCV2 : MonoBehaviour
                     taskCompleted = false;
                 }
             }
-        }
-        
+        }  
     }
 
     public void Init(string myName, string myId)
@@ -1503,119 +1516,3 @@ public class NPCV2 : MonoBehaviour
 
     }
 }
-
-/* LEGACY INIT MED */
-
-/*
-myProblems = new string[4];
-for (int i = 0; i < myMedication.Length; i++)
-{
-    if (randMeds[i] != null)
-    {
-        myMedication[i] = randMeds[i];
-        myProblems[i] = randMeds[i].Usage;
-        drugscount++;
-    }
-    else
-    {
-        myMedication[i] = null;
-        myProblems[i] = null;
-    }       
-}
-
-
-// assign meds to different times of day and randomize one of three dosages
-if (myMedication[0] != null)
-{
-    morningMed.title = myMedication[0].Title;
-    int rnd = Random.Range(1, 4);
-    switch (rnd)
-    {
-        case 1:
-            morningDos = myMedication[0].SmallDosage;
-            break;
-        case 2:
-            morningDos = myMedication[0].MediumDosage;
-            break;
-        case 3:
-            morningDos = myMedication[0].HighDosage;
-            break;
-    }
-}
-morningMed.isActive = false;
-
-if (myMedication[1] != null)
-{
-    afternoonMed.title = myMedication[1].Title;
-    int rnd = Random.Range(1, 4);
-    switch (rnd)
-    {
-        case 1:
-            afternoonDos = myMedication[0].SmallDosage;
-            break;
-        case 2:
-            afternoonDos = myMedication[0].MediumDosage;
-            break;
-        case 3:
-            afternoonDos = myMedication[0].HighDosage;
-            break;
-    }
-}
-afternoonMed.isActive = false;
-
-if (myMedication[2] != null)
-{
-    eveningMed.title = myMedication[2].Title;
-    int rnd = Random.Range(1, 4);
-    switch (rnd)
-    {
-        case 1:
-            eveningDos = myMedication[0].SmallDosage;
-            break;
-        case 2:
-            eveningDos = myMedication[0].MediumDosage;
-            break;
-        case 3:
-            eveningDos = myMedication[0].HighDosage;
-            break;
-    }
-}
-eveningMed.isActive = false;
-
-if (myMedication[3] != null)
-{
-    nightMed.title = myMedication[3].Title;
-    int rnd = Random.Range(1, 4);
-    switch (rnd)
-    {
-        case 1:
-            nightDos = myMedication[0].SmallDosage;
-            break;
-        case 2:
-            nightDos = myMedication[0].MediumDosage;
-            break;
-        case 3:
-            nightDos = myMedication[0].HighDosage;
-            break;
-    }
-}
-nightMed.isActive = false;
-
-// print 'em (temporary)
-if (myMedication[0] != null)
-    print("aamu: " + morningMed.title + " -- " + morningDos + " -- " + myMedication[0].Usage);
-else
-    print("aamu: N/A");
-if (myMedication[1] != null)
-    print("päivä: " + afternoonMed.title + " -- " + afternoonDos + " -- " + myMedication[1].Usage);
-else
-    print("päivä: N/A");
-if (myMedication[2] != null)
-    print("ilta: " + eveningMed.title + " -- " + eveningDos + " -- " + myMedication[2].Usage);
-else
-    print("ilta: N/A");
-if (myMedication[3] != null)
-    print("yö: " + nightMed.title + " -- " + nightDos + " -- " + myMedication[3].Usage);
-else
-    print("yö: N/A");
-    */

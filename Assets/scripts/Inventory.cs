@@ -124,6 +124,49 @@ public class Inventory : MonoBehaviour {
         }
     }
 
+    public void AddItems(List<string> titles, List<int> dosages)
+    {
+        Item[] itemsToAdd = new Item[titles.Count];
+        int i = 0;
+        foreach (string title in titles)
+        {
+            itemsToAdd[i] = database.FetchItemByTitle(title);
+            itemsToAdd[i].currentDosage = dosages[i];
+            i++;
+        }
+        ItemContainer container = new ItemContainer();
+        bool foundEmptySlot = false;
+        for (i = 0; i < items.Count; i++)
+        {
+            // ID -1 = empty slot
+            if (items[i].ID == -1)
+            {
+                items[i].ID = 1;
+                foundEmptySlot = true;
+                for (int j = 0; j < itemsToAdd.Length; j++)
+                {
+                    items[i].medicine.Add(itemsToAdd[j]);
+                }
+                GameObject itemObj = Instantiate(inventoryItem);
+                itemObj.GetComponent<ItemData>().item = items[i];
+                itemObj.GetComponent<ItemData>().slot = i;
+                // make the object child of the corresponding slot
+                itemObj.transform.SetParent(slots[i].transform);
+                //itemObj.transform.position = slots[i].transform.position;
+                itemObj.transform.localScale = Vector3.one;
+                itemObj.GetComponent<RectTransform>().sizeDelta = Vector2.zero;
+                itemObj.GetComponent<RectTransform>().anchoredPosition = Vector2.zero;
+                itemObj.GetComponent<Image>().sprite = items[i].mySprite;
+                break;
+            }
+        }
+        if (!foundEmptySlot)
+        {
+            // no empty slots, show "inventory full" -message
+            Debug.Log("Inventaario on täynnä!");
+        }
+    }
+
     public void RemoveItem(int id)
     {
         for (int i = 0; i < items.Count; i++)

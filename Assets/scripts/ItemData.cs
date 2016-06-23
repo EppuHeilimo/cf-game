@@ -76,7 +76,7 @@ public class ItemData : MonoBehaviour,/* IBeginDragHandler,  IDragHandler, IEndD
                             foreach (Item it in item.medicine)
                             {
                                 titles[j] = it.Title;
-                                dosages[j] = it.DefaultDosage;
+                                dosages[j] = it.currentDosage;
                                 j++;
                             }
 
@@ -101,7 +101,7 @@ public class ItemData : MonoBehaviour,/* IBeginDragHandler,  IDragHandler, IEndD
                 foreach (Item it in item.medicine)
                 {
                     titles[j] = it.Title;
-                    dosages[j] = it.DefaultDosage;
+                    dosages[j] = it.currentDosage;
                     j++;
                 }
                 // remove medicine from inventory if giving it succeeds
