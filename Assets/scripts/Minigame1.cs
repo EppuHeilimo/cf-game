@@ -112,6 +112,7 @@ public class Minigame1 : MonoBehaviour {
     public void quitMinigame()
     {
         AddCupsToInv();
+        ClearCups();
         GetComponent<MedCabInventory>().Reset();
         active = false;
         uiCanvas.SetActive(true);
@@ -395,28 +396,6 @@ public class Minigame1 : MonoBehaviour {
             }
         }
 
-        /* PRINT SHIT TEMPORARY! */
-        foreach (MedCup.Med m in morningCupMeds)
-        {
-            
-            print("AAMU KUPIN SISÄLTÖ: " + m.name + m.dosage);
-        }
-
-        foreach (MedCup.Med m in afternoonCupMeds)
-        {
-            print("PÄIVÄ KUPIN SISÄLTÖ: " + m.name + m.dosage);
-        }
-
-        foreach (MedCup.Med m in eveningCupMeds)
-        {
-            print("ILTA KUPIN SISÄLTÖ: " + m.name + m.dosage);
-        }
-
-        foreach (MedCup.Med m in nightCupMeds)
-        {
-            print("YÖ KUPIN SISÄLTÖ: " + m.name + m.dosage);
-        }
-
         mCamera.SwitchToMainCamera();
         minigameCanvas.SetActive(true);
         minigameCanvas2.SetActive(false);
@@ -438,11 +417,11 @@ public class Minigame1 : MonoBehaviour {
                     morningTmpList.Add(m);
                 else
                 { 
-                    foreach (MedCup.Med mm in morningTmpList)
+                    for (int i = 0; i < morningTmpList.Count; i++)
                     {
-                        if (mm.name == m.name)
+                        if (morningTmpList[i].name == m.name)
                         {
-                            mm.dosage += m.dosage;
+                            morningTmpList[i].dosage += m.dosage;
                         }
                         else
                         {
@@ -463,11 +442,11 @@ public class Minigame1 : MonoBehaviour {
                     afternoonTmpList.Add(m);
                 else
                 {
-                    foreach (MedCup.Med mm in afternoonTmpList)
+                    for (int i = 0; i < afternoonTmpList.Count; i++)
                     {
-                        if (mm.name == m.name)
+                        if (afternoonTmpList[i].name == m.name)
                         {
-                            mm.dosage += m.dosage;
+                            afternoonTmpList[i].dosage += m.dosage;
                         }
                         else
                         {
@@ -488,11 +467,11 @@ public class Minigame1 : MonoBehaviour {
                     eveningTmpList.Add(m);
                 else
                 {
-                    foreach (MedCup.Med mm in eveningTmpList)
+                    for (int i = 0; i < eveningTmpList.Count; i++)
                     {
-                        if (mm.name == m.name)
+                        if (eveningTmpList[i].name == m.name)
                         {
-                            mm.dosage += m.dosage;
+                            eveningTmpList[i].dosage += m.dosage;
                         }
                         else
                         {
@@ -501,7 +480,7 @@ public class Minigame1 : MonoBehaviour {
                     }
                 }
             }
-            playerInv.AddItems(afternoonTmpList);
+            playerInv.AddItems(eveningTmpList);
         }
 
         // duplicates -> add up dosage
@@ -513,11 +492,11 @@ public class Minigame1 : MonoBehaviour {
                     nightTmpList.Add(m);
                 else
                 {
-                    foreach (MedCup.Med mm in nightTmpList)
+                    for (int i = 0; i < nightTmpList.Count; i++)
                     {
-                        if (mm.name == m.name)
+                        if (nightTmpList[i].name == m.name)
                         {
-                            mm.dosage += m.dosage;
+                            nightTmpList[i].dosage += m.dosage;
                         }
                         else
                         {
@@ -526,7 +505,15 @@ public class Minigame1 : MonoBehaviour {
                     }
                 }
             }
-            playerInv.AddItems(eveningTmpList);
+            playerInv.AddItems(nightTmpList);
         }
+    }
+
+    public void ClearCups()
+    {
+        morningCupMeds.Clear();
+        afternoonCupMeds.Clear();
+        eveningCupMeds.Clear();
+        nightCupMeds.Clear();
     }
 }

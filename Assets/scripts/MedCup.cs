@@ -22,11 +22,6 @@ public class MedCup : MonoBehaviour {
         med.dosage = pill.dosage;
         medsInThisCup.Add(med);
         Destroy(other.gameObject);
-
-        if (medsInThisCup.Count > 0)
-        {
-            print(cupName + " :" + medsInThisCup.Count);
-        }
     }
 
     public void Reset()
