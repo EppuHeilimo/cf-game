@@ -16,6 +16,7 @@ public class MedCup : MonoBehaviour {
     };
 
     public List<Med> medsInThisCup = new List<Med>();
+    public List<GameObject> pills = new List<GameObject>();
     public string cupName;
 
     void OnTriggerEnter2D(Collider2D other)
@@ -26,12 +27,17 @@ public class MedCup : MonoBehaviour {
         med.name = pill.medName;
         med.dosage = pill.dosage;
         medsInThisCup.Add(med);
-        Destroy(other.gameObject);
+        //Destroy(other.gameObject);
+        pills.Add(other.gameObject);
+        other.gameObject.tag = "Untagged";
     }
 
     public void Reset()
     {
         medsInThisCup.Clear();
+        foreach (GameObject pill in pills)
+            Destroy(pill);
+        pills.Clear();
     }
 
 }

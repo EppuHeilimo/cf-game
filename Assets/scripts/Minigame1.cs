@@ -375,7 +375,7 @@ public class Minigame1 : MonoBehaviour {
                 foreach (MedCup.Med m in cup.GetComponent<MedCup>().medsInThisCup)
                     morningCupMeds.Add(m);
                 CombineMeds(0);
-                cup.GetComponent<MedCup>().medsInThisCup.Clear();
+                cup.GetComponent<MedCup>().Reset();
             }
 
             if (cup.GetComponent<MedCup>().cupName == "afternoon")
@@ -383,7 +383,7 @@ public class Minigame1 : MonoBehaviour {
                 foreach (MedCup.Med m in cup.GetComponent<MedCup>().medsInThisCup)
                     afternoonCupMeds.Add(m);
                 CombineMeds(1);
-                cup.GetComponent<MedCup>().medsInThisCup.Clear();
+                cup.GetComponent<MedCup>().Reset();
             }
 
             if (cup.GetComponent<MedCup>().cupName == "evening")
@@ -391,7 +391,7 @@ public class Minigame1 : MonoBehaviour {
                 foreach (MedCup.Med m in cup.GetComponent<MedCup>().medsInThisCup)
                     eveningCupMeds.Add(m);
                 CombineMeds(2);
-                cup.GetComponent<MedCup>().medsInThisCup.Clear();
+                cup.GetComponent<MedCup>().Reset();
             }
 
             if (cup.GetComponent<MedCup>().cupName == "night")
@@ -399,7 +399,7 @@ public class Minigame1 : MonoBehaviour {
                 foreach (MedCup.Med m in cup.GetComponent<MedCup>().medsInThisCup)
                     nightCupMeds.Add(m);
                 CombineMeds(3);
-                cup.GetComponent<MedCup>().medsInThisCup.Clear();
+                cup.GetComponent<MedCup>().Reset();
             }
         }
 
@@ -562,18 +562,22 @@ public class Minigame1 : MonoBehaviour {
         {
             case 0:
                 morningCupMeds.Clear();
+                morningCupMedsNoDuplicates.Clear();
                 ShowMedsInCups();
                 break;
             case 1:
                 afternoonCupMeds.Clear();
+                afternoonCupMedsNoDuplicates.Clear();
                 ShowMedsInCups();
                 break;
             case 2:
                 eveningCupMeds.Clear();
+                eveningCupMedsNoDuplicates.Clear();
                 ShowMedsInCups();
                 break;
             case 3:
                 nightCupMeds.Clear();
+                nightCupMedsNoDuplicates.Clear();
                 ShowMedsInCups();
                 break;
         }
