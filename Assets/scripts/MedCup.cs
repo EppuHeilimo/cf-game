@@ -8,6 +8,11 @@ public class MedCup : MonoBehaviour {
     {
         public string name;
         public int dosage;
+
+        public override string ToString()
+        {
+            return name + " " + dosage;
+        }
     };
 
     public List<Med> medsInThisCup = new List<Med>();

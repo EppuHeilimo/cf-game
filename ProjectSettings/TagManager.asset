@@ -28,6 +28,11 @@ TagManager:
   - MyImage
   - PickupItem
   - Tooltip
+  - medCup
+  - BigMedCont
+  - Pill
+  - Minigame1Canvas2
+  - MedCupPanel
   layers:
   - Default
   - TransparentFX

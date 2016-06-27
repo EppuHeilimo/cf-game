@@ -76,7 +76,7 @@ public class Inventory : MonoBehaviour {
             Debug.Log("Inventaario on täynnä!");
         }
     }
-
+    /*
     public void AddItems(int[] ids)
     {
         Item[] itemsToAdd = new Item[ids.Length];
@@ -118,7 +118,7 @@ public class Inventory : MonoBehaviour {
             Debug.Log("Inventaario on täynnä!");
         }
     }
-
+    */
     public void AddItems(List<MedCup.Med> itemsInCup)
     {
         Item[] itemsToAdd = new Item[itemsInCup.Count];
@@ -161,7 +161,7 @@ public class Inventory : MonoBehaviour {
             Debug.Log("Inventaario on täynnä!");
         }
     }
-
+    /*
     public void AddItems(List<string> titles, List<int> dosages)
     {
         Item[] itemsToAdd = new Item[titles.Count];
@@ -204,7 +204,7 @@ public class Inventory : MonoBehaviour {
             Debug.Log("Inventaario on täynnä!");
         }
     }
-
+    */
     public void RemoveItem(int id)
     {
         for (int i = 0; i < items.Count; i++)
