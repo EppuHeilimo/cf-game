@@ -33,6 +33,7 @@ TagManager:
   - Pill
   - Minigame1Canvas2
   - MedCupPanel
+  - Trolley
   layers:
   - Default
   - TransparentFX

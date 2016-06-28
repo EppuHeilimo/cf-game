@@ -124,7 +124,10 @@ public class NPCV2 : MonoBehaviour
     //distance to destination at last test
     float lastdisttodest;
 
-    
+    Vector3 lastAgentVelocity = Vector3.zero;
+    NavMeshPath lastAgentPath;
+    bool agentPaused = false;
+
     // Use this for initialization
     void Start()
     {
@@ -151,8 +154,18 @@ public class NPCV2 : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if(paused)
+        {
+            if(!agentPaused)
+                pause();
+        }
+
         if(!paused)
         {
+            if(agentPaused)
+            {
+                resume();
+            }
             if (playersResponsibility)
             {
                 responsibilityIndicatorclone.transform.position = new Vector3(transform.position.x, transform.position.y + 64, transform.position.z);
@@ -169,6 +182,32 @@ public class NPCV2 : MonoBehaviour
         }
 
     }
+
+    void pause()
+    {
+        if(agent.enabled)
+        {
+            lastAgentVelocity = agent.velocity;
+            lastAgentPath = agent.path;
+            agent.velocity = Vector3.zero;
+            agent.ResetPath();
+        }
+
+        agentPaused = true;
+    }
+
+    void resume()
+    {
+        if(agent.enabled)
+        {
+            agent.velocity = lastAgentVelocity;
+            agent.SetPath(lastAgentPath);
+        }
+
+        agentPaused = false;
+    }
+
+
     private void actAccordingToState()
     {
         /* act according to myState */
@@ -256,7 +295,7 @@ public class NPCV2 : MonoBehaviour
             }
         }
 
-        if (myState != NPCState.STATE_DEAD && !sleeping && !sitting && dialogZone.GetComponent<DialogV2>().playerInZone)
+        if (myState != NPCState.STATE_TALK_TO_PLAYER && myState != NPCState.STATE_DEAD && !sleeping && !sitting && dialogZone.GetComponent<DialogV2>().playerInZone)
         {
             addStateToQueue(3, NPCState.STATE_TALK_TO_PLAYER);
         }
@@ -870,10 +909,10 @@ public class NPCV2 : MonoBehaviour
         {
             agent.Stop();
             agent.GetComponent<IiroAnimBehavior>().fall();
+            npcManager.spawnNurseToFetchNPC(gameObject);
         }
         if (timer > STAY_ON_FLOOR_ON_FALL)
         {
-            Destroy(responsibilityIndicatorclone);
             List<GameObject> npcList = GameObject.Find("NPCManager").GetComponent<NPCManagerV2>().npcList;
             npcList.Remove(gameObject);
             if (player.GetComponent<PlayerControl>().getTarget() == gameObject)
@@ -882,7 +921,6 @@ public class NPCV2 : MonoBehaviour
             }
             npcManager.removeNpcFromPlayersResponsibilities(gameObject);
             print(myName + " lähti teho-osastolle...");
-            Destroy(gameObject);
         }
         
 
@@ -950,10 +988,12 @@ public class NPCV2 : MonoBehaviour
     {
         interactionComponent.setTarget(target);
     }
+
     public GameObject getTarget()
     {
         return interactionComponent.getTarget();
     }
+
     //returns true if npc is already at target, sets the agent destination
     private bool walkToTarget()
     {
@@ -1520,4 +1560,6 @@ public class NPCV2 : MonoBehaviour
         return false;
 
     }
+
 }
+

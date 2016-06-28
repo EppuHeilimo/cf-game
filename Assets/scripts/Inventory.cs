@@ -41,6 +41,9 @@ public class Inventory : MonoBehaviour {
             slots[i].transform.SetParent(slotPanel.transform);
         }
 
+        int[] ids = { 0, 1, 2, 3};
+        AddItems(ids);
+
 
     }
 
@@ -76,7 +79,7 @@ public class Inventory : MonoBehaviour {
             Debug.Log("Inventaario on täynnä!");
         }
     }
-    /*
+
     public void AddItems(int[] ids)
     {
         Item[] itemsToAdd = new Item[ids.Length];
@@ -118,7 +121,7 @@ public class Inventory : MonoBehaviour {
             Debug.Log("Inventaario on täynnä!");
         }
     }
-    */
+
     public void AddItems(List<MedCup.Med> itemsInCup)
     {
         Item[] itemsToAdd = new Item[itemsInCup.Count];
