@@ -65,7 +65,7 @@ public class NurseAI : MonoBehaviour {
                     dest = interaction.getDestToTargetNPCSide(1, 16.0f);
                     moveToDest();
                 }
-                else if (arrivedToDestination(50.0f))
+                else if (arrivedToDestination(5.0f))
                 {
                     if(interaction.RotateTowards(targetNPC.transform) && !anim.pickingup && !readyToLeave)
                     {
