@@ -93,8 +93,7 @@ public class Minigame1 : MonoBehaviour {
         {
             if (!kasDesAnim.IsPlaying("Drop") && spawnDrops)
             {
-                foreach (GameObject d in drops)
-                    d.SetActive(false);
+                EnableDropsAnim(false);
                 spawnDrops = false;
             }
         }
@@ -115,9 +114,12 @@ public class Minigame1 : MonoBehaviour {
         player.GetComponent<PlayerControl>().enabled = false;
         foreach (GameObject n in npcManager.npcList)
         {
-            if(n.GetComponent<NPCV2>().diagnosed)
+            if (n != null)
             {
-                npcList.Add(n);
+                if(n.GetComponent<NPCV2>().diagnosed)
+                {
+                    npcList.Add(n);
+                }
             }
         }
         currNpc = 0;
@@ -140,8 +142,7 @@ public class Minigame1 : MonoBehaviour {
         minigameCanvas2.SetActive(false);    
         uiManager.pause(false);
         player.GetComponent<PlayerControl>().enabled = true;
-        foreach (GameObject d in drops)
-            d.SetActive(true);
+        EnableDropsAnim(true);
     }
 
     public void nextNPC()
@@ -189,8 +190,7 @@ public class Minigame1 : MonoBehaviour {
         kasDesObj.GetComponent<KasiDesi>().StopBlinking();
         kasDesObj.GetComponent<KasiDesi>().SetDefaultColor();
         kasiDesi = true;
-        foreach (GameObject d in drops)
-            d.SetActive(true);
+        EnableDropsAnim(true);
         kasDesAnim.Play();
         spawnDrops = true;    
     }
@@ -398,7 +398,6 @@ public class Minigame1 : MonoBehaviour {
                 foreach (MedCup.Med m in cup.GetComponent<MedCup>().medsInThisCup)
                     morningCupMeds.Add(m);
                 CombineMeds(0);
-                cup.GetComponent<MedCup>().Reset();
             }
 
             if (cup.GetComponent<MedCup>().cupName == "afternoon")
@@ -406,7 +405,6 @@ public class Minigame1 : MonoBehaviour {
                 foreach (MedCup.Med m in cup.GetComponent<MedCup>().medsInThisCup)
                     afternoonCupMeds.Add(m);
                 CombineMeds(1);
-                cup.GetComponent<MedCup>().Reset();
             }
 
             if (cup.GetComponent<MedCup>().cupName == "evening")
@@ -414,7 +412,6 @@ public class Minigame1 : MonoBehaviour {
                 foreach (MedCup.Med m in cup.GetComponent<MedCup>().medsInThisCup)
                     eveningCupMeds.Add(m);
                 CombineMeds(2);
-                cup.GetComponent<MedCup>().Reset();
             }
 
             if (cup.GetComponent<MedCup>().cupName == "night")
@@ -422,8 +419,9 @@ public class Minigame1 : MonoBehaviour {
                 foreach (MedCup.Med m in cup.GetComponent<MedCup>().medsInThisCup)
                     nightCupMeds.Add(m);
                 CombineMeds(3);
-                cup.GetComponent<MedCup>().Reset();
             }
+
+            cup.GetComponent<MedCup>().Clear();
         }
 
         mCamera.SwitchToMainCamera();
@@ -577,6 +575,9 @@ public class Minigame1 : MonoBehaviour {
         medCupPanel.transform.GetChild(1).transform.GetChild(0).GetComponent<Text>().text = "Empty";
         medCupPanel.transform.GetChild(2).transform.GetChild(0).GetComponent<Text>().text = "Empty";
         medCupPanel.transform.GetChild(3).transform.GetChild(0).GetComponent<Text>().text = "Empty";
+        GameObject[] cups = GameObject.FindGameObjectsWithTag("medCup");
+        foreach (GameObject cup in cups)
+            cup.GetComponent<MedCup>().DestroyPills();
     }
 
     public void ClearCup(int id)
@@ -653,5 +654,11 @@ public class Minigame1 : MonoBehaviour {
         medCupPanel.transform.GetChild(1).transform.GetChild(0).GetComponent<Text>().text = aText;
         medCupPanel.transform.GetChild(2).transform.GetChild(0).GetComponent<Text>().text = eText;
         medCupPanel.transform.GetChild(3).transform.GetChild(0).GetComponent<Text>().text = nText;
+    }
+
+    void EnableDropsAnim(bool enable)
+    {
+        foreach (GameObject d in drops)
+            d.SetActive(enable);
     }
 }

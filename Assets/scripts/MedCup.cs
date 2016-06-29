@@ -28,24 +28,37 @@ public class MedCup : MonoBehaviour {
         med.name = pill.medName;
         med.dosage = pill.dosage;
         medsInThisCup.Add(med);
-        //Destroy(other.gameObject);
         pills.Add(other.gameObject);
         other.gameObject.tag = "Untagged";
         Invoke("DisableRotation", 3f);
     }
 
+    public void Clear()
+    {
+        medsInThisCup.Clear();
+    }
+
     public void Reset()
     {
         medsInThisCup.Clear();
+        DestroyPills();
+    }
+
+    public void DestroyPills()
+    {
         foreach (GameObject pill in pills)
-            Destroy(pill);
+            if (pill != null)
+                Destroy(pill);
         pills.Clear();
     }
 
     void DisableRotation()
     {
-        foreach (GameObject pill in pills)
-            pill.GetComponent<Rigidbody2D>().freezeRotation = true;
+        if (pills.Count > 0)
+        { 
+            foreach (GameObject pill in pills)
+                if (pill != null)
+                    pill.GetComponent<Rigidbody2D>().freezeRotation = true;
+        }
     }
-
 }
