@@ -61,6 +61,12 @@ public class Minigame1 : MonoBehaviour {
     List<MedCup.Med> eveningCupMedsNoDuplicates = new List<MedCup.Med>();
     List<MedCup.Med> nightCupMedsNoDuplicates = new List<MedCup.Med>();
 
+    /* animation stuff */
+    public GameObject kasDesObj;
+    Animation kasDesAnim;
+    bool spawnDrops;
+    public GameObject[] drops;
+
     void Start()
     {
         invObj = GameObject.Find("Inventory");
@@ -85,18 +91,27 @@ public class Minigame1 : MonoBehaviour {
     {
         if (active)
         {
-            //Logic here...
+            if (!kasDesAnim.IsPlaying("Drop") && spawnDrops)
+            {
+                foreach (GameObject d in drops)
+                    d.SetActive(false);
+                spawnDrops = false;
+            }
         }
     }
 
     public void startMinigame()
     {
-        active = true;
         kasiDesi = false;
         uiManager.pause(true);
         minigameCanvas.SetActive(true);
         uiCanvas.SetActive(false);
-        
+        kasDesObj = GameObject.FindGameObjectWithTag("KasDes");
+        kasDesAnim = kasDesObj.GetComponent<Animation>();
+        drops = GameObject.FindGameObjectsWithTag("Drop");
+        spawnDrops = true;
+        active = true;
+
         player.GetComponent<PlayerControl>().enabled = false;
         foreach (GameObject n in npcManager.npcList)
         {
@@ -125,6 +140,8 @@ public class Minigame1 : MonoBehaviour {
         minigameCanvas2.SetActive(false);    
         uiManager.pause(false);
         player.GetComponent<PlayerControl>().enabled = true;
+        foreach (GameObject d in drops)
+            d.SetActive(true);
     }
 
     public void nextNPC()
@@ -169,7 +186,13 @@ public class Minigame1 : MonoBehaviour {
 
     public void kasiVitunDesi()
     {
+        kasDesObj.GetComponent<KasiDesi>().StopBlinking();
+        kasDesObj.GetComponent<KasiDesi>().SetDefaultColor();
         kasiDesi = true;
+        foreach (GameObject d in drops)
+            d.SetActive(true);
+        kasDesAnim.Play();
+        spawnDrops = true;    
     }
 
     public void showMedCard(NPCV2 npc)
