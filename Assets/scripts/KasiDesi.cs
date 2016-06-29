@@ -22,13 +22,13 @@ public class KasiDesi : MonoBehaviour {
     {
         if (blink)
         {
-            image.color = new Color(255, 0, 0, (Mathf.Sin(Time.time * 2.0f) + 1.0f) / 2.0f);
+            kasDesTxt.color = new Color(255, 255, 255, (Mathf.Sin(Time.time * 2.0f) + 1.0f) / 2.0f);
         }
     }
 
     public void StartBlinking()
     {
-        kasDesTxt.text = "Click it!";
+        kasDesTxt.text = "Use hand disinfectant first!";
         blink = true;
     }
 
