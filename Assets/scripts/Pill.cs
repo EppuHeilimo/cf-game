@@ -51,6 +51,7 @@ public class Pill : MonoBehaviour
             {
                 Destroy(spring);
                 rigbody.velocity = force;
+                rigbody.angularVelocity = force.magnitude * 10f;
             }
             LineRendererUpdate();
         }

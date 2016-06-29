@@ -22,6 +22,7 @@ public class MedCup : MonoBehaviour {
     void OnTriggerEnter2D(Collider2D other)
     {
         GameObject pillObj = other.gameObject;
+        
         Pill pill = pillObj.GetComponent<Pill>();
         Med med = new Med();
         med.name = pill.medName;
@@ -30,6 +31,7 @@ public class MedCup : MonoBehaviour {
         //Destroy(other.gameObject);
         pills.Add(other.gameObject);
         other.gameObject.tag = "Untagged";
+        Invoke("DisableRotation", 3f);
     }
 
     public void Reset()
@@ -38,6 +40,12 @@ public class MedCup : MonoBehaviour {
         foreach (GameObject pill in pills)
             Destroy(pill);
         pills.Clear();
+    }
+
+    void DisableRotation()
+    {
+        foreach (GameObject pill in pills)
+            pill.GetComponent<Rigidbody2D>().freezeRotation = true;
     }
 
 }
