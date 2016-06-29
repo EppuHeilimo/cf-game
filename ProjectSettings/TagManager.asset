@@ -36,6 +36,7 @@ TagManager:
   - Drop
   - KasDes
   - KasDesTxt
+  - Trolley
   layers:
   - Default
   - TransparentFX

@@ -49,7 +49,7 @@ public class UIManager : MonoBehaviour {
 
     public void pause(bool pause)
     {
-        if (pause)
+        if (pause && !paused)
         {
             NPCManagerV2 npcmanager = GameObject.FindGameObjectWithTag("NPCManager").GetComponent<NPCManagerV2>();
             
