@@ -197,7 +197,7 @@ public class ObjectInteraction : MonoBehaviour {
                         destination = new Vector3(target.transform.position.x + offset, transform.position.y, target.transform.position.z);
                     else
                     {
-                        print("Target unreachable! Target name: " + target.name);
+                        destination = target.transform.position;
                     }
                     break;
                 case 1:
@@ -211,7 +211,7 @@ public class ObjectInteraction : MonoBehaviour {
                         destination = new Vector3(target.transform.position.x, transform.position.y, target.transform.position.z - offset);
                     else
                     {
-                        print("Target unreachable! Target name: " + target.name);
+                        destination = target.transform.position;
                     }
                     break;
                 case 2:
@@ -225,7 +225,7 @@ public class ObjectInteraction : MonoBehaviour {
                         destination = new Vector3(target.transform.position.x + offset, transform.position.y, target.transform.position.z);
                     else
                     {
-                        print("Target unreachable! Target name: " + target.name);
+                        destination = target.transform.position;
                     }
                     break;
                 case 3:
@@ -239,7 +239,7 @@ public class ObjectInteraction : MonoBehaviour {
                         destination = new Vector3(target.transform.position.x, transform.position.y, target.transform.position.z + offset);
                     else
                     {
-                        print("Target unreachable! Target name: " + target.name);
+                        destination = target.transform.position;
                     }
                     break;
 

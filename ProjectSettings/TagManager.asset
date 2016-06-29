@@ -37,6 +37,7 @@ TagManager:
   - KasDes
   - KasDesTxt
   - Trolley
+  - MedCabinet
   layers:
   - Default
   - TransparentFX

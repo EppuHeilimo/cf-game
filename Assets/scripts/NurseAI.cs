@@ -13,13 +13,15 @@ public class NurseAI : MonoBehaviour {
     bool initialized = false;
     Transform trolley;
     bool readyToLeave = false;
+    bool readyForLift = false;
     public NurseAI partner;
     float timer = 0;
+    NPCManagerV2 npcManager;
 	// Use this for initialization
 	void Start ()
     {
-
-	}
+        npcManager = GameObject.FindGameObjectWithTag("NPCManager").GetComponent<NPCManagerV2>();
+    }
 	
     void moveToDest()
     {
@@ -36,13 +38,16 @@ public class NurseAI : MonoBehaviour {
                 if(dest == Vector3.zero)
                 {
                     interaction.setTarget(targetNPC);
-                    dest = interaction.getDestToTargetNPCSide(3, 32.0f);
+                    NavMeshHit hit;
+                    NavMesh.SamplePosition(targetNPC.transform.position, out hit, 50.0f, NavMesh.AllAreas);
+                    dest = hit.position;
                     moveToDest();
                 }
-                else if(arrivedToDestination(10.0f) && !readyToLeave)
+                else if(arrivedToDestination(100.0f) && !readyToLeave)
                 {
                     agent.Stop();
-                    if(partner.readyToLeave)
+                    readyForLift = true;
+                    if (partner.readyToLeave)
                     {
                         targetNPC.GetComponent<NavMeshAgent>().enabled = false;
                         targetNPC.transform.position = new Vector3(trolley.position.x, 24.0f, trolley.position.z);
@@ -51,9 +56,20 @@ public class NurseAI : MonoBehaviour {
                         targetNPC.transform.SetParent(trolley);
                         targetNPC.transform.localPosition = new Vector3(targetNPC.transform.localPosition.x -20f, targetNPC.transform.localPosition.y, targetNPC.transform.localPosition.z);
                         readyToLeave = true;
+                        NavMeshHit hit;
                         dest = new Vector3(733, 0, -742);
+                        NavMesh.SamplePosition(dest, out hit, 50.0f, NavMesh.AllAreas);
+                        dest = hit.position;
                         moveToDest();
                         agent.Resume();
+                    }
+                }
+                else if (partner.readyForLift && !arrivedToDestination(50.0f) && !readyToLeave)
+                {
+                    timer += Time.deltaTime;
+                    if (timer > 1.0f)
+                    {
+                        agent.Warp(agent.destination);
                     }
                 }
             }
@@ -65,27 +81,39 @@ public class NurseAI : MonoBehaviour {
                     dest = interaction.getDestToTargetNPCSide(1, 16.0f);
                     moveToDest();
                 }
-                else if (arrivedToDestination(5.0f))
+                else if (arrivedToDestination(15.0f))
                 {
-                    if(interaction.RotateTowards(targetNPC.transform) && !anim.pickingup && !readyToLeave)
+                    if(interaction.RotateTowards(targetNPC.transform))
                     {
-                        anim.pickfromfloor();
-                    }
-                    else if(anim.pickingup)
-                    {
-                        timer += Time.deltaTime;
-                    }
-                    if (timer > 1.0f)
-                    {
-                        readyToLeave = true;
-                        anim.stoppickfromfloor();
-                        dest = new Vector3(733, 0, -742);
-                        moveToDest();
+                        if (!readyForLift)
+                            readyForLift = true;
+                        if (!anim.pickingup && !readyToLeave && partner.readyForLift)
+                        {
+                            anim.pickfromfloor();
+                        }
+                        else if (anim.pickingup)
+                        {
+                            timer += Time.deltaTime;
+                        }
+                        if (timer > 1.0f)
+                        {
+                            readyToLeave = true;
+                            anim.stoppickfromfloor();
+                            dest = new Vector3(733, 0, -742);
+                            moveToDest();
+                        }
                     }
                 }
             }
             if(readyToLeave && arrivedToDestination(30.0f))
             {
+                npcManager.npcList.Remove(gameObject);
+                if (GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerControl>().getTarget() == gameObject)
+                {
+                    GameObject.FindGameObjectWithTag("TextBoxManager").GetComponent<TextBoxManager>().DisableTextBox();
+                }
+                npcManager.removeNpcFromPlayersResponsibilities(gameObject);
+                npcManager.nursesDeployed = false;
                 Destroy(gameObject);
             }
         }
