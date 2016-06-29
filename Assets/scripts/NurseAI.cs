@@ -38,7 +38,9 @@ public class NurseAI : MonoBehaviour {
                 if(dest == Vector3.zero)
                 {
                     interaction.setTarget(targetNPC);
-                    dest = targetNPC.transform.position;
+                    NavMeshHit hit;
+                    NavMesh.SamplePosition(targetNPC.transform.position, out hit, 50.0f, NavMesh.AllAreas);
+                    dest = hit.position;
                     moveToDest();
                 }
                 else if(arrivedToDestination(100.0f) && !readyToLeave)
@@ -54,9 +56,20 @@ public class NurseAI : MonoBehaviour {
                         targetNPC.transform.SetParent(trolley);
                         targetNPC.transform.localPosition = new Vector3(targetNPC.transform.localPosition.x -20f, targetNPC.transform.localPosition.y, targetNPC.transform.localPosition.z);
                         readyToLeave = true;
+                        NavMeshHit hit;
                         dest = new Vector3(733, 0, -742);
+                        NavMesh.SamplePosition(dest, out hit, 50.0f, NavMesh.AllAreas);
+                        dest = hit.position;
                         moveToDest();
                         agent.Resume();
+                    }
+                }
+                else if (partner.readyForLift && !arrivedToDestination(50.0f) && !readyToLeave)
+                {
+                    timer += Time.deltaTime;
+                    if (timer > 1.0f)
+                    {
+                        agent.Warp(agent.destination);
                     }
                 }
             }
@@ -70,20 +83,25 @@ public class NurseAI : MonoBehaviour {
                 }
                 else if (arrivedToDestination(15.0f))
                 {
-                    if(interaction.RotateTowards(targetNPC.transform) && !anim.pickingup && !readyToLeave && partner.readyForLift)
+                    if(interaction.RotateTowards(targetNPC.transform))
                     {
-                        anim.pickfromfloor();
-                    }
-                    else if(anim.pickingup)
-                    {
-                        timer += Time.deltaTime;
-                    }
-                    if (timer > 1.0f)
-                    {
-                        readyToLeave = true;
-                        anim.stoppickfromfloor();
-                        dest = new Vector3(733, 0, -742);
-                        moveToDest();
+                        if (!readyForLift)
+                            readyForLift = true;
+                        if (!anim.pickingup && !readyToLeave && partner.readyForLift)
+                        {
+                            anim.pickfromfloor();
+                        }
+                        else if (anim.pickingup)
+                        {
+                            timer += Time.deltaTime;
+                        }
+                        if (timer > 1.0f)
+                        {
+                            readyToLeave = true;
+                            anim.stoppickfromfloor();
+                            dest = new Vector3(733, 0, -742);
+                            moveToDest();
+                        }
                     }
                 }
             }

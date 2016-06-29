@@ -40,6 +40,8 @@ public class Inventory : MonoBehaviour {
             slots[i].GetComponent<Slot>().id = i;
             slots[i].transform.SetParent(slotPanel.transform);
         }
+        int[] ids = { 0, 1, 2, 3 };
+        AddItems(ids);
     }
 
     public void AddItem(int id)
@@ -94,7 +96,7 @@ public class Inventory : MonoBehaviour {
             // ID -1 = empty slot
             if (items[i].ID == -1)
             {
-                items[i].ID = 1;
+                items[i].ID = i;
                 foundEmptySlot = true;
                 for (int j = 0; j < itemsToAdd.Length; j++)
                 {
@@ -120,7 +122,7 @@ public class Inventory : MonoBehaviour {
         }
     }
 
-    /*
+
     public void AddItems(int[] ids)
     {
         Item[] itemsToAdd = new Item[ids.Length];
@@ -205,7 +207,7 @@ public class Inventory : MonoBehaviour {
             Debug.Log("Inventaario on täynnä!");
         }
     }
-    */
+
 
     public void RemoveItem(int id)
     {

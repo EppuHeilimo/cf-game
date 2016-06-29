@@ -14,7 +14,7 @@ public class NPCManagerV2 : MonoBehaviour
     [SerializeField]
     GameObject nurseWithTrolleyPrefab;
     Vector3 nurseSpawn = new Vector3(733, 0, -742);
-    Vector3 nurseSpawn2 = new Vector3(700, 0, -742);
+    Vector3 nurseSpawn2 = new Vector3(700, 0, -700);
     public bool nursesDeployed = false;
 
     public bool paused = false;

@@ -1019,7 +1019,8 @@ public class NPCV2 : MonoBehaviour
         }
         else
         {
-            moveTo(target.transform.position);
+            if(!agent.hasPath)
+                moveTo(target.transform.position);
             return false;
         }
     }
@@ -1417,7 +1418,14 @@ public class NPCV2 : MonoBehaviour
     public void moveTo(Vector3 dest)
     {
         if(agent.enabled)
-            agent.SetDestination(dest);
+        {
+            NavMeshHit hit;
+            if (NavMesh.SamplePosition(dest, out hit, 10.0f, agent.areaMask))
+                agent.SetDestination(hit.position);
+            else
+                agent.SetDestination(dest);
+        }
+            
     }
     void checkMed()
     {
@@ -1492,7 +1500,7 @@ public class NPCV2 : MonoBehaviour
             {
                 meds = (Medicine[])morningMed.Clone();
             }
-            else if(currTime == ClockTime.DayTime.AFTERNOON)
+            else if (currTime == ClockTime.DayTime.AFTERNOON)
             {
                 meds = (Medicine[])afternoonMed.Clone();
             }
@@ -1541,9 +1549,9 @@ public class NPCV2 : MonoBehaviour
                 return true;
             }
             myHp -= incorrect * 20;
-
+            return true;
         }
-        return false;
+        else return false;
     }
 
     public void disableAllMeds()
