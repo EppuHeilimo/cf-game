@@ -5,7 +5,8 @@ using UnityEngine.UI;
 
 public class MedCabinet : MonoBehaviour
 {
-    GameObject miniGame;  
+    GameObject miniGame;
+    public bool playerInZone = false;
 
     void Start()
     {
@@ -15,7 +16,13 @@ public class MedCabinet : MonoBehaviour
     void OnTriggerEnter(Collider other)
     {
         if (other.tag == "Player")
-            miniGame.GetComponent<Minigame1>().startMinigame();
+            playerInZone = true;
+            
+    }
+
+    public void startMinigame()
+    {
+        miniGame.GetComponent<Minigame1>().startMinigame();
     }
 
     /*

@@ -16,6 +16,8 @@ public class PlayerControl : MonoBehaviour {
     bool sleeping = false;
     bool followNpc = false;
     bool pickingup = false;
+    bool movingtomedcabinet = false; 
+
     // Use this for initialization
     void Start () {
         interaction = GetComponent<ObjectInteraction>();
@@ -52,6 +54,26 @@ public class PlayerControl : MonoBehaviour {
             }
         }
 
+        if(movingtomedcabinet)
+        {
+            if(arrivedToDestination(10.0f))
+            {
+                if(target != null && target.tag == "MedCabinet")
+                {
+                    GameObject.Find("Minigame1").GetComponent<Minigame1>().startMinigame();
+                    movingtomedcabinet = false;
+                }
+                else
+                {
+                    movingtomedcabinet = false;
+                }
+            }
+            if(target == null || target.tag != "MedCabinet")
+            {
+                movingtomedcabinet = false;
+            }
+        }
+
         if(sitting)
         {
             if(arrivedToDestination(10.0f))
@@ -73,7 +95,6 @@ public class PlayerControl : MonoBehaviour {
                             {
                                 anim.sit();
                             }
-
                         }
 
                     }
@@ -295,6 +316,13 @@ public class PlayerControl : MonoBehaviour {
                                 pickingup = true;
                                 agent.SetDestination(target.transform.position);
                                 disableMoveIndicator();
+                            }
+                            else if (target.tag == "MedCabinet")
+                            {
+                                interaction.setTarget(target);
+                                agent.SetDestination(target.transform.position);
+                                disableMoveIndicator();
+                                movingtomedcabinet = true;
                             }
                         }
                         else

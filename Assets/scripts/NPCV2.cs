@@ -22,7 +22,7 @@ public class NPCV2 : MonoBehaviour
         STATE_TRY_UNSTUCK,
         STATE_GO_WC,
         STATE_IDLE_SIT,
-        STATE_DEFAULT
+        STATE_DEFAULT //Do nothing
     }
 
     /* basic stuff */
@@ -379,8 +379,7 @@ public class NPCV2 : MonoBehaviour
             }
 
         }
-
-        if (arrivedToDestination(10.0f) && !sitting)
+        else if (arrivedToDestination(10.0f) && !sitting)
         {
             agent.Stop();
             sitting = true;
@@ -405,7 +404,7 @@ public class NPCV2 : MonoBehaviour
                 taskCompleted = true;
             }
         }
-        if (sitting)
+        else if (sitting)
         {
             timer += Time.deltaTime;
             if(timer > 2 * IDLE_IN_THIS_PLACE_TIME)
@@ -679,7 +678,7 @@ public class NPCV2 : MonoBehaviour
         if (dest == Vector3.zero && myBed != null)
         {
             interactionComponent.setTarget(myBed);
-            dest = interactionComponent.getDestToTargetObjectSide(1, 20.0f);
+            dest = interactionComponent.getDestToTargetObjectSide(1, 25.0f);
             if(dest == Vector3.zero)
             {
                 cantFindBed = true;
@@ -851,16 +850,23 @@ public class NPCV2 : MonoBehaviour
         }
         else if (dest == Vector3.zero)
         {
-            
-            if (Random.Range(0, 10) > 7)
+            if (Random.Range(1, 11) > 7)
             {
                 if (!talking)
+                {
                     addStateToQueue(2, NPCState.STATE_TALK_TO_OTHER_NPC);
+                    taskCompleted = true;
+                }
+                    
             }
-            else if (Random.Range(0, 10) > 7)
+            else if (Random.Range(1, 11) > 7)
             {
                 if (!talking && !sitting)
+                {
                     addStateToQueue(2, NPCState.STATE_IDLE_SIT);
+                    taskCompleted = true;
+                }
+                    
             }
             else
             {
@@ -882,15 +888,23 @@ public class NPCV2 : MonoBehaviour
                 {
                     timer = 0;
                     //20% chance every IDLE_IN_THIS_PLACE_TIME to start talking to somoene or go sit
-                    if (Random.Range(0, 10) > 7)
+                    if (Random.Range(1, 11) > 7)
                     {
                         if (!talking)
+                        {
+                            taskCompleted = true;
                             addStateToQueue(2, NPCState.STATE_TALK_TO_OTHER_NPC);
+                        }
+                            
                     }
-                    else if (Random.Range(0, 10) > 7)
+                    else if (Random.Range(1, 11) > 7)
                     {
                         if (!talking && !sitting)
+                        {
                             addStateToQueue(2, NPCState.STATE_IDLE_SIT);
+                            taskCompleted = true;
+                        }
+                            
                     }
                     else
                     {
@@ -904,26 +918,27 @@ public class NPCV2 : MonoBehaviour
     private void die()
     {
         lockstate = true;
-        timer += Time.deltaTime;
-        if(!animations.falling)
+        if (sleeping)
         {
-            agent.Stop();
-            agent.GetComponent<IiroAnimBehavior>().fall();
-            npcManager.spawnNurseToFetchNPC(gameObject);
+            animations.stopSleep();
+            sleeping = false;
         }
-        if (timer > STAY_ON_FLOOR_ON_FALL)
+        else if (sitting)
         {
-            List<GameObject> npcList = GameObject.Find("NPCManager").GetComponent<NPCManagerV2>().npcList;
-            npcList.Remove(gameObject);
-            if (player.GetComponent<PlayerControl>().getTarget() == gameObject)
+            animations.stopSit();
+            sitting = false;
+        }
+        else
+        {
+            if (!npcManager.nursesDeployed)
+                npcManager.spawnNurseToFetchNPC(gameObject);
+            timer += Time.deltaTime;
+            if (!animations.falling)
             {
-                GameObject.FindGameObjectWithTag("TextBoxManager").GetComponent<TextBoxManager>().DisableTextBox();
+                agent.Stop();
+                agent.GetComponent<IiroAnimBehavior>().fall();
             }
-            npcManager.removeNpcFromPlayersResponsibilities(gameObject);
-            print(myName + " lähti teho-osastolle...");
         }
-        
-
     }
     //if player is close and player has target on this npc, talk to player
     private void talkToPlayer()
@@ -1063,8 +1078,13 @@ public class NPCV2 : MonoBehaviour
     public void addStateToQueue(int priority, NPCState state)
     {
         Queue<NPCState> queue = new Queue<NPCState>();
+        
         stateQueue.TryGetValue(priority, out queue);
-        queue.Enqueue(state);
+        if(!queue.Contains(state))
+        {
+            queue.Enqueue(state);
+        }
+        
     }
 
     void unbookAllMyObjects()
