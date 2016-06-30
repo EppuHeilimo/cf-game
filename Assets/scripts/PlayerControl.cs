@@ -491,7 +491,6 @@ public class PlayerControl : MonoBehaviour {
 
     void outlineGameObjectRecursive(Transform gameobject, Shader shader)
     {
-
         foreach (Transform child in gameobject)
         {
             outlineGameObjectRecursive(child, shader);

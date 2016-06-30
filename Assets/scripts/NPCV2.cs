@@ -876,7 +876,18 @@ public class NPCV2 : MonoBehaviour
 
     private void die()
     {
-        if(!dead)
+        lockstate = true;
+        if (sleeping)
+        {
+            animations.stopSleep();
+            sleeping = false;
+        }
+        else if (sitting)
+        {
+            animations.stopSit();
+            sitting = false;
+        }
+        if (!dead)
         {
             if (dest == Vector3.zero)
             {
@@ -885,34 +896,20 @@ public class NPCV2 : MonoBehaviour
                 dest = hit.position;
                 agent.SetDestination(dest);
             }
-            else if (arrivedToDestination(30.0f) && !dead)
+            else if (arrivedToDestination(30.0f))
             {
                 dead = true;
             }
         }
         else
         {
-            lockstate = true;
-            if (sleeping)
+            if (!npcManager.nursesDeployed)
+                npcManager.spawnNurseToFetchNPC(gameObject);
+            timer += Time.deltaTime;
+            if (!animations.falling)
             {
-                animations.stopSleep();
-                sleeping = false;
-            }
-            else if (sitting)
-            {
-                animations.stopSit();
-                sitting = false;
-            }
-            else
-            {
-                if (!npcManager.nursesDeployed)
-                    npcManager.spawnNurseToFetchNPC(gameObject);
-                timer += Time.deltaTime;
-                if (!animations.falling)
-                {
-                    agent.Stop();
-                    agent.GetComponent<IiroAnimBehavior>().fall();
-                }
+                agent.Stop();
+                agent.GetComponent<IiroAnimBehavior>().fall();
             }
         }
     }
