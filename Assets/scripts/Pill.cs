@@ -38,6 +38,12 @@ public class Pill : MonoBehaviour
         maxStretchSqr = maxStretch * maxStretch;       
     }
 
+    void OnCollisionEnter2D(Collision2D coll)
+    {
+        if (coll.gameObject.tag == "Pill" || coll.gameObject.tag == "disabledPill")
+            Physics2D.IgnoreCollision(coll.gameObject.GetComponent<CircleCollider2D>(), GetComponent<CircleCollider2D>());
+    }
+
     void Update()
     {
         if (clickedOn)

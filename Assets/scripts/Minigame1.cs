@@ -49,17 +49,7 @@ public class Minigame1 : MonoBehaviour {
     public Text night3 = null;
     public Text night4 = null;
 
-    /* dosage game stuff */
     CameraMovement mCamera;
-    public List<MedCup.Med> morningCupMeds = new List<MedCup.Med>();
-    public List<MedCup.Med> afternoonCupMeds = new List<MedCup.Med>();
-    public List<MedCup.Med> eveningCupMeds = new List<MedCup.Med>();
-    public List<MedCup.Med> nightCupMeds = new List<MedCup.Med>();
-    //NoDuplicates
-    List<MedCup.Med> morningCupMedsNoDuplicates = new List<MedCup.Med>();
-    List<MedCup.Med> afternoonCupMedsNoDuplicates = new List<MedCup.Med>();
-    List<MedCup.Med> eveningCupMedsNoDuplicates = new List<MedCup.Med>();
-    List<MedCup.Med> nightCupMedsNoDuplicates = new List<MedCup.Med>();
 
     /* animation stuff */
     public GameObject kasDesObj;
@@ -134,7 +124,6 @@ public class Minigame1 : MonoBehaviour {
     public void quitMinigame()
     {
         AddCupsToInv();
-        ClearCups();
         GetComponent<MedCabInventory>().Reset();
         active = false;
         uiCanvas.SetActive(true);
@@ -389,224 +378,45 @@ public class Minigame1 : MonoBehaviour {
     }
 
     public void quitDosingGame()
-    {
-        GameObject[] cups = GameObject.FindGameObjectsWithTag("medCup");
-        foreach (GameObject cup in cups)
-        {
-            if (cup.GetComponent<MedCup>().cupName == "morning")
-            {
-                foreach (MedCup.Med m in cup.GetComponent<MedCup>().medsInThisCup)
-                    morningCupMeds.Add(m);
-                CombineMeds(0);
-            }
-
-            if (cup.GetComponent<MedCup>().cupName == "afternoon")
-            {
-                foreach (MedCup.Med m in cup.GetComponent<MedCup>().medsInThisCup)
-                    afternoonCupMeds.Add(m);
-                CombineMeds(1);
-            }
-
-            if (cup.GetComponent<MedCup>().cupName == "evening")
-            {
-                foreach (MedCup.Med m in cup.GetComponent<MedCup>().medsInThisCup)
-                    eveningCupMeds.Add(m);
-                CombineMeds(2);
-            }
-
-            if (cup.GetComponent<MedCup>().cupName == "night")
-            {
-                foreach (MedCup.Med m in cup.GetComponent<MedCup>().medsInThisCup)
-                    nightCupMeds.Add(m);
-                CombineMeds(3);
-            }
-
-            cup.GetComponent<MedCup>().Clear();
-        }
-
+    {   
         mCamera.SwitchToMainCamera();
         minigameCanvas.SetActive(true);
         minigameCanvas2.SetActive(false);
-        ShowMedsInCups();
     }
 
     public void AddCupsToInv()
     {
-        if (morningCupMedsNoDuplicates.Count > 0)
-            playerInv.AddItems(morningCupMedsNoDuplicates);
+        GameObject morningCupObj = GameObject.FindGameObjectWithTag("morningCup");
+        MedCup morningCup = morningCupObj.GetComponent<MedCup>();
 
-        if (afternoonCupMedsNoDuplicates.Count > 0)
-            playerInv.AddItems(afternoonCupMedsNoDuplicates);
+        GameObject afternoonCupObj = GameObject.FindGameObjectWithTag("afternoonCup");
+        MedCup afternoonCup = afternoonCupObj.GetComponent<MedCup>();
 
-        if (eveningCupMedsNoDuplicates.Count > 0)
-            playerInv.AddItems(eveningCupMedsNoDuplicates);
+        GameObject eveningCupObj = GameObject.FindGameObjectWithTag("eveningCup");
+        MedCup eveningCup = eveningCupObj.GetComponent<MedCup>();
 
-        if (nightCupMedsNoDuplicates.Count > 0)
-            playerInv.AddItems(nightCupMedsNoDuplicates);
+        GameObject nightCupObj = GameObject.FindGameObjectWithTag("nightCup");
+        MedCup nightCup = nightCupObj.GetComponent<MedCup>();
+
+        if (morningCup.medsInThisCup.Count > 0)
+            playerInv.AddItems(morningCup.medsInThisCup);
+
+        if (afternoonCup.medsInThisCup.Count > 0)
+            playerInv.AddItems(afternoonCup.medsInThisCup);
+
+        if (eveningCup.medsInThisCup.Count > 0)
+            playerInv.AddItems(eveningCup.medsInThisCup);
+
+        if (nightCup.medsInThisCup.Count > 0)
+            playerInv.AddItems(nightCup.medsInThisCup);
+
+        morningCup.Reset();
+        afternoonCup.Reset();
+        eveningCup.Reset();
+        nightCup.Reset();
     }
 
-    void CombineMeds(int id)
-    {
-        switch (id)
-        {
-            case 0:
-                // duplicates -> add up dosage
-                if (morningCupMeds.Count > 0)
-                {
-                    foreach (MedCup.Med m in morningCupMeds)
-                    {
-                        if (morningCupMedsNoDuplicates.Count == 0)
-                            morningCupMedsNoDuplicates.Add(m);
-                        else
-                        {
-                            bool found = false;
-                            for (int i = 0; i < morningCupMedsNoDuplicates.Count; i++)
-                            {
-                                if (morningCupMedsNoDuplicates[i].name == m.name)
-                                {
-                                    morningCupMedsNoDuplicates[i].dosage += m.dosage;
-                                    found = true;
-                                    break;
-                                }
-                            }
-                            if (!found)
-                                morningCupMedsNoDuplicates.Add(m);
-                        }
-                    }
-                }
-                morningCupMeds.Clear();
-                break;
-
-            case 1:
-                if (afternoonCupMeds.Count > 0)
-                {
-                    foreach (MedCup.Med m in afternoonCupMeds)
-                    {
-                        if (afternoonCupMedsNoDuplicates.Count == 0)
-                            afternoonCupMedsNoDuplicates.Add(m);
-                        else
-                        {
-                            bool found = false;
-                            for (int i = 0; i < afternoonCupMedsNoDuplicates.Count; i++)
-                            {
-                                if (afternoonCupMedsNoDuplicates[i].name == m.name)
-                                {
-                                    afternoonCupMedsNoDuplicates[i].dosage += m.dosage;
-                                    found = true;
-                                    break;
-                                }
-                            }
-                            if (!found)
-                                afternoonCupMedsNoDuplicates.Add(m);
-                        }
-                    }
-                }
-                afternoonCupMeds.Clear();
-                break;
-
-            case 2:
-                if (eveningCupMeds.Count > 0)
-                {
-                    foreach (MedCup.Med m in eveningCupMeds)
-                    {
-                        if (eveningCupMedsNoDuplicates.Count == 0)
-                            eveningCupMedsNoDuplicates.Add(m);
-                        else
-                        {
-                            bool found = false;
-                            for (int i = 0; i < eveningCupMedsNoDuplicates.Count; i++)
-                            {
-                                if (eveningCupMedsNoDuplicates[i].name == m.name)
-                                {
-                                    eveningCupMedsNoDuplicates[i].dosage += m.dosage;
-                                    found = true;
-                                    break;
-                                }
-                            }
-                            if (!found)
-                                eveningCupMedsNoDuplicates.Add(m);
-                        }
-                    }
-                }
-                eveningCupMeds.Clear();
-                break;
-
-            case 3:
-                if (nightCupMeds.Count > 0)
-                {
-                    foreach (MedCup.Med m in nightCupMeds)
-                    {
-                        if (nightCupMedsNoDuplicates.Count == 0)
-                            nightCupMedsNoDuplicates.Add(m);
-                        else
-                        {
-                            bool found = false;
-                            for (int i = 0; i < nightCupMedsNoDuplicates.Count; i++)
-                            {
-                                if (nightCupMedsNoDuplicates[i].name == m.name)
-                                {
-                                    nightCupMedsNoDuplicates[i].dosage += m.dosage;
-                                    found = true;
-                                    break;
-                                }
-                            }
-                            if (!found)
-                                nightCupMedsNoDuplicates.Add(m);
-                        }
-                    }
-                }
-                nightCupMeds.Clear();
-                break;
-        }     
-    }
-
-    public void ClearCups()
-    {     
-        morningCupMeds.Clear();
-        morningCupMedsNoDuplicates.Clear();
-        afternoonCupMeds.Clear();
-        afternoonCupMedsNoDuplicates.Clear();
-        eveningCupMeds.Clear();
-        eveningCupMedsNoDuplicates.Clear();
-        nightCupMeds.Clear();
-        nightCupMedsNoDuplicates.Clear();
-        GameObject medCupPanel = GameObject.FindGameObjectWithTag("MedCupPanel");
-        medCupPanel.transform.GetChild(0).transform.GetChild(0).GetComponent<Text>().text = "Empty";
-        medCupPanel.transform.GetChild(1).transform.GetChild(0).GetComponent<Text>().text = "Empty";
-        medCupPanel.transform.GetChild(2).transform.GetChild(0).GetComponent<Text>().text = "Empty";
-        medCupPanel.transform.GetChild(3).transform.GetChild(0).GetComponent<Text>().text = "Empty";
-        GameObject[] cups = GameObject.FindGameObjectsWithTag("medCup");
-        foreach (GameObject cup in cups)
-            cup.GetComponent<MedCup>().DestroyPills();
-    }
-
-    public void ClearCup(int id)
-    {
-        switch (id)
-        {
-            case 0:
-                morningCupMeds.Clear();
-                morningCupMedsNoDuplicates.Clear();
-                ShowMedsInCups();
-                break;
-            case 1:
-                afternoonCupMeds.Clear();
-                afternoonCupMedsNoDuplicates.Clear();
-                ShowMedsInCups();
-                break;
-            case 2:
-                eveningCupMeds.Clear();
-                eveningCupMedsNoDuplicates.Clear();
-                ShowMedsInCups();
-                break;
-            case 3:
-                nightCupMeds.Clear();
-                nightCupMedsNoDuplicates.Clear();
-                ShowMedsInCups();
-                break;
-        }
-    }
-
+    /*
     public void ShowMedsInCups()
     {
         GameObject medCupPanel = GameObject.FindGameObjectWithTag("MedCupPanel");
@@ -655,6 +465,7 @@ public class Minigame1 : MonoBehaviour {
         medCupPanel.transform.GetChild(2).transform.GetChild(0).GetComponent<Text>().text = eText;
         medCupPanel.transform.GetChild(3).transform.GetChild(0).GetComponent<Text>().text = nText;
     }
+    */
 
     void EnableDropsAnim(bool enable)
     {
