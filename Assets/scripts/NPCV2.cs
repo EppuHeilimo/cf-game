@@ -850,35 +850,14 @@ public class NPCV2 : MonoBehaviour
         }
         else if (dest == Vector3.zero)
         {
-            if (Random.Range(1, 11) > 7)
-            {
-                if (!talking)
-                {
-                    addStateToQueue(2, NPCState.STATE_TALK_TO_OTHER_NPC);
-                    taskCompleted = true;
-                }
-                    
-            }
-            else if (Random.Range(1, 11) > 7)
-            {
-                if (!talking && !sitting)
-                {
-                    addStateToQueue(2, NPCState.STATE_IDLE_SIT);
-                    taskCompleted = true;
-                }
-                    
-            }
-            else
-            {
-                // move to idle at random position
-                Vector3 randomDirection = Random.insideUnitSphere * WALK_RADIUS;
-                randomDirection += transform.position;
-                NavMeshHit hit;
-                NavMesh.SamplePosition(randomDirection, out hit, WALK_RADIUS, 1);
-                Vector3 finalPosition = hit.position;
-                dest = new Vector3(finalPosition.x, 0, finalPosition.z);
-                moveTo(dest);
-            }
+            // move to idle at random position
+            Vector3 randomDirection = Random.insideUnitSphere * WALK_RADIUS;
+            randomDirection += transform.position;
+            NavMeshHit hit;
+            NavMesh.SamplePosition(randomDirection, out hit, WALK_RADIUS, 1);
+            Vector3 finalPosition = hit.position;
+            dest = new Vector3(finalPosition.x, 0, finalPosition.z);
+            moveTo(dest);
         }
         else
         {
@@ -888,33 +867,12 @@ public class NPCV2 : MonoBehaviour
                 {
                     timer = 0;
                     //20% chance every IDLE_IN_THIS_PLACE_TIME to start talking to somoene or go sit
-                    if (Random.Range(1, 11) > 7)
-                    {
-                        if (!talking)
-                        {
-                            taskCompleted = true;
-                            addStateToQueue(2, NPCState.STATE_TALK_TO_OTHER_NPC);
-                        }
-                            
-                    }
-                    else if (Random.Range(1, 11) > 7)
-                    {
-                        if (!talking && !sitting)
-                        {
-                            addStateToQueue(2, NPCState.STATE_IDLE_SIT);
-                            taskCompleted = true;
-                        }
-                            
-                    }
-                    else
-                    {
-                        taskCompleted = true;
-                    }
-                    
+                    taskCompleted = true;
                 }
             }
         }
     }
+
     private void die()
     {
         lockstate = true;
@@ -1154,14 +1112,31 @@ public class NPCV2 : MonoBehaviour
                         }
                         else
                         {
-                            if (myState != NPCState.STATE_IDLE)
+                            //if nothing to do choose randomly from talking with npcs, sitting, idle walking
+                            if (Random.Range(1, 11) > 7)
+                            {
+                                if (!talking)
+                                {
+                                    prevState = myState;
+                                    myState = NPCState.STATE_TALK_TO_OTHER_NPC;
+                                }
+                            }
+                            else if (Random.Range(1, 11) > 7)
+                            {
+                                if (!talking && !sitting)
+                                {
+                                    prevState = myState;
+                                    myState = NPCState.STATE_IDLE_SIT;
+                                }
+                            }
+                            else
                             {
                                 prevState = myState;
                                 myState = NPCState.STATE_IDLE;
-                                dest = Vector3.zero;
-                                taskCompleted = false;
-                                currentTaskPriority = 1;
                             }
+                            dest = Vector3.zero;
+                            taskCompleted = false;
+                            currentTaskPriority = 1;
                         }
                     }
                 }

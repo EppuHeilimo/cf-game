@@ -6,7 +6,7 @@ public class SlidingDoors : MonoBehaviour {
     int triggerObjectsInArea = 0;
     Vector3[] defaultPos = new Vector3[2];
     bool isOpen = false;
-    float animSpeed = 40f;
+    float animSpeed = 55f;
     Transform[] doors = new Transform[2];
     Vector3[] targetPos = new Vector3[2];
     // Use this for initialization

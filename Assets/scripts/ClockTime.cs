@@ -16,8 +16,9 @@ public class ClockTime : MonoBehaviour {
     float dayLengthInRealHours = 24;
 
     float dayLength;
-    //day start hour (0-24)
-    int startHour = 7; 
+    //day start hour in minutes (60 * 1 to 24)
+    int startHour = 7;
+    float startHourInSeconds;
     Text textref;
     string currentText;
 
@@ -48,6 +49,7 @@ public class ClockTime : MonoBehaviour {
     // Use this for initialization
     void Start () {
         dayLength = dayLengthInRealHours * 60 * secToGameMin;
+        startHourInSeconds = startHour * 60 * secToGameMin;
         textref = GetComponent<Text>();
         currentText = textref.text;
         GameObject NPCManagerObj = GameObject.Find("NPCManager");
@@ -60,11 +62,13 @@ public class ClockTime : MonoBehaviour {
         if(!paused)
         {
             currentTime += Time.deltaTime;
-            if (currentTime >= dayLength)
+            if (currentTime >= dayLength - startHourInSeconds)
             {
                 currentTime = 0;
                 currentHours = 0;
                 day++;
+                startHourInSeconds = 0;
+                startHour = 0;
             }
             string timeString = getTimeString();
             currentText = timeString; // + " Day " + day + "\n" + currentDayTime.ToString();

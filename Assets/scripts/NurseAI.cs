@@ -39,7 +39,7 @@ public class NurseAI : MonoBehaviour {
                 {
                     interaction.setTarget(targetNPC);
                     NavMeshHit hit;
-                    NavMesh.SamplePosition(targetNPC.transform.position, out hit, 50.0f, NavMesh.AllAreas);
+                    NavMesh.SamplePosition(targetNPC.transform.position, out hit, 200.0f, (1 << 7));
                     dest = hit.position;
                     moveToDest();
                 }
