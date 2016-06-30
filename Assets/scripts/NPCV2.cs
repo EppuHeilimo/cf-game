@@ -38,6 +38,7 @@ public class NPCV2 : MonoBehaviour
     int currentTaskPriority = 0;
     public Sprite myHead2d;
     int prevTaskPriority = 0;
+    bool dead = false;
     /* Reference to player */
     private GameObject player;
     public GameObject responsibilityIndicator;
@@ -875,26 +876,43 @@ public class NPCV2 : MonoBehaviour
 
     private void die()
     {
-        lockstate = true;
-        if (sleeping)
+        if(!dead)
         {
-            animations.stopSleep();
-            sleeping = false;
-        }
-        else if (sitting)
-        {
-            animations.stopSit();
-            sitting = false;
+            if (dest == Vector3.zero)
+            {
+                NavMeshHit hit;
+                NavMesh.SamplePosition(transform.position, out hit, 1000.0f, (1 << 7));
+                dest = hit.position;
+                agent.SetDestination(dest);
+            }
+            else if (arrivedToDestination(30.0f) && !dead)
+            {
+                dead = true;
+            }
         }
         else
         {
-            if (!npcManager.nursesDeployed)
-                npcManager.spawnNurseToFetchNPC(gameObject);
-            timer += Time.deltaTime;
-            if (!animations.falling)
+            lockstate = true;
+            if (sleeping)
             {
-                agent.Stop();
-                agent.GetComponent<IiroAnimBehavior>().fall();
+                animations.stopSleep();
+                sleeping = false;
+            }
+            else if (sitting)
+            {
+                animations.stopSit();
+                sitting = false;
+            }
+            else
+            {
+                if (!npcManager.nursesDeployed)
+                    npcManager.spawnNurseToFetchNPC(gameObject);
+                timer += Time.deltaTime;
+                if (!animations.falling)
+                {
+                    agent.Stop();
+                    agent.GetComponent<IiroAnimBehavior>().fall();
+                }
             }
         }
     }
