@@ -19,7 +19,10 @@ public class BigMedCont : MonoBehaviour
     {
         this.medName = medName;
         this.defaultDosage = defaultDosage;
-        gameObject.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Sprites/Minigame1/" + medName + "_cont");
+        Sprite medSprite = Resources.Load<Sprite>("Sprites/Minigame1/" + medName);
+        if (medSprite == null)
+            medSprite = Resources.Load<Sprite>("Sprites/Minigame1/null");
+        gameObject.GetComponent<SpriteRenderer>().sprite = medSprite;
         GameObject.FindGameObjectWithTag("Pill").GetComponent<Pill>().Init(this.medName, this.defaultDosage);
     }
 
@@ -48,7 +51,7 @@ public class BigMedCont : MonoBehaviour
         {
             GameObject pillObj = Instantiate(pillPrefab);
             pillObj.transform.SetParent(minigameObj.transform);
-            pillObj.transform.position = gameObject.transform.position + new Vector3(-2, 0, 0);
+            pillObj.transform.position = gameObject.transform.position + new Vector3(-1, -1, 0);
             pillObj.GetComponent<SpringJoint2D>().connectedBody = gameObject.GetComponent<Rigidbody2D>();
             pillObj.GetComponent<Pill>().Init(this.medName, this.defaultDosage);
         }

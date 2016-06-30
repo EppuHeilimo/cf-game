@@ -17,7 +17,7 @@ public class MedContainer : MonoBehaviour {
     {
         if (!minigame.kasiDesi)
         {
-            print("ota nyt se vitun käsidesi eka plz...");
+            minigame.kasDesObj.GetComponent<KasiDesi>().StartBlinking();
         }
         else
         {

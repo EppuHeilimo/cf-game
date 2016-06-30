@@ -22,22 +22,43 @@ public class MedCup : MonoBehaviour {
     void OnTriggerEnter2D(Collider2D other)
     {
         GameObject pillObj = other.gameObject;
+        
         Pill pill = pillObj.GetComponent<Pill>();
         Med med = new Med();
         med.name = pill.medName;
         med.dosage = pill.dosage;
         medsInThisCup.Add(med);
-        //Destroy(other.gameObject);
         pills.Add(other.gameObject);
         other.gameObject.tag = "Untagged";
+        Invoke("DisableRotation", 3f);
+    }
+
+    public void Clear()
+    {
+        medsInThisCup.Clear();
     }
 
     public void Reset()
     {
         medsInThisCup.Clear();
+        DestroyPills();
+    }
+
+    public void DestroyPills()
+    {
         foreach (GameObject pill in pills)
-            Destroy(pill);
+            if (pill != null)
+                Destroy(pill);
         pills.Clear();
     }
 
+    void DisableRotation()
+    {
+        if (pills.Count > 0)
+        { 
+            foreach (GameObject pill in pills)
+                if (pill != null)
+                    pill.GetComponent<Rigidbody2D>().freezeRotation = true;
+        }
+    }
 }

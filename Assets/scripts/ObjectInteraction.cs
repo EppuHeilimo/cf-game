@@ -175,4 +175,78 @@ public class ObjectInteraction : MonoBehaviour {
         return false;
 
     }
+
+    /* Gets Vector3 position next to the bed left side */
+    /* Side: 0 - front, 1 - left, 2 - back, 3 - right */
+    public Vector3 getDestToTargetNPCSide(int side, float offset)
+    {
+        Vector3 destination = Vector3.zero;
+        if (target != null)
+        {
+            float targetroty = target.transform.eulerAngles.y;
+            switch (side)
+            {
+                case 0:
+                    if (approx(targetroty, 0.0f, 45.0f))
+                        destination = new Vector3(target.transform.position.x, transform.position.y, target.transform.position.z - offset);
+                    else if (approx(targetroty, 90.0f, 45.0f))
+                        destination = new Vector3(target.transform.position.x - offset, transform.position.y, target.transform.position.z);
+                    else if (approx(targetroty, 180.0f, 45.0f))
+                        destination = new Vector3(target.transform.position.x, transform.position.y, target.transform.position.z + offset);
+                    else if (approx(targetroty, 270.0f, 45.0f))
+                        destination = new Vector3(target.transform.position.x + offset, transform.position.y, target.transform.position.z);
+                    else
+                    {
+                        destination = target.transform.position;
+                    }
+                    break;
+                case 1:
+                    if (approx(targetroty, 0.0f, 45.0f))
+                        destination = new Vector3(target.transform.position.x, transform.position.y, target.transform.position.z + offset);
+                    else if (approx(targetroty, 90.0f, 45.0f))
+                        destination = new Vector3(target.transform.position.x, transform.position.y, target.transform.position.z + offset);
+                    else if (approx(targetroty, 180.0f, 45.0f))
+                        destination = new Vector3(target.transform.position.x, transform.position.y, target.transform.position.z - offset);
+                    else if (approx(targetroty, 270.0f, 45.0f))
+                        destination = new Vector3(target.transform.position.x, transform.position.y, target.transform.position.z - offset);
+                    else
+                    {
+                        destination = target.transform.position;
+                    }
+                    break;
+                case 2:
+                    if (approx(targetroty, 0.0f, 45.0f))
+                        destination = new Vector3(target.transform.position.x, transform.position.y, target.transform.position.z + offset);
+                    else if (approx(targetroty, 90.0f, 45.0f))
+                        destination = new Vector3(target.transform.position.x - offset, transform.position.y, target.transform.position.z);
+                    else if (approx(targetroty, 180.0f, 45.0f))
+                        destination = new Vector3(target.transform.position.x, transform.position.y, target.transform.position.z - offset);
+                    else if (approx(targetroty, 270.0f, 45.0f))
+                        destination = new Vector3(target.transform.position.x + offset, transform.position.y, target.transform.position.z);
+                    else
+                    {
+                        destination = target.transform.position;
+                    }
+                    break;
+                case 3:
+                    if (approx(targetroty, 0.0f, 45.0f))
+                        destination = new Vector3(target.transform.position.x, transform.position.y, target.transform.position.z - offset);
+                    else if (approx(targetroty, 90.0f, 45.0f))
+                        destination = new Vector3(target.transform.position.x, transform.position.y, target.transform.position.z - offset);
+                    else if (approx(targetroty, 180.0f, 45.0f))
+                        destination = new Vector3(target.transform.position.x, transform.position.y, target.transform.position.z + offset);
+                    else if (approx(targetroty, 270.0f, 45.0f))
+                        destination = new Vector3(target.transform.position.x, transform.position.y, target.transform.position.z + offset);
+                    else
+                    {
+                        destination = target.transform.position;
+                    }
+                    break;
+
+
+            }
+        }
+
+        return destination;
+    }
 }

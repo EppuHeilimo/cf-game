@@ -50,7 +50,7 @@ public class Tooltip : MonoBehaviour {
         data = "";
         foreach(Item it in item.medicine)
         {
-            data += "<color=#0473f0><b>" + it.Title + "</b></color>\n" + it.Desc + "" + it.currentDosage + "\n";
+            data += "<color=#0473f0><b>" + it.Title + "</b></color>\n" + it.Desc + "\n" + it.currentDosage + "\n";
         }
         tooltip.transform.GetChild(0).GetComponent<Text>().text = data;
     }

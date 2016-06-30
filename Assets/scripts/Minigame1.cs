@@ -61,6 +61,12 @@ public class Minigame1 : MonoBehaviour {
     List<MedCup.Med> eveningCupMedsNoDuplicates = new List<MedCup.Med>();
     List<MedCup.Med> nightCupMedsNoDuplicates = new List<MedCup.Med>();
 
+    /* animation stuff */
+    public GameObject kasDesObj;
+    Animation kasDesAnim;
+    bool spawnDrops;
+    public GameObject[] drops;
+
     void Start()
     {
         invObj = GameObject.Find("Inventory");
@@ -85,24 +91,35 @@ public class Minigame1 : MonoBehaviour {
     {
         if (active)
         {
-            //Logic here...
+            if (!kasDesAnim.IsPlaying("Drop") && spawnDrops)
+            {
+                EnableDropsAnim(false);
+                spawnDrops = false;
+            }
         }
     }
 
     public void startMinigame()
     {
-        active = true;
         kasiDesi = false;
         uiManager.pause(true);
         minigameCanvas.SetActive(true);
         uiCanvas.SetActive(false);
-        
+        kasDesObj = GameObject.FindGameObjectWithTag("KasDes");
+        kasDesAnim = kasDesObj.GetComponent<Animation>();
+        drops = GameObject.FindGameObjectsWithTag("Drop");
+        spawnDrops = true;
+        active = true;
+
         player.GetComponent<PlayerControl>().enabled = false;
         foreach (GameObject n in npcManager.npcList)
         {
-            if(n.GetComponent<NPCV2>().diagnosed)
+            if (n != null)
             {
-                npcList.Add(n);
+                if(n.GetComponent<NPCV2>().diagnosed)
+                {
+                    npcList.Add(n);
+                }
             }
         }
         currNpc = 0;
@@ -125,6 +142,7 @@ public class Minigame1 : MonoBehaviour {
         minigameCanvas2.SetActive(false);    
         uiManager.pause(false);
         player.GetComponent<PlayerControl>().enabled = true;
+        EnableDropsAnim(true);
     }
 
     public void nextNPC()
@@ -169,7 +187,12 @@ public class Minigame1 : MonoBehaviour {
 
     public void kasiVitunDesi()
     {
+        kasDesObj.GetComponent<KasiDesi>().StopBlinking();
+        kasDesObj.GetComponent<KasiDesi>().SetDefaultColor();
         kasiDesi = true;
+        EnableDropsAnim(true);
+        kasDesAnim.Play();
+        spawnDrops = true;    
     }
 
     public void showMedCard(NPCV2 npc)
@@ -375,7 +398,6 @@ public class Minigame1 : MonoBehaviour {
                 foreach (MedCup.Med m in cup.GetComponent<MedCup>().medsInThisCup)
                     morningCupMeds.Add(m);
                 CombineMeds(0);
-                cup.GetComponent<MedCup>().Reset();
             }
 
             if (cup.GetComponent<MedCup>().cupName == "afternoon")
@@ -383,7 +405,6 @@ public class Minigame1 : MonoBehaviour {
                 foreach (MedCup.Med m in cup.GetComponent<MedCup>().medsInThisCup)
                     afternoonCupMeds.Add(m);
                 CombineMeds(1);
-                cup.GetComponent<MedCup>().Reset();
             }
 
             if (cup.GetComponent<MedCup>().cupName == "evening")
@@ -391,7 +412,6 @@ public class Minigame1 : MonoBehaviour {
                 foreach (MedCup.Med m in cup.GetComponent<MedCup>().medsInThisCup)
                     eveningCupMeds.Add(m);
                 CombineMeds(2);
-                cup.GetComponent<MedCup>().Reset();
             }
 
             if (cup.GetComponent<MedCup>().cupName == "night")
@@ -399,8 +419,9 @@ public class Minigame1 : MonoBehaviour {
                 foreach (MedCup.Med m in cup.GetComponent<MedCup>().medsInThisCup)
                     nightCupMeds.Add(m);
                 CombineMeds(3);
-                cup.GetComponent<MedCup>().Reset();
             }
+
+            cup.GetComponent<MedCup>().Clear();
         }
 
         mCamera.SwitchToMainCamera();
@@ -554,6 +575,9 @@ public class Minigame1 : MonoBehaviour {
         medCupPanel.transform.GetChild(1).transform.GetChild(0).GetComponent<Text>().text = "Empty";
         medCupPanel.transform.GetChild(2).transform.GetChild(0).GetComponent<Text>().text = "Empty";
         medCupPanel.transform.GetChild(3).transform.GetChild(0).GetComponent<Text>().text = "Empty";
+        GameObject[] cups = GameObject.FindGameObjectsWithTag("medCup");
+        foreach (GameObject cup in cups)
+            cup.GetComponent<MedCup>().DestroyPills();
     }
 
     public void ClearCup(int id)
@@ -630,5 +654,11 @@ public class Minigame1 : MonoBehaviour {
         medCupPanel.transform.GetChild(1).transform.GetChild(0).GetComponent<Text>().text = aText;
         medCupPanel.transform.GetChild(2).transform.GetChild(0).GetComponent<Text>().text = eText;
         medCupPanel.transform.GetChild(3).transform.GetChild(0).GetComponent<Text>().text = nText;
+    }
+
+    void EnableDropsAnim(bool enable)
+    {
+        foreach (GameObject d in drops)
+            d.SetActive(enable);
     }
 }

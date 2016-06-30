@@ -51,6 +51,7 @@ public class Pill : MonoBehaviour
             {
                 Destroy(spring);
                 rigbody.velocity = force;
+                rigbody.angularVelocity = force.magnitude * 10f;
             }
             LineRendererUpdate();
         }
@@ -68,13 +69,15 @@ public class Pill : MonoBehaviour
 
     void OnMouseDown()
     {
-        spring.enabled = false;
+        if (spring != null)
+            spring.enabled = false;
         clickedOn = true;
     }
 
     void OnMouseUp()
     {
-        spring.enabled = true;
+        if (spring != null)
+            spring.enabled = true;
         rigbody.isKinematic = false;
         clickedOn = false;
     }

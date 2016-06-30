@@ -62,7 +62,7 @@ public class ItemDatabase : MonoBehaviour {
 
 
 
-public class Item
+public class Item : ICloneable
 {
     public int ID { get; set; }
     public string Title { get; set; }
@@ -114,5 +114,10 @@ public class Item
     public Item()
     {
         this.ID = -1;
+    }
+
+    public object Clone()
+    {
+        return this.MemberwiseClone();
     }
 }

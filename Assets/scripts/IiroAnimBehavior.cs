@@ -89,6 +89,34 @@ public class IiroAnimBehavior : MonoBehaviour {
         animator.SetBool("sit", false);
     }
 
+    public void pickwithboth()
+    {
+        pickingup = true;
+        agent.enabled = false;
+        animator.SetBool("pickupbothhands", true);
+    }
+
+    public void stoppickwithboth()
+    {
+        pickingup = false;
+        agent.enabled = true;
+        animator.SetBool("pickupbothhands", false);
+    }
+
+    public void pickfromfloor()
+    {
+        pickingup = true;
+        agent.enabled = false;
+        animator.SetBool("pickupfloor", true);
+    }
+
+    public void stoppickfromfloor()
+    {
+        pickingup = false;
+        agent.enabled = true;
+        animator.SetBool("pickupfloor", false);
+    }
+
     public void sitwithrotation()
     {
         sittingwithrotation = true;

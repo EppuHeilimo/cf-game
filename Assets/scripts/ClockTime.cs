@@ -148,13 +148,16 @@ public class ClockTime : MonoBehaviour {
     {
         foreach (GameObject npcObj in NPCManager.npcList)
         {
-            NPCV2 npc = npcObj.GetComponent<NPCV2>();
-            for(int i = 0; i < npc.morningMed.Length; i++)
-            {
-                if (npc.morningMed[i].title != null)
+            if (npcObj != null)
+            { 
+                NPCV2 npc = npcObj.GetComponent<NPCV2>();
+                for(int i = 0; i < npc.morningMed.Length; i++)
                 {
-                    if (!npc.morningMed[i].isActive)
-                        npc.isLosingHp = true;
+                    if (npc.morningMed[i].title != null)
+                    {
+                        if (!npc.morningMed[i].isActive)
+                            npc.isLosingHp = true;
+                    }
                 }
             }
         }
@@ -164,13 +167,16 @@ public class ClockTime : MonoBehaviour {
     {
         foreach (GameObject npcObj in NPCManager.npcList)
         {
-            NPCV2 npc = npcObj.GetComponent<NPCV2>();
-            for (int i = 0; i < npc.afternoonMed.Length; i++)
+            if (npcObj != null)
             {
-                if (npc.afternoonMed[i].title != null)
+                NPCV2 npc = npcObj.GetComponent<NPCV2>();
+                for (int i = 0; i < npc.afternoonMed.Length; i++)
                 {
-                    if (!npc.afternoonMed[i].isActive)
-                        npc.isLosingHp = true;
+                    if (npc.afternoonMed[i].title != null)
+                    {
+                        if (!npc.afternoonMed[i].isActive)
+                            npc.isLosingHp = true;
+                    }
                 }
             }
         }
@@ -180,13 +186,16 @@ public class ClockTime : MonoBehaviour {
     {
         foreach (GameObject npcObj in NPCManager.npcList)
         {
-            NPCV2 npc = npcObj.GetComponent<NPCV2>();
-            for (int i = 0; i < npc.eveningMed.Length; i++)
+            if (npcObj != null)
             {
-                if (npc.eveningMed[i].title != null)
+                NPCV2 npc = npcObj.GetComponent<NPCV2>();
+                for (int i = 0; i < npc.eveningMed.Length; i++)
                 {
-                    if (!npc.eveningMed[i].isActive)
-                        npc.isLosingHp = true;
+                    if (npc.eveningMed[i].title != null)
+                    {
+                        if (!npc.eveningMed[i].isActive)
+                            npc.isLosingHp = true;
+                    }
                 }
             }
         }
@@ -196,13 +205,16 @@ public class ClockTime : MonoBehaviour {
     {
         foreach (GameObject npcObj in NPCManager.npcList)
         {
-            NPCV2 npc = npcObj.GetComponent<NPCV2>();
-            for (int i = 0; i < npc.nightMed.Length; i++)
+            if (npcObj != null)
             {
-                if (npc.nightMed[i].title != null)
+                NPCV2 npc = npcObj.GetComponent<NPCV2>();
+                for (int i = 0; i < npc.nightMed.Length; i++)
                 {
-                    if (!npc.nightMed[i].isActive)
-                        npc.isLosingHp = true;
+                    if (npc.nightMed[i].title != null)
+                    {
+                        if (!npc.nightMed[i].isActive)
+                            npc.isLosingHp = true;
+                    }
                 }
             }
         }
@@ -212,8 +224,11 @@ public class ClockTime : MonoBehaviour {
     {
         foreach (GameObject npcObj in NPCManager.npcList)
         {
-            npcObj.GetComponent<NPCV2>().disableAllMeds();
-            npcObj.GetComponent<NPCV2>().isLosingHp = false;
+            if (npcObj != null)
+            {
+                npcObj.GetComponent<NPCV2>().disableAllMeds();
+                npcObj.GetComponent<NPCV2>().isLosingHp = false;
+            }
         }
     }
 }

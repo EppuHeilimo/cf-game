@@ -11,8 +11,8 @@ GameObject:
   - 212: {fileID: 21286080}
   - 114: {fileID: 11420294}
   - 50: {fileID: 5089234}
-  - 58: {fileID: 5829730}
   - 231: {fileID: 23199230}
+  - 58: {fileID: 5820034}
   m_Layer: 0
   m_Name: Pill
   m_TagString: Pill
@@ -26,10 +26,10 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 185684}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 9091.98, y: -113.42, z: 456.14}
-  m_LocalScale: {x: 0.55119044, y: 0.5641121, z: 1}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: 0, y: 0, z: 0.42261833, w: 0.9063078}
+  m_LocalPosition: {x: 9091.97, y: -113.42, z: 456.14}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 50}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -50,7 +50,7 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
---- !u!58 &5829730
+--- !u!58 &5820034
 CircleCollider2D:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -58,12 +58,12 @@ CircleCollider2D:
   m_GameObject: {fileID: 185684}
   m_Enabled: 1
   m_Density: 1
-  m_Material: {fileID: 6200000, guid: f90ca2ac1a2423a45937459bfe4c81ff, type: 2}
+  m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_UsedByEffector: 0
-  m_Offset: {x: 0.001953125, y: -0.0000052452087}
+  m_Offset: {x: 0, y: -0.00048828125}
   serializedVersion: 2
-  m_Radius: 0.63
+  m_Radius: 0.3
 --- !u!114 &11420294
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -105,7 +105,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingOrder: 15
-  m_Sprite: {fileID: 21300000, guid: 54ce4d44ed8e83b43882d22ee9e38482, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 5f7d8329c0a6aaf499853c100255a815, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -125,7 +125,7 @@ SpringJoint2D:
   m_Anchor: {x: 0, y: 0}
   m_ConnectedAnchor: {x: 0, y: 0}
   m_AutoConfigureDistance: 1
-  m_Distance: 1.6847111
+  m_Distance: 0.005
   m_DampingRatio: 0
   m_Frequency: 5
 --- !u!1001 &100100000

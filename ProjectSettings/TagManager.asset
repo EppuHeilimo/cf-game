@@ -33,6 +33,11 @@ TagManager:
   - Pill
   - Minigame1Canvas2
   - MedCupPanel
+  - Drop
+  - KasDes
+  - KasDesTxt
+  - Trolley
+  - MedCabinet
   layers:
   - Default
   - TransparentFX
