@@ -32,12 +32,17 @@ TagManager:
   - BigMedCont
   - Pill
   - Minigame1Canvas2
-  - MedCupPanel
   - Drop
   - KasDes
   - KasDesTxt
   - Trolley
   - MedCabinet
+  - morningCup
+  - afternoonCup
+  - eveningCup
+  - nightCup
+  - disabledPill
+  - MedCupPanel
   layers:
   - Default
   - TransparentFX
