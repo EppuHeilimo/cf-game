@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.UI;
 
 public class MedCup : MonoBehaviour {
 
@@ -21,12 +22,12 @@ public class MedCup : MonoBehaviour {
     bool isColliding;
     Ray ray;
     RaycastHit hit;
+    Text medsInThisCupTxt;
 
     void OnTriggerEnter2D(Collider2D other)
     {
         if (isColliding) return;
         isColliding = true;
-        print("kutsuttu");
         GameObject pillObj = other.gameObject;   
         Pill pill = pillObj.GetComponent<Pill>();
         Med med = new Med();
@@ -35,18 +36,13 @@ public class MedCup : MonoBehaviour {
         Add(med);
         pills.Add(other.gameObject);
         other.gameObject.tag = "disabledPill";
-        Invoke("DisableRotation", 3f);
+        Invoke("DisableRotation", 1f);
+        UpdateText();
     }
 
     void Update()
     {
         isColliding = false;
-        ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        if (Physics.Raycast(ray, out hit))
-        {
-            if (hit.collider.tag == "morningCup")
-                print("ASDDDD");
-        }
     }
 
     public void Add(Med m)
@@ -74,6 +70,7 @@ public class MedCup : MonoBehaviour {
     {
         medsInThisCup.Clear();
         DestroyPills();
+        UpdateText();
     }
 
     public void DestroyPills()
@@ -91,6 +88,16 @@ public class MedCup : MonoBehaviour {
             foreach (GameObject pill in pills)
                 if (pill != null)
                     pill.GetComponent<Rigidbody2D>().freezeRotation = true;
+        }
+    }
+
+    void UpdateText()
+    {
+        medsInThisCupTxt = transform.GetChild(0).GetChild(1).GetComponent<Text>();
+        medsInThisCupTxt.text = "";
+        for (int i = 0; i < medsInThisCup.Count; i++)
+        {
+            medsInThisCupTxt.text += medsInThisCup[i].name + " " + medsInThisCup[i].dosage + "\n";
         }
     }
 }
