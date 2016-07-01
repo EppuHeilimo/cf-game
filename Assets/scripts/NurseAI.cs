@@ -107,13 +107,7 @@ public class NurseAI : MonoBehaviour {
             }
             if(readyToLeave && arrivedToDestination(30.0f))
             {
-                npcManager.npcList.Remove(gameObject);
-                if (GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerControl>().getTarget() == gameObject)
-                {
-                    GameObject.FindGameObjectWithTag("TextBoxManager").GetComponent<TextBoxManager>().DisableTextBox();
-                }
-                npcManager.removeNpcFromPlayersResponsibilities(gameObject);
-                npcManager.nursesDeployed = false;
+
                 Destroy(gameObject);
             }
         }

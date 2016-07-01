@@ -19,10 +19,11 @@ public class Pill : MonoBehaviour
     Vector2 force;
     Ray catapultToProjectileRay;
 
-    public void Init(string medName, int dosage)
+    public void Init(string medName, int dosage, Sprite pillSprite)
     {
         this.medName = medName;
-        this.dosage = dosage;     
+        this.dosage = dosage;
+        gameObject.GetComponent<SpriteRenderer>().sprite = pillSprite;
     }
 
     void Awake()

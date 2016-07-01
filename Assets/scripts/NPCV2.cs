@@ -898,6 +898,13 @@ public class NPCV2 : MonoBehaviour
             }
             else if (arrivedToDestination(30.0f))
             {
+                npcManager.npcList.Remove(gameObject);
+                if (GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerControl>().getTarget() == gameObject)
+                {
+                    GameObject.FindGameObjectWithTag("TextBoxManager").GetComponent<TextBoxManager>().DisableTextBox();
+                }
+                npcManager.removeNpcFromPlayersResponsibilities(gameObject);
+                npcManager.nursesDeployed = false;
                 dead = true;
             }
         }

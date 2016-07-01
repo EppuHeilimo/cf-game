@@ -9,6 +9,7 @@ public class BigMedCont : MonoBehaviour
     public int defaultDosage;
     public GameObject pillPrefab;
     GameObject minigameObj;
+    Sprite pillSprite;
 
     void Start()
     {
@@ -19,29 +20,21 @@ public class BigMedCont : MonoBehaviour
     {
         this.medName = medName;
         this.defaultDosage = defaultDosage;
-        Sprite medSprite = Resources.Load<Sprite>("Sprites/Minigame1/" + medName);
+        Sprite medSprite = Resources.Load<Sprite>("Sprites/Meds/" + medName);
         if (medSprite == null)
-            medSprite = Resources.Load<Sprite>("Sprites/Minigame1/null");
+            medSprite = Resources.Load<Sprite>("Sprites/Meds/null");
         gameObject.GetComponent<SpriteRenderer>().sprite = medSprite;
-        GameObject.FindGameObjectWithTag("Pill").GetComponent<Pill>().Init(this.medName, this.defaultDosage);
-    }
+        /*
+        var bounds = gameObject.GetComponent<SpriteRenderer>().sprite.bounds;
+        Vector3 scale = new Vector3(5.0f / bounds.size.x, 5.0f / bounds.size.y, 0);
+        transform.localScale = scale;
+        */
 
-    /*
-    void Update()
-    {
-        if ((Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began) || (Input.GetMouseButtonDown(0)))
-        {
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            RaycastHit hit;
-            if (Physics.Raycast(ray, out hit) && hit.transform.tag == "BigMedCont")
-            {
-                GameObject pillObj = (GameObject)Instantiate(pillPrefab, hit.transform.position, Quaternion.identity);
-                pillObj.transform.SetParent(minigameObj.transform);
-                pillObj.GetComponent<Pill>().Init(this.medName, this.defaultDosage);
-            }
-        }
+        pillSprite = Resources.Load<Sprite>("Sprites/Meds/" + medName + "_pill");
+        if (pillSprite == null)
+            pillSprite = Resources.Load<Sprite>("Sprites/Meds/null_pill");
+        GameObject.FindGameObjectWithTag("Pill").GetComponent<Pill>().Init(this.medName, this.defaultDosage, pillSprite);
     }
-    */
 
     void Update()
     {
@@ -53,7 +46,7 @@ public class BigMedCont : MonoBehaviour
             pillObj.transform.SetParent(minigameObj.transform);
             pillObj.transform.position = gameObject.transform.position + new Vector3(-1, -1, 0);
             pillObj.GetComponent<SpringJoint2D>().connectedBody = gameObject.GetComponent<Rigidbody2D>();
-            pillObj.GetComponent<Pill>().Init(this.medName, this.defaultDosage);
+            pillObj.GetComponent<Pill>().Init(this.medName, this.defaultDosage, pillSprite);
         }
     }
 }
