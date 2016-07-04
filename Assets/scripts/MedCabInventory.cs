@@ -21,7 +21,11 @@ public class MedCabInventory : MonoBehaviour {
             Item itemToAdd = database.FetchItemByID(i);
             medContainer.medName = itemToAdd.Title;
             medContainer.defaultDos = itemToAdd.DefaultDosage;
-            medContainerObj.GetComponentInChildren<Text>().text = itemToAdd.Title;
+            medContainerObj.GetComponentInChildren<Text>().text = itemToAdd.Title + " " + itemToAdd.DefaultDosage;
+            Sprite medContainerSprite = Resources.Load<Sprite>("Sprites/Meds/" + itemToAdd.Title);
+            if (medContainerSprite == null)
+                medContainerSprite = Resources.Load<Sprite>("Sprites/Meds/null");
+            medContainerObj.GetComponent<Image>().sprite = medContainerSprite;
         }
     }
 
