@@ -58,12 +58,12 @@ CircleCollider2D:
   m_GameObject: {fileID: 185684}
   m_Enabled: 1
   m_Density: 1
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: f90ca2ac1a2423a45937459bfe4c81ff, type: 2}
   m_IsTrigger: 0
   m_UsedByEffector: 0
-  m_Offset: {x: 0, y: -0.00048828125}
+  m_Offset: {x: 0, y: 0}
   serializedVersion: 2
-  m_Radius: 0.3
+  m_Radius: 5
 --- !u!114 &11420294
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -104,7 +104,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
-  m_SortingOrder: 15
+  m_SortingOrder: 100
   m_Sprite: {fileID: 21300000, guid: 5f7d8329c0a6aaf499853c100255a815, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0

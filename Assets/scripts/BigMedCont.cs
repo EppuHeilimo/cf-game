@@ -23,20 +23,22 @@ public class BigMedCont : MonoBehaviour
         Sprite medSprite = Resources.Load<Sprite>("Sprites/Meds/" + medName);
         if (medSprite == null)
             medSprite = Resources.Load<Sprite>("Sprites/Meds/null");
-        gameObject.GetComponent<SpriteRenderer>().sprite = medSprite;
-        /*
-        var bounds = gameObject.GetComponent<SpriteRenderer>().sprite.bounds;
-        Vector3 scale = new Vector3(5.0f / bounds.size.x, 5.0f / bounds.size.y, 0);
-        transform.localScale = scale;
-        */
-
-        pillSprite = Resources.Load<Sprite>("Sprites/Meds/" + medName + "_pill");
+        SpriteRenderer sRenderer = gameObject.GetComponent<SpriteRenderer>();
+        sRenderer.sprite = medSprite;
+        transform.localScale = new Vector3(0.2f, 0.2f, 0f); //scale sprite smaller
+        pillSprite = Resources.Load<Sprite>("Sprites/Meds/" + medName + "_tab");
         if (pillSprite == null)
-            pillSprite = Resources.Load<Sprite>("Sprites/Meds/null_pill");
+            pillSprite = Resources.Load<Sprite>("Sprites/Meds/null_tab");
+        spawnPill();
         GameObject.FindGameObjectWithTag("Pill").GetComponent<Pill>().Init(this.medName, this.defaultDosage, pillSprite);
     }
 
     void Update()
+    {
+        spawnPill();
+    }
+
+    void spawnPill()
     {
         // spawn new pill if one doesn't exist already
         GameObject existingPill = GameObject.FindGameObjectWithTag("Pill");
