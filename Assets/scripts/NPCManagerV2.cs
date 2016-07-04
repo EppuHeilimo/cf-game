@@ -43,7 +43,9 @@ public class NPCManagerV2 : MonoBehaviour
     // hard-coded pool for names, probably changed later
     string[] namePool = { "Aleksi", "Pekka", "Matti", "Kalle", "Jorma" };
 
-    const int MAX_NPCS = 30; 
+    const int MAX_NPCS = 30;
+    public static int MAX_NPCS_IN_WARD_AREA = 12;
+    public int currentNpcsInWard = 0;
 
     List<string> usedIds; // IDs already used
 
