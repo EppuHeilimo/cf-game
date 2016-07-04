@@ -555,57 +555,65 @@ public class NPCV2 : MonoBehaviour
 
     private void goToDoc()
     {
-        doctimer += Time.deltaTime;
-        if (dest == Vector3.zero)
+        if(!diagnosed)
         {
-            dest = new Vector3(-50.0f, transform.position.y, 393.0f);
-            moveTo(dest);
-            timer = 0;
-            doctimer = 0;
-        }
-        if(arrivedToDestination(30.0f))
-        {
-            doctimer = 0;
-            timer += Time.deltaTime;
-            if(timer > AT_DOC)
+            doctimer += Time.deltaTime;
+            if (dest == Vector3.zero)
             {
-                int r = Random.Range(1, 10);
-                if(r > 1)
-                {
-                    // Randomize 1-4 DIFFERENT problems for the NPC
-                    int numProblems = UnityEngine.Random.Range(1, 5);
-                    Item[] randMeds = new Item[4];
-                    // Fetch random medicine items from database
-                    for (int i = 0; i < randMeds.Length; i++)
-                    {
-                        if (numProblems > 0)
-                        {
-                            randMeds[i] = npcManager.RandomItem(randMeds);
-                            numProblems--;
-                        }
-                        else
-                            randMeds[i] = null;
-                    }
-                    InitMedication(randMeds);
-                    addStateToQueue(2, NPCState.STATE_MOVE_TO_WARD_AREA);
-                    diagnosed = true;
-                    if(!npcManager.isPlayerResponsibilityLevelFulfilled())
-                    {
-                        npcManager.addNpcToPlayersResponsibilities(gameObject);
-                        playersResponsibility = true;
-                        responsibilityIndicatorclone = (GameObject)Instantiate(responsibilityIndicator, transform.position, new Quaternion(0, 0, 0, 0));
-                    }
-                }
-                else
-                {
-                    addStateToQueue(3, NPCState.STATE_LEAVE_HOSPITAL);
-                }
+                dest = new Vector3(-50.0f, transform.position.y, 393.0f);
+                moveTo(dest);
                 timer = 0;
-                taskCompleted = true;
-                dest = Vector3.zero;
-                npcManager.setDocFree();
-
+                doctimer = 0;
             }
+            if (arrivedToDestination(30.0f))
+            {
+                doctimer = 0;
+                timer += Time.deltaTime;
+                if (timer > AT_DOC)
+                {
+                    int r = Random.Range(1, 10);
+                    if (r > 1 && npcManager.currentNpcsInWard < NPCManagerV2.MAX_NPCS_IN_WARD_AREA)
+                    {
+                        // Randomize 1-4 DIFFERENT problems for the NPC
+                        int numProblems = UnityEngine.Random.Range(1, 5);
+                        Item[] randMeds = new Item[4];
+                        // Fetch random medicine items from database
+                        for (int i = 0; i < randMeds.Length; i++)
+                        {
+                            if (numProblems > 0)
+                            {
+                                randMeds[i] = npcManager.RandomItem(randMeds);
+                                numProblems--;
+                            }
+                            else
+                                randMeds[i] = null;
+                        }
+                        InitMedication(randMeds);
+                        addStateToQueue(2, NPCState.STATE_MOVE_TO_WARD_AREA);
+                        diagnosed = true;
+                        if (!npcManager.isPlayerResponsibilityLevelFulfilled())
+                        {
+                            npcManager.addNpcToPlayersResponsibilities(gameObject);
+                            playersResponsibility = true;
+                            responsibilityIndicatorclone = (GameObject)Instantiate(responsibilityIndicator, transform.position, new Quaternion(0, 0, 0, 0));
+                        }
+                        npcManager.currentNpcsInWard++;
+                    }
+                    else
+                    {
+                        addStateToQueue(3, NPCState.STATE_LEAVE_HOSPITAL);
+                    }
+                    timer = 0;
+                    taskCompleted = true;
+                    dest = Vector3.zero;
+                    npcManager.setDocFree();
+
+                }
+            }
+        }
+        else
+        {
+            taskCompleted = true;
         }
     }
 
@@ -1079,7 +1087,7 @@ public class NPCV2 : MonoBehaviour
                 objectManager.unbookObject(interactionComponent.getCurrentChair());
                 interactionComponent.setCurrentChair(null);
             }
-            if (prevStateUncompleted && prevState != NPCState.STATE_TALK_TO_PLAYER && prevState != NPCState.STATE_TRY_UNSTUCK)
+            if (prevStateUncompleted)
             {
                 prevStateUncompleted = false;
                 addStateToQueue(3, prevState);
@@ -1164,10 +1172,12 @@ public class NPCV2 : MonoBehaviour
             stateQueue.TryGetValue(3, out queue);
             if (currentTaskPriority < 3 && queue.Count > 0)
             {
+                //if currenttaskpriority is higher than 1 we will resume the task after new task is complete
+                if(currentTaskPriority > 1)
+                    prevStateUncompleted = true;
                 //save current state info so it can be done after the prioritized task is complete
                 prevState = myState;
                 myState = queue.Dequeue();
-                prevStateUncompleted = true;
                 prevTaskPriority = currentTaskPriority;
                 dest = Vector3.zero;
                 taskCompleted = false;
@@ -1182,7 +1192,6 @@ public class NPCV2 : MonoBehaviour
                     prevState = myState;
                     myState = queue.Dequeue();
                     dest = Vector3.zero;
-                    prevStateUncompleted = true;
                     prevTaskPriority = currentTaskPriority;
                     taskCompleted = false;
                 }
