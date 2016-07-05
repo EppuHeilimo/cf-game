@@ -67,7 +67,7 @@ public class NurseAI : MonoBehaviour {
                 else if (partner.readyForLift && !arrivedToDestination(50.0f) && !readyToLeave)
                 {
                     timer += Time.deltaTime;
-                    if (timer > 1.0f)
+                    if (timer > 4.0f)
                     {
                         agent.Warp(agent.destination);
                     }
@@ -107,7 +107,8 @@ public class NurseAI : MonoBehaviour {
             }
             if(readyToLeave && arrivedToDestination(30.0f))
             {
-
+                if(id == 0)
+                    npcManager.nursesDeployed = false;
                 Destroy(gameObject);
             }
         }

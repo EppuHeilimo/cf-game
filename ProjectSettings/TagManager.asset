@@ -43,6 +43,8 @@ TagManager:
   - nightCup
   - disabledPill
   - MedCupPanel
+  - ScoringSystem
+  - FloatingText
   layers:
   - Default
   - TransparentFX

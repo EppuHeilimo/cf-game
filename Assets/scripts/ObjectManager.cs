@@ -53,16 +53,14 @@ public class ObjectManager : MonoBehaviour {
         List<KeyValuePair<GameObject, GameObject>> temp = new List<KeyValuePair<GameObject, GameObject>>();
         foreach (KeyValuePair<GameObject, GameObject> obj in bookableObjects)
         {
-            if( (obj.Key.tag == "Chair2" || obj.Key.tag == "Chair" || obj.Key.tag == "QueueChair") && bookableObjects[obj.Key] == null )
+            if( (obj.Key.tag == "Chair2" || obj.Key.tag == "Chair" || obj.Key.tag == "QueueChair") && obj.Value == null )
             {
                 temp.Add(obj);
             }
         }
         if (temp.Count > 0)
         {
-            System.Random rnd = new System.Random();
-            int rand = rnd.Next(0, temp.Count);
-            GameObject key = temp[rand].Key;
+            GameObject key = temp[Random.Range(0, temp.Count)].Key;
             bookableObjects[key] = reserver;
             return key;
         }
@@ -81,9 +79,7 @@ public class ObjectManager : MonoBehaviour {
         }
         if (temp.Count > 0)
         {
-            System.Random rnd = new System.Random();
-            int rand = rnd.Next(0, temp.Count);
-            GameObject key = temp[rand].Key;
+            GameObject key = temp[Random.Range(0, temp.Count)].Key;
             bookableObjects[key] = reserver;
             return key;
         }
@@ -102,9 +98,7 @@ public class ObjectManager : MonoBehaviour {
         }
         if (temp.Count > 0)
         {
-            System.Random rnd = new System.Random();
-            int rand = rnd.Next(0, temp.Count);
-            GameObject key = temp[rand].Key;
+            GameObject key = temp[Random.Range(0, temp.Count)].Key;
             bookableObjects[key] = reserver;
             return key;
         }
