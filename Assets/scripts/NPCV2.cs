@@ -56,7 +56,7 @@ public class NPCV2 : MonoBehaviour
     public Dictionary<int, Queue<NPCState>> stateQueue;
     public GameObject myBed;
     //how far from destination player can be to start the task
-    private bool taskCompleted = true;
+    public bool taskCompleted = true;
     GameObject dialogZone;
     ObjectInteraction interactionComponent;
     ObjectManager objectManager;
@@ -68,6 +68,7 @@ public class NPCV2 : MonoBehaviour
     bool prevStateUncompleted = false;
     bool playersResponsibility = false;
     private bool sleepingqueued = false;
+    ScoringSystem scoreSystem;
 
     /* NEW MEDICINE SYSTEM */
     float deathTimer; // time without medicine
@@ -151,10 +152,20 @@ public class NPCV2 : MonoBehaviour
         objectManager = GameObject.FindGameObjectWithTag("ObjectManager").GetComponent<ObjectManager>();
         clock = GameObject.FindGameObjectWithTag("Clock").GetComponent<ClockTime>();
         animations = agent.GetComponent<IiroAnimBehavior>();
+        scoreSystem = GameObject.FindGameObjectWithTag("ScoringSystem").GetComponent<ScoringSystem>();
     }
     // Update is called once per frame
     void Update()
     {
+        //Weird bug caused stateQueue to be set to null if game window was not focused, so lets check if dictionary is null and create new empty one to reset npc behavior
+        if(stateQueue == null)
+        {
+            stateQueue = new Dictionary<int, Queue<NPCState>>();
+            stateQueue.Add(1, new Queue<NPCState>());
+            stateQueue.Add(2, new Queue<NPCState>());
+            stateQueue.Add(3, new Queue<NPCState>());
+        }
+
         if(paused)
         {
             if(!agentPaused)
@@ -266,6 +277,7 @@ public class NPCV2 : MonoBehaviour
         //stuck test
         stucktimer += Time.deltaTime;
         //test every STUCK seconds if npc hasn't moved towards it's dest
+        /*
         if (stucktimer > STUCK && dest != Vector3.zero && !arrivedToDestination(10.0f))
         {
             if(myState != NPCState.STATE_TALK_TO_PLAYER)
@@ -294,7 +306,7 @@ public class NPCV2 : MonoBehaviour
                     lastdisttodest = 0;
                 }
             }
-        }
+        }*/
 
         if (myState != NPCState.STATE_TALK_TO_PLAYER && myState != NPCState.STATE_DEAD && !sleeping && !sitting && dialogZone.GetComponent<DialogV2>().playerInZone)
         {
@@ -313,22 +325,16 @@ public class NPCV2 : MonoBehaviour
             }
             //Increase fatigue every x seconds if state is not sleep
             //if sleeping already queued, just skip
-            if (!sleepingqueued)
+            if (!sleepingqueued && !sleeping)
             {
                 fatiquetimer += Time.deltaTime;
                 if (fatiquetimer > 5.0f)
                 {
-                    fatique += 3f;
+                    fatique += 1f;
                     fatiquetimer = 0;
                 }
-                //if fatigue is too high and can't find bed, lose happiness, reset fatique
-                if (fatique > 30.0f && cantFindBed)
-                {
-                    myHappiness -= 10;
-                    fatique = 0;
-                }
                 //if has bed and fatique over x, queue sleep task
-                if (fatique > 10.0f && !cantFindBed)
+                if (fatique > 10.0f)
                 {
                     addStateToQueue(2, NPCState.STATE_SLEEP);
                     sleepingqueued = true;
@@ -341,6 +347,7 @@ public class NPCV2 : MonoBehaviour
                 if (callofnaturetimer > 5.0f)
                 {
                     callofnature += 1;
+                    callofnaturetimer = 0;
                 }
                 if (callofnature > 10.0f)
                 {
@@ -382,27 +389,19 @@ public class NPCV2 : MonoBehaviour
         }
         else if (arrivedToDestination(10.0f) && !sitting)
         {
-            agent.Stop();
-            sitting = true;
-            if (interactionComponent.getCurrentChair())
+            //rotate to look away from the chair so animation will move the player on the chair
+            if (interactionComponent.RotateAwayFrom(interactionComponent.getTarget().transform))
             {
-                //rotate to look away from the bed so animation will move the player on the bed
-                if (interactionComponent.RotateAwayFrom(interactionComponent.getCurrentChair().transform))
+                sitting = true;
+                agent.Stop();
+                if (interactionComponent.getCurrentChair().tag == "Chair2")
                 {
-                    if (interactionComponent.getCurrentChair().tag == "Chair2")
-                    {
-                        agent.GetComponent<IiroAnimBehavior>().sitwithrotation();
-                    }
-                    else
-                    {
-                        agent.GetComponent<IiroAnimBehavior>().sit();
-                    }
-
+                    agent.GetComponent<IiroAnimBehavior>().sitwithrotation();
                 }
-            }
-            else
-            {
-                taskCompleted = true;
+                else
+                {
+                    agent.GetComponent<IiroAnimBehavior>().sit();
+                }
             }
         }
         else if (sitting)
@@ -454,13 +453,13 @@ public class NPCV2 : MonoBehaviour
                 moveTo(dest);
             }
          }
-        if (arrivedToDestination(10.0f) && !sitting)
+        else if (arrivedToDestination(10.0f) && !sitting)
         {
             agent.Stop();
             sitting = true;
         }
 
-        if (sitting)
+        else if (sitting)
         {
             if (arrivedToDestination(20.0f))
             {
@@ -851,11 +850,11 @@ public class NPCV2 : MonoBehaviour
     {
         //check if there's something else to do
         timer += Time.deltaTime;
-        GameObject target = interactionComponent.getTarget();
-        if (target != null && talking)
+        //if there is a npc in dialogzone and it has target to this, assume it's talking to this
+        if (talking)
         {
-            agent.Stop();
-            interactionComponent.RotateTowards(target.transform);
+            interactionComponent.setTarget(dialogZone.GetComponent<DialogV2>().getNpcTargetingMe());
+            interactionComponent.RotateTowards(interactionComponent.getTarget().transform);
         }
         else if (dest == Vector3.zero)
         {
@@ -867,6 +866,7 @@ public class NPCV2 : MonoBehaviour
             Vector3 finalPosition = hit.position;
             dest = new Vector3(finalPosition.x, 0, finalPosition.z);
             moveTo(dest);
+            talking = false;
         }
         else
         {
@@ -875,8 +875,8 @@ public class NPCV2 : MonoBehaviour
                 if((timer > IDLE_IN_THIS_PLACE_TIME))
                 {
                     timer = 0;
-                    //20% chance every IDLE_IN_THIS_PLACE_TIME to start talking to somoene or go sit
                     taskCompleted = true;
+                    talking = false;
                 }
             }
         }
@@ -884,6 +884,7 @@ public class NPCV2 : MonoBehaviour
 
     private void die()
     {
+
         lockstate = true;
         if (sleeping)
         {
@@ -897,30 +898,45 @@ public class NPCV2 : MonoBehaviour
         }
         if (!dead)
         {
+            objectManager.unbookObject(myBed);
+            //first iteration will set destination to area where fetching nurses can actually move
             if (dest == Vector3.zero)
             {
                 NavMeshHit hit;
-                NavMesh.SamplePosition(transform.position, out hit, 1000.0f, (1 << 7));
+                NavMesh.SamplePosition(transform.position, out hit, 2000.0f, (1 << 7));
                 dest = hit.position;
                 agent.SetDestination(dest);
+                interactionComponent.setTarget(null);
             }
-            else if (arrivedToDestination(30.0f))
+            //When arrived to good position, set npc to dead and rmeove from npclists
+            else if (arrivedToDestination(5.0f))
             {
                 npcManager.npcList.Remove(gameObject);
+                //if this npc is players target, make sure textboxmanager disables UI showing npc status
                 if (GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerControl>().getTarget() == gameObject)
                 {
                     GameObject.FindGameObjectWithTag("TextBoxManager").GetComponent<TextBoxManager>().DisableTextBox();
                 }
-                npcManager.removeNpcFromPlayersResponsibilities(gameObject);
-                npcManager.nursesDeployed = false;
+                //if this npc was players responsibility, remove from responsibilities
+                if(playersResponsibility)
+                {
+                    playersResponsibility = false;
+                    npcManager.removeNpcFromPlayersResponsibilities(gameObject);
+                    Destroy(responsibilityIndicatorclone);
+                }
+                    
                 dead = true;
             }
         }
         else
         {
+            if (gameObject == null)
+                return;
+            //if dead and nurses aren't already deployed to fetch someone, release the nurses
             if (!npcManager.nursesDeployed)
                 npcManager.spawnNurseToFetchNPC(gameObject);
             timer += Time.deltaTime;
+            //if not already fallen, fall
             if (!animations.falling)
             {
                 agent.Stop();
@@ -947,37 +963,31 @@ public class NPCV2 : MonoBehaviour
     {
         GameObject target = interactionComponent.getTarget();
         //check that the target is actually capable of talking
-        if (target == null || target.tag != "NPC" || !target.GetComponent<NPCV2>().isIdle() || target.GetComponent<NPCV2>().talking)
+        if (target == null || target.tag != "NPC" || !target.GetComponent<NPCV2>().isIdle() || target.GetComponent<NPCV2>().dead)
         {
             findOtherIdleNPC();
         }
-
         //check if at target & set destination
-        if  (target != null && target.tag == "NPC" && walkToTarget())
+        else if(walkToTarget())
         {
-            //set both npc's to talking
-            target.GetComponent<NPCV2>().talking = true;
-            talking = true;
-
-            //stop moving
-            agent.Stop();
-            target.GetComponent<NPCV2>().agent.Stop();
-
+            if(!talking)
+            {
+                talking = true;
+                target.GetComponent<NPCV2>().talking = true;
+                //stop moving
+                agent.Stop();
+                target.GetComponent<NPCV2>().agent.Stop();
+            }
             //rotate to look the target
             interactionComponent.RotateTowards(target.transform);
             timer += Time.deltaTime;
             if (timer > MAX_TIME_TALK_TO_OTHER)
             {
                 timer = 0;
-                target.GetComponent<NPCV2>().stopTalking();
                 stopTalking();
-
+                target.GetComponent<NPCV2>().stopTalking();
+                
             }
-        }
-        //fail proof
-        if(target == null || target.tag != "NPC")
-        {
-            stopTalking();
         }
 
     }
@@ -1015,7 +1025,7 @@ public class NPCV2 : MonoBehaviour
     //looks for other npcs who are idle
     private void findOtherIdleNPC()
     {
-        GameObject[] npcs = GameObject.FindGameObjectsWithTag("NPC");
+        List<GameObject> npcs = npcManager.npcList;
         List<GameObject> idlenpcs = new List<GameObject>();
         foreach (GameObject npc in npcs)
         {
@@ -1046,6 +1056,8 @@ public class NPCV2 : MonoBehaviour
         talking = false;
         taskCompleted = true;
     }
+
+
     public bool isIdle()
     {
         if (myState == NPCState.STATE_IDLE)
@@ -1143,21 +1155,16 @@ public class NPCV2 : MonoBehaviour
                         else
                         {
                             //if nothing to do choose randomly from talking with npcs, sitting, idle walking
-                            if (Random.Range(1, 11) > 7)
+                            
+                            if (Random.Range(1, 11) > 7 && !talking)
                             {
-                                if (!talking)
-                                {
-                                    prevState = myState;
-                                    myState = NPCState.STATE_TALK_TO_OTHER_NPC;
-                                }
-                            }
-                            else if (Random.Range(1, 11) > 7)
+                                prevState = myState;
+                                myState = NPCState.STATE_TALK_TO_OTHER_NPC;
+                            } 
+                            else if (Random.Range(1, 11) > 7 && !talking && !sitting)
                             {
-                                if (!talking && !sitting)
-                                {
-                                    prevState = myState;
-                                    myState = NPCState.STATE_IDLE_SIT;
-                                }
+                                prevState = myState;
+                                myState = NPCState.STATE_IDLE_SIT;
                             }
                             else
                             {
@@ -1179,8 +1186,13 @@ public class NPCV2 : MonoBehaviour
             stateQueue.TryGetValue(3, out queue);
             if (currentTaskPriority < 3 && queue.Count > 0)
             {
+                if (talking)
+                {
+                    stopTalking();
+                    interactionComponent.getTarget().GetComponent<NPCV2>().stopTalking();
+                }
                 //if currenttaskpriority is higher than 1 we will resume the task after new task is complete
-                if(currentTaskPriority > 1)
+                if (currentTaskPriority > 1)
                     prevStateUncompleted = true;
                 //save current state info so it can be done after the prioritized task is complete
                 prevState = myState;
@@ -1189,12 +1201,17 @@ public class NPCV2 : MonoBehaviour
                 dest = Vector3.zero;
                 taskCompleted = false;
             }
-            else
+            else 
             {
                 //Dequeue a task from priority 2 queue if it has a task and the current task is less important
                 stateQueue.TryGetValue(2, out queue);
                 if (currentTaskPriority < 2 && queue.Count > 0)
                 {
+                    if (talking)
+                    {
+                        stopTalking();
+                        interactionComponent.getTarget().GetComponent<NPCV2>().stopTalking();
+                    }
                     //save current state info so it can be done after the prioritized task is complete
                     prevState = myState;
                     myState = queue.Dequeue();
@@ -1435,61 +1452,65 @@ public class NPCV2 : MonoBehaviour
     }
     void checkMed()
     {
-        if (isLosingHp)
+        if(!paused)
         {
-            // lose hp if no medicine is active, if hp reaches zero -> die
-            deathTimer += Time.deltaTime;
-            if (deathTimer >= LOSE_HP_TIME)
+            if (isLosingHp)
             {
-                myHp--;
-                deathTimer = 0;
-            }
+                // lose hp if no medicine is active, if hp reaches zero -> die
+                deathTimer += Time.deltaTime;
+                if (deathTimer >= LOSE_HP_TIME)
+                {
+                    myHp--;
+                    deathTimer = 0;
+                }
 
-            // check if medicine has been activated and stop losing hp if so
-            ClockTime.DayTime currTime = GameObject.FindGameObjectWithTag("Clock").GetComponent<ClockTime>().currentDayTime;
+                // check if medicine has been activated and stop losing hp if so
+                ClockTime.DayTime currTime = GameObject.FindGameObjectWithTag("Clock").GetComponent<ClockTime>().currentDayTime;
 
-            // MORNING
-            if (currTime == ClockTime.DayTime.MORNING)
-            {
-                foreach(Medicine med in morningMed)
+                // MORNING
+                if (currTime == ClockTime.DayTime.MORNING)
                 {
-                    if (med.isActive)
-                        isLosingHp = false;
+                    foreach (Medicine med in morningMed)
+                    {
+                        if (med.isActive)
+                            isLosingHp = false;
+                    }
+                }
+                // AFTERNOON
+                if (currTime == ClockTime.DayTime.AFTERNOON)
+                {
+                    foreach (Medicine med in afternoonMed)
+                    {
+                        if (med.isActive)
+                            isLosingHp = false;
+                    }
+                }
+                // EVENING
+                if (currTime == ClockTime.DayTime.EVENING)
+                {
+                    foreach (Medicine med in eveningMed)
+                    {
+                        if (med.isActive)
+                            isLosingHp = false;
+                    }
+                }
+                // NIGHT
+                if (currTime == ClockTime.DayTime.NIGHT)
+                {
+                    foreach (Medicine med in nightMed)
+                    {
+                        if (med.isActive)
+                            isLosingHp = false;
+                    }
                 }
             }
-            // AFTERNOON
-            if (currTime == ClockTime.DayTime.AFTERNOON)
+            if (myHp <= 0)
             {
-                foreach (Medicine med in afternoonMed)
-                {
-                    if (med.isActive)
-                        isLosingHp = false;
-                }
-            }
-            // EVENING
-            if (currTime == ClockTime.DayTime.EVENING)
-            {
-                foreach (Medicine med in eveningMed)
-                {
-                    if (med.isActive)
-                        isLosingHp = false;
-                }
-            }
-            // NIGHT
-            if (currTime == ClockTime.DayTime.NIGHT)
-            {
-                foreach (Medicine med in nightMed)
-                {
-                    if (med.isActive)
-                        isLosingHp = false;
-                }
+                addStateToQueue(3, NPCState.STATE_DEAD);
+                taskCompleted = true;
             }
         }
-        if (myHp <= 0)
-        {
-            addStateToQueue(3, NPCState.STATE_DEAD);
-            taskCompleted = true;
-        }
+        
     }
     public bool giveMed(string[] med, float[] dosage)
     {
@@ -1500,6 +1521,7 @@ public class NPCV2 : MonoBehaviour
             ClockTime.DayTime currTime = GameObject.FindGameObjectWithTag("Clock").GetComponent<ClockTime>().currentDayTime;
             //incorrect rating, add 1 for every error
             int incorrect = 0;
+            int correct = 0;
             Medicine[] meds = new Medicine[2];
             // MORNING
             if (currTime == ClockTime.DayTime.MORNING)
@@ -1527,11 +1549,17 @@ public class NPCV2 : MonoBehaviour
                 {
                     if (string.Equals(med[i], meds[j].title, System.StringComparison.CurrentCultureIgnoreCase))
                     {
-                        if (dosage[i] == meds[j].dosage)
+                        //if the med was already give, giving more means overdose
+                        if(meds[j].isActive)
+                        {
+                            incorrect++;
+                        }
+                        else if (dosage[i] == meds[j].dosage)
                         {
                             found = true;
                             meds[j].isActive = true;
-                            myHp += 5;
+                            correct++;
+                            myHp += 3;
                             print("Correct medicine!");
                         }
                     }
@@ -1550,6 +1578,8 @@ public class NPCV2 : MonoBehaviour
                 incorrect++;
             }
 
+            int temp = correct - incorrect;
+            scoreSystem.addToScore(temp);
             if (incorrect == 0)
             {
                 return true;
