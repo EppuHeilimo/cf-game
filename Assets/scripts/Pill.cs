@@ -6,6 +6,7 @@ public class Pill : MonoBehaviour
 {
     public string medName;
     public int dosage;
+    public int canSplit;
 
     public float maxStretch = 2.0f;
     float maxStretchSqr;
@@ -23,11 +24,16 @@ public class Pill : MonoBehaviour
     bool pillSplitOn;
     bool splitted;
 
-    public void Init(string medName, int dosage, Sprite pillSprite)
+    Sprite pillSpriteHalf;
+
+    public void Init(string medName, int dosage, Sprite pillSprite, int canSplit)
     {
         this.medName = medName;
         this.dosage = dosage;
+        this.canSplit = canSplit;
         gameObject.GetComponent<SpriteRenderer>().sprite = pillSprite;
+        if (canSplit != 0)
+            pillSpriteHalf = Resources.Load<Sprite>("Sprites/Meds/" + medName + "_tab_half");
         transform.localScale = new Vector3(0.1f, 0.1f, 0f); //scale sprite smaller
         isFlying = false;
         Time.timeScale = 1.0f;
@@ -94,6 +100,7 @@ public class Pill : MonoBehaviour
             {
                 this.dosage = this.dosage / 2;
                 splitted = true;
+                gameObject.GetComponent<SpriteRenderer>().sprite = pillSpriteHalf;
                 print("puolitettu");
             }
         }

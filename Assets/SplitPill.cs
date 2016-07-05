@@ -7,11 +7,12 @@ public class SplitPill : MonoBehaviour {
     {
         if (other.gameObject.tag == "Pill")
         {
-            other.gameObject.GetComponent<Pill>().splitPill(true);
-            Time.timeScale = 0.2f;
-            Time.fixedDeltaTime = 0.02F * Time.timeScale;
+            if (other.gameObject.GetComponent<Pill>().canSplit != 0)
+            { 
+                other.gameObject.GetComponent<Pill>().splitPill(true);
+                Time.timeScale = 0.2f;
+                Time.fixedDeltaTime = 0.02F * Time.timeScale;
+            }
         }
     }
-
-
 }

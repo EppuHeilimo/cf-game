@@ -369,16 +369,22 @@ public class Minigame1 : MonoBehaviour {
         }
     }
 
-    public void startDosingGame(string medName, int defaultDosage)
+    public void startDosingGame(string medName, int defaultDosage, int canSplit)
     {
         mCamera.SwitchToMinigame1Camera();
-        gameObject.transform.Find("BigMedCont").GetComponent<BigMedCont>().Init(medName, defaultDosage);
+        gameObject.transform.Find("BigMedCont").GetComponent<BigMedCont>().Init(medName, defaultDosage, canSplit);
         minigameCanvas.SetActive(false);
         minigameCanvas2.SetActive(true);
     }
 
     public void quitDosingGame()
-    {   
+    {
+        gameObject.transform.Find("BigMedCont").GetComponent<BigMedCont>().spawnPills = false;
+        GameObject pill = GameObject.FindGameObjectWithTag("Pill");
+        if (pill != null)
+        {
+            Destroy(pill);
+        }
         mCamera.SwitchToMainCamera();
         minigameCanvas.SetActive(true);
         minigameCanvas2.SetActive(false);
