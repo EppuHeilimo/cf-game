@@ -8,7 +8,7 @@ public class Pill : MonoBehaviour
     public int dosage;
     public int canSplit;
 
-    public float maxStretch = 2.0f;
+    public float maxStretch = 24.0f;
     float maxStretchSqr;
     bool clickedOn;
     bool isFlying;
@@ -26,11 +26,12 @@ public class Pill : MonoBehaviour
 
     Sprite pillSpriteHalf;
 
-    public void Init(string medName, int dosage, Sprite pillSprite, int canSplit)
+    public void Init(string medName, int dosage, Sprite pillSprite, int canSplit, Vector3 pos)
     {
         this.medName = medName;
         this.dosage = dosage;
         this.canSplit = canSplit;
+        transform.position = pos;
         gameObject.GetComponent<SpriteRenderer>().sprite = pillSprite;
         if (canSplit != 0)
             pillSpriteHalf = Resources.Load<Sprite>("Sprites/Meds/" + medName + "_tab_half");
@@ -101,6 +102,8 @@ public class Pill : MonoBehaviour
                 this.dosage = this.dosage / 2;
                 splitted = true;
                 gameObject.GetComponent<SpriteRenderer>().sprite = pillSpriteHalf;
+                Time.timeScale = 1.0f;
+                Time.fixedDeltaTime = 0.02F * Time.timeScale;
             }
         }
     }
@@ -119,14 +122,16 @@ public class Pill : MonoBehaviour
     {
         Vector3 mouseWorldPoint = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         Vector2 catapultToMouse = mouseWorldPoint - catapult.position;
-        force = new Vector2(-catapultToMouse.x * 5, -catapultToMouse.y * 5);
+       
         if (catapultToMouse.sqrMagnitude > maxStretchSqr)
         {
             rayToMouse.direction = catapultToMouse;
             mouseWorldPoint = rayToMouse.GetPoint(maxStretch);
         }
         mouseWorldPoint.z = transform.position.z;
-        transform.position = mouseWorldPoint;    
+        catapultToMouse = mouseWorldPoint - catapult.position;
+        transform.position = mouseWorldPoint;
+        force = new Vector2(catapultToMouse.x * catapultToMouse.x * 7, catapultToMouse.y * catapultToMouse.y * 5);
     }
 
     void LineRendererUpdate()

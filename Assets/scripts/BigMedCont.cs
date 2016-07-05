@@ -33,7 +33,7 @@ public class BigMedCont : MonoBehaviour
         if (pillSprite == null)
             pillSprite = Resources.Load<Sprite>("Sprites/Meds/null_tab");
         spawnPill();
-        GameObject.FindGameObjectWithTag("Pill").GetComponent<Pill>().Init(this.medName, this.defaultDosage, pillSprite, canSplit);
+        GameObject.FindGameObjectWithTag("Pill").GetComponent<Pill>().Init(this.medName, this.defaultDosage, pillSprite, canSplit, transform.position);
         spawnPills = true;
     }
 
@@ -41,6 +41,16 @@ public class BigMedCont : MonoBehaviour
     {
         if (spawnPills)
             spawnPill();
+        if (spawnPills && Input.GetKeyDown("space"))
+            destroyPill();
+    }
+
+    void OnMouseDown()
+    {
+        if (spawnPills)
+        {
+            destroyPill();
+        }
     }
 
     void spawnPill()
@@ -53,7 +63,16 @@ public class BigMedCont : MonoBehaviour
             pillObj.transform.SetParent(minigameObj.transform);
             pillObj.transform.position = gameObject.transform.position + new Vector3(-1, -1, 0);
             pillObj.GetComponent<SpringJoint2D>().connectedBody = gameObject.GetComponent<Rigidbody2D>();
-            pillObj.GetComponent<Pill>().Init(this.medName, this.defaultDosage, pillSprite, canSplit);
+            pillObj.GetComponent<Pill>().Init(this.medName, this.defaultDosage, pillSprite, canSplit, transform.position);
+        }
+    }
+
+    void destroyPill()
+    {
+        GameObject pill = GameObject.FindGameObjectWithTag("Pill");
+        if (pill != null)
+        {
+            Destroy(pill);
         }
     }
 }
