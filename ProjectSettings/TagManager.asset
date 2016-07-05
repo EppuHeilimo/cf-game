@@ -45,6 +45,7 @@ TagManager:
   - MedCupPanel
   - ScoringSystem
   - FloatingText
+  - MedInfo
   layers:
   - Default
   - TransparentFX

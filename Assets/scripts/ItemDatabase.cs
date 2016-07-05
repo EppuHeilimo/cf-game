@@ -55,7 +55,7 @@ public class ItemDatabase : MonoBehaviour {
         for (int i = 0; i < itemData.Count; i++)
         {
             database.Add(new Item((int)itemData[i]["id"], itemData[i]["title"].ToString(), itemData[i]["desc"].ToString(), itemData[i]["usage"].ToString(),
-                                  (int)itemData[i]["dosages"]["small"], (int)itemData[i]["dosages"]["medium"], (int)itemData[i]["dosages"]["high"], (int)itemData[i]["defaultDos"]));
+                                  (int)itemData[i]["dosages"]["small"], (int)itemData[i]["dosages"]["medium"], (int)itemData[i]["dosages"]["high"], (int)itemData[i]["defaultDos"], (int)itemData[i]["dosagesPerDay"], (int)itemData[i]["canSplit"]));
         }
     }
 }
@@ -75,7 +75,9 @@ public class Item : ICloneable
     public int DefaultDosage { get; set; }
     public int timesPerDay { get; set; }
     public int currentDosage { get; set; }
-    public Item(int id, string title, string desc, string usage, int smallDosage, int mediumDosage, int highDosage, int defaultDosage, int timesPerDay)
+    public int canSplit { get; set; }
+
+    public Item(int id, string title, string desc, string usage, int smallDosage, int mediumDosage, int highDosage, int defaultDosage, int timesPerDay, int canSplit)
     {
         this.ID = id;
         this.Title = title;
@@ -91,9 +93,10 @@ public class Item : ICloneable
         this.HighDosage = highDosage;
         this.DefaultDosage = defaultDosage;
         this.timesPerDay = timesPerDay;
+        this.canSplit = canSplit;
     }
 
-    public Item(int id, string title, string desc, string usage, int smallDosage, int mediumDosage, int highDosage, int defaultDosage)
+    public Item(int id, string title, string desc, string usage, int smallDosage, int mediumDosage, int highDosage, int defaultDosage, int canSplit)
     {
         this.ID = id;
         this.Title = title;
@@ -109,6 +112,7 @@ public class Item : ICloneable
         this.HighDosage = highDosage;
         this.DefaultDosage = defaultDosage;
         this.timesPerDay = 0;
+        this.canSplit = canSplit;
     }
 
     public Item()

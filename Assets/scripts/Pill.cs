@@ -6,10 +6,12 @@ public class Pill : MonoBehaviour
 {
     public string medName;
     public int dosage;
+    public int canSplit;
 
     public float maxStretch = 2.0f;
     float maxStretchSqr;
     bool clickedOn;
+    bool isFlying;
 
     public LineRenderer Line;
     SpringJoint2D spring;
@@ -19,11 +21,23 @@ public class Pill : MonoBehaviour
     Vector2 force;
     Ray catapultToProjectileRay;
 
-    public void Init(string medName, int dosage, Sprite pillSprite)
+    bool pillSplitOn;
+    bool splitted;
+
+    Sprite pillSpriteHalf;
+
+    public void Init(string medName, int dosage, Sprite pillSprite, int canSplit)
     {
         this.medName = medName;
         this.dosage = dosage;
+        this.canSplit = canSplit;
         gameObject.GetComponent<SpriteRenderer>().sprite = pillSprite;
+        if (canSplit != 0)
+            pillSpriteHalf = Resources.Load<Sprite>("Sprites/Meds/" + medName + "_tab_half");
+        transform.localScale = new Vector3(0.1f, 0.1f, 0f); //scale sprite smaller
+        isFlying = false;
+        Time.timeScale = 1.0f;
+        Time.fixedDeltaTime = 0.02F * Time.timeScale;
     }
 
     void Awake()
@@ -47,7 +61,7 @@ public class Pill : MonoBehaviour
 
     void Update()
     {
-        if (clickedOn)
+        if (clickedOn && !isFlying)
         {
             Dragging();
         }
@@ -79,6 +93,16 @@ public class Pill : MonoBehaviour
         if (spring != null)
             spring.enabled = false;
         clickedOn = true;
+
+        if (pillSplitOn)
+        {
+            if (!splitted)
+            {
+                this.dosage = this.dosage / 2;
+                splitted = true;
+                gameObject.GetComponent<SpriteRenderer>().sprite = pillSpriteHalf;
+            }
+        }
     }
 
     void OnMouseUp()
@@ -87,6 +111,8 @@ public class Pill : MonoBehaviour
             spring.enabled = true;
         rigbody.isKinematic = false;
         clickedOn = false;
+        isFlying = true;
+        Invoke("StuckCheck", 10);
     }
 
     void Dragging()
@@ -113,5 +139,15 @@ public class Pill : MonoBehaviour
             Line.enabled = true;
     }
 
-    //TODO: pillerin puolitus, puolittaa dosagen, slowmotion triggerillä
+    public void splitPill(bool b)
+    {
+        pillSplitOn = b;
+    }
+
+    public void StuckCheck()
+    {
+        if (isFlying && gameObject.tag == "Pill")
+            Destroy(gameObject);
+    }
+
 }

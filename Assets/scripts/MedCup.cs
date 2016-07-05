@@ -26,18 +26,21 @@ public class MedCup : MonoBehaviour {
 
     void OnTriggerEnter2D(Collider2D other)
     {
-        if (isColliding) return;
-        isColliding = true;
-        GameObject pillObj = other.gameObject;   
-        Pill pill = pillObj.GetComponent<Pill>();
-        Med med = new Med();
-        med.name = pill.medName;
-        med.dosage = pill.dosage;
-        Add(med);
-        pills.Add(other.gameObject);
-        other.gameObject.tag = "disabledPill";
-        Invoke("DisableRotation", 1f);
-        UpdateText();
+        if (other.gameObject.tag == "Pill")
+        {
+            if (isColliding) return;
+            isColliding = true;
+            GameObject pillObj = other.gameObject;   
+            Pill pill = pillObj.GetComponent<Pill>();
+            Med med = new Med();
+            med.name = pill.medName;
+            med.dosage = pill.dosage;
+            Add(med);
+            pills.Add(other.gameObject);
+            other.gameObject.tag = "disabledPill";
+            Invoke("DisableRotation", 1f);
+            UpdateText();
+        }
     }
 
     void Update()
@@ -97,7 +100,7 @@ public class MedCup : MonoBehaviour {
         medsInThisCupTxt.text = "";
         for (int i = 0; i < medsInThisCup.Count; i++)
         {
-            medsInThisCupTxt.text += medsInThisCup[i].name + " " + medsInThisCup[i].dosage + "\n";
+            medsInThisCupTxt.text += medsInThisCup[i].name + " " + medsInThisCup[i].dosage + " mg" + "\n";
         }
     }
 }
