@@ -101,7 +101,6 @@ public class Pill : MonoBehaviour
                 this.dosage = this.dosage / 2;
                 splitted = true;
                 gameObject.GetComponent<SpriteRenderer>().sprite = pillSpriteHalf;
-                print("puolitettu");
             }
         }
     }

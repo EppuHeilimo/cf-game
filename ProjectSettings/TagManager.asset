@@ -43,6 +43,7 @@ TagManager:
   - nightCup
   - disabledPill
   - MedCupPanel
+  - MedInfo
   layers:
   - Default
   - TransparentFX

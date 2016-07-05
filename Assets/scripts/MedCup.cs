@@ -100,7 +100,7 @@ public class MedCup : MonoBehaviour {
         medsInThisCupTxt.text = "";
         for (int i = 0; i < medsInThisCup.Count; i++)
         {
-            medsInThisCupTxt.text += medsInThisCup[i].name + " " + medsInThisCup[i].dosage + "\n";
+            medsInThisCupTxt.text += medsInThisCup[i].name + " " + medsInThisCup[i].dosage + " mg" + "\n";
         }
     }
 }

@@ -2,7 +2,7 @@
 using System.Collections;
 using UnityEngine.EventSystems;
 using System;
-
+using UnityEngine.UI;
 public class BigMedCont : MonoBehaviour
 {
     public string medName;

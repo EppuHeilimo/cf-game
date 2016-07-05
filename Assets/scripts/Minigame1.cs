@@ -375,6 +375,12 @@ public class Minigame1 : MonoBehaviour {
         gameObject.transform.Find("BigMedCont").GetComponent<BigMedCont>().Init(medName, defaultDosage, canSplit);
         minigameCanvas.SetActive(false);
         minigameCanvas2.SetActive(true);
+        string splittable;
+        if (canSplit == 0)
+            splittable = "Non-splittable";
+        else
+            splittable = "Splittable";
+        GameObject.FindGameObjectWithTag("MedInfo").GetComponent<Text>().text = medName + " " + defaultDosage + " mg" + "\n" + splittable;
     }
 
     public void quitDosingGame()
