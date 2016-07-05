@@ -612,57 +612,6 @@ public class Minigame1 : MonoBehaviour {
         nightCup.Reset();
     }
 
-    /*
-    public void ShowMedsInCups()
-    {
-        GameObject medCupPanel = GameObject.FindGameObjectWithTag("MedCupPanel");
-        string mText = "Empty";
-        string aText = "Empty";
-        string eText = "Empty";
-        string nText = "Empty";
-
-        if (morningCupMedsNoDuplicates.Count > 0)
-        {
-            mText = "";
-            for (int i = 0; i < morningCupMedsNoDuplicates.Count; i++)
-            {
-                mText += morningCupMedsNoDuplicates[i].ToString() + "\n";
-            }
-        }
-
-        if (afternoonCupMedsNoDuplicates.Count > 0)
-        {
-            aText = "";
-            for (int i = 0; i < afternoonCupMedsNoDuplicates.Count; i++)
-            {
-                aText += afternoonCupMedsNoDuplicates[i].ToString() + "\n";
-            }
-        }
-
-        if (eveningCupMedsNoDuplicates.Count > 0)
-        {
-            eText = "";
-            for (int i = 0; i < eveningCupMedsNoDuplicates.Count; i++)
-            {
-                eText += eveningCupMedsNoDuplicates[i].ToString() + "\n";
-            }
-        }
-
-        if (nightCupMedsNoDuplicates.Count > 0)
-        {
-            nText = "";
-            for (int i = 0; i < nightCupMedsNoDuplicates.Count; i++)
-            {
-                nText += nightCupMedsNoDuplicates[i].ToString() + "\n";
-            }
-        }
-        medCupPanel.transform.GetChild(0).transform.GetChild(0).GetComponent<Text>().text = mText;
-        medCupPanel.transform.GetChild(1).transform.GetChild(0).GetComponent<Text>().text = aText;
-        medCupPanel.transform.GetChild(2).transform.GetChild(0).GetComponent<Text>().text = eText;
-        medCupPanel.transform.GetChild(3).transform.GetChild(0).GetComponent<Text>().text = nText;
-    }
-    */
-
     void EnableDropsAnim(bool enable)
     {
         foreach (GameObject d in drops)
