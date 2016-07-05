@@ -963,7 +963,7 @@ public class NPCV2 : MonoBehaviour
     {
         GameObject target = interactionComponent.getTarget();
         //check that the target is actually capable of talking
-        if (target == null || target.tag != "NPC" || !target.GetComponent<NPCV2>().isIdle() || target.GetComponent<NPCV2>().dead)
+        if (target == null || target.tag != "NPC" || !target.GetComponent<NPCV2>().isIdle() || target.GetComponent<NPCV2>().dead || target.GetComponent<NPCV2>().sleeping || target.GetComponent<NPCV2>().sitting)
         {
             findOtherIdleNPC();
         }
@@ -986,7 +986,6 @@ public class NPCV2 : MonoBehaviour
                 timer = 0;
                 stopTalking();
                 target.GetComponent<NPCV2>().stopTalking();
-                
             }
         }
 
@@ -1032,7 +1031,7 @@ public class NPCV2 : MonoBehaviour
             if (npc.gameObject != gameObject)
             {
                 NPCV2 script = npc.GetComponent<NPCV2>();
-                if (script.isIdle())
+                if (script.isIdle() && !script.sitting && !script.sleeping)
                 {
                     if(!script.talking)
                     {
@@ -1239,7 +1238,16 @@ public class NPCV2 : MonoBehaviour
     float getRandomDosage(Item medicine)
     {
         float ret = medicine.DefaultDosage;
-        int range = Random.Range(1, 4);
+        int range = 0;
+        if (medicine.canSplit == 0)
+        {
+           range = Random.Range(2, 4);
+        }
+        else
+        {
+            range = Random.Range(1, 4);
+        }
+        
         switch(range)
         {
             case 1:
@@ -1522,24 +1530,26 @@ public class NPCV2 : MonoBehaviour
             //incorrect rating, add 1 for every error
             int incorrect = 0;
             int correct = 0;
-            Medicine[] meds = new Medicine[2];
+            Medicine[] meds = new Medicine[4];
             // MORNING
             if (currTime == ClockTime.DayTime.MORNING)
             {
-                meds = (Medicine[])morningMed.Clone();
+                meds = morningMed;
             }
             else if (currTime == ClockTime.DayTime.AFTERNOON)
             {
-                meds = (Medicine[])afternoonMed.Clone();
+                meds = afternoonMed;
             }
             else if (currTime == ClockTime.DayTime.EVENING)
             {
-                meds = (Medicine[])eveningMed.Clone();
+                meds = eveningMed;
             }
             else if (currTime == ClockTime.DayTime.NIGHT)
             {
-                meds = (Medicine[])nightMed.Clone();
+                meds = nightMed;
             }
+
+
             List<string> wrongmeds = new List<string>();
             for (int i = 0; i < med.Length; i++)
             {
@@ -1549,18 +1559,17 @@ public class NPCV2 : MonoBehaviour
                 {
                     if (string.Equals(med[i], meds[j].title, System.StringComparison.CurrentCultureIgnoreCase))
                     {
-                        //if the med was already give, giving more means overdose
+                        //if the med was already given, giving more means overdose
                         if(meds[j].isActive)
                         {
                             incorrect++;
+                            GetComponent<FloatTextNPC>().addFloatText(FloatText.IncorrectMedicine);
                         }
                         else if (dosage[i] == meds[j].dosage)
                         {
                             found = true;
                             meds[j].isActive = true;
                             correct++;
-                            myHp += 3;
-                            print("Correct medicine!");
                         }
                     }
                     if (found)
@@ -1571,6 +1580,7 @@ public class NPCV2 : MonoBehaviour
                 if (!found)
                 {
                     wrongmeds.Add(med[i]);
+                    GetComponent<FloatTextNPC>().addFloatText(FloatText.IncorrectMedicine);
                 }
             }
             for (int i = 0; i < wrongmeds.Count; i++)
@@ -1578,13 +1588,61 @@ public class NPCV2 : MonoBehaviour
                 incorrect++;
             }
 
-            int temp = correct - incorrect;
-            scoreSystem.addToScore(temp);
-            if (incorrect == 0)
+            int medcount = correct + incorrect;
+
+            float temp = correct / medcount;
+            float correctratio = temp - (incorrect / medcount);
+
+            if(correctratio > 0)
             {
-                return true;
+                if (correctratio > 0 && correctratio <= 0.25f)
+                {
+                    GetComponent<FloatTextNPC>().addFloatText(FloatText.Plus5);
+                    myHp += 5;
+                }
+                else if (correctratio > 0.25f && correctratio <= 0.5f)
+                {
+                    GetComponent<FloatTextNPC>().addFloatText(FloatText.Plus10);
+                    myHp += 10;
+                }
+                else if (correctratio > 0.5f && correctratio <= 0.75f)
+                {
+                    GetComponent<FloatTextNPC>().addFloatText(FloatText.Plus10);
+                    GetComponent<FloatTextNPC>().addFloatText(FloatText.Plus5);
+                    myHp += 15;
+                }
+                else if (correctratio > 0.75f && correctratio <= 1f)
+                {
+                    GetComponent<FloatTextNPC>().addFloatText(FloatText.Plus10);
+                    myHp += 20;
+                }
             }
-            myHp -= incorrect * 20;
+            else if(correctratio < 0)
+            {
+                if (correctratio < 0 && correctratio >= -0.25f)
+                {
+                    GetComponent<FloatTextNPC>().addFloatText(FloatText.Minus5);
+                    myHp -= 5;
+                }
+                else if (correctratio < -0.25f && correctratio >= -0.5f)
+                {
+                    GetComponent<FloatTextNPC>().addFloatText(FloatText.Minus10);
+                    myHp -= 10;
+                }
+                else if (correctratio < -0.5f && correctratio >= -0.75f)
+                {
+                    GetComponent<FloatTextNPC>().addFloatText(FloatText.Minus10);
+                    GetComponent<FloatTextNPC>().addFloatText(FloatText.Minus5);
+                    myHp -= 15;
+                }
+                else if (correctratio < -0.75f && correctratio >= -1f)
+                {
+                    GetComponent<FloatTextNPC>().addFloatText(FloatText.Minus20);
+                    myHp -= 20;
+                }
+            }
+
+            scoreSystem.addToScore(correctratio);
             return true;
         }
         else return false;
@@ -1622,8 +1680,6 @@ public class NPCV2 : MonoBehaviour
             return true;
         }
         return false;
-
     }
-
 }
 

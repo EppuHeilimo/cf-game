@@ -41,7 +41,8 @@ public class FloatTextNPC : MonoBehaviour {
 
     public void addFloatText(FloatText text)
     {
-        floatingTexts.Add(text);
+        if(!floatingTexts.Contains(text))
+            floatingTexts.Add(text);
     }
 
     public void addFloatText(List<FloatText> txts)

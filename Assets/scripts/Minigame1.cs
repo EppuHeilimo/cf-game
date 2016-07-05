@@ -5,6 +5,8 @@ using UnityEngine.UI;
 
 public class Minigame1 : MonoBehaviour {
 
+
+    ClockTime.DayTime time;
     bool active = false;
     GameObject invObj;
     Inventory playerInv;
@@ -59,6 +61,7 @@ public class Minigame1 : MonoBehaviour {
 
     void Start()
     {
+        
         invObj = GameObject.Find("Inventory");
         playerInv = invObj.GetComponent<Inventory>();
         database = invObj.GetComponent<ItemDatabase>();
@@ -75,6 +78,7 @@ public class Minigame1 : MonoBehaviour {
         npcManager = npcManagerObj.GetComponent<NPCManagerV2>();
         mCamera = GameObject.Find("Main Camera").GetComponent<CameraMovement>();
         npcList = new List<GameObject>();
+        
     }
 
     void Update()
@@ -92,6 +96,7 @@ public class Minigame1 : MonoBehaviour {
     public void startMinigame()
     {
         kasiDesi = false;
+        time = GameObject.FindGameObjectWithTag("Clock").GetComponent<ClockTime>().currentDayTime;
         uiManager.pause(true);
         minigameCanvas.SetActive(true);
         uiCanvas.SetActive(false);
@@ -235,18 +240,64 @@ public class Minigame1 : MonoBehaviour {
                 switch (i)
                 {
                     case 0:
+
                         morning1.text = npc.morningMed[i].dosage.ToString();
+                        if (time == ClockTime.DayTime.MORNING)
+                        {
+                            if (npc.morningMed[i].isActive)
+                            {
+                                morning1.GetComponent<Text>().color = Color.green;
+                            }
+                            else
+                            {
+                                morning1.GetComponent<Text>().color = Color.red;
+                            }
+                        }
                         break;
                     case 1:
                         morning2.text = npc.morningMed[i].dosage.ToString();
+                        if (time == ClockTime.DayTime.MORNING)
+                        {
+                            if (npc.morningMed[i].isActive)
+                            {
+                                morning2.GetComponent<Text>().color = Color.green;
+                            }
+                            else
+                            {
+                                morning2.GetComponent<Text>().color = Color.red;
+                            }
+                        }
                         break;
                     case 2:
                         morning3.text = npc.morningMed[i].dosage.ToString();
+                        if (time == ClockTime.DayTime.MORNING)
+                        {
+                            if (npc.morningMed[i].isActive)
+                            {
+                                morning3.GetComponent<Text>().color = Color.green;
+                            }
+                            else
+                            {
+                                morning3.GetComponent<Text>().color = Color.red;
+                            }
+                        }
                         break;
                     case 3:
                         morning4.text = npc.morningMed[i].dosage.ToString();
+                        if (time == ClockTime.DayTime.MORNING)
+                        {
+                            if (npc.morningMed[i].isActive)
+                            {
+                                morning4.GetComponent<Text>().color = Color.green;
+                            }
+                            else
+                            {
+                                morning4.GetComponent<Text>().color = Color.red;
+                            }
+                        }
                         break;
                 }
+
             }
 
         }
@@ -276,15 +327,59 @@ public class Minigame1 : MonoBehaviour {
                 {
                     case 0:
                         afternoon1.text = npc.afternoonMed[i].dosage.ToString();
+                        if (time == ClockTime.DayTime.AFTERNOON)
+                        {
+                            if (npc.afternoonMed[i].isActive)
+                            {
+                                afternoon1.GetComponent<Text>().color = Color.green;
+                            }
+                            else
+                            {
+                                afternoon1.GetComponent<Text>().color = Color.red;
+                            }
+                        }
                         break;
                     case 1:
                         afternoon2.text = npc.afternoonMed[i].dosage.ToString();
+                        if (time == ClockTime.DayTime.AFTERNOON)
+                        {
+                            if (npc.afternoonMed[i].isActive)
+                            {
+                                afternoon2.GetComponent<Text>().color = Color.green;
+                            }
+                            else
+                            {
+                                afternoon2.GetComponent<Text>().color = Color.red;
+                            }
+                        }
                         break;
                     case 2:
                         afternoon3.text = npc.afternoonMed[i].dosage.ToString();
+                        if (time == ClockTime.DayTime.AFTERNOON)
+                        {
+                            if (npc.afternoonMed[i].isActive)
+                            {
+                                afternoon3.GetComponent<Text>().color = Color.green;
+                            }
+                            else
+                            {
+                                afternoon3.GetComponent<Text>().color = Color.red;
+                            }
+                        }
                         break;
                     case 3:
                         afternoon4.text = npc.afternoonMed[i].dosage.ToString();
+                        if (time == ClockTime.DayTime.AFTERNOON)
+                        {
+                            if (npc.afternoonMed[i].isActive)
+                            {
+                                afternoon4.GetComponent<Text>().color = Color.green;
+                            }
+                            else
+                            {
+                                afternoon4.GetComponent<Text>().color = Color.red;
+                            }
+                        }
                         break;
                 }
             }
@@ -315,15 +410,59 @@ public class Minigame1 : MonoBehaviour {
                 {
                     case 0:
                         evening1.text = npc.eveningMed[i].dosage.ToString();
+                        if (time == ClockTime.DayTime.EVENING)
+                        {
+                            if (npc.eveningMed[i].isActive)
+                            {
+                                evening1.GetComponent<Text>().color = Color.green;
+                            }
+                            else
+                            {
+                                evening1.GetComponent<Text>().color = Color.red;
+                            }
+                        }
                         break;
                     case 1:
                         evening2.text = npc.eveningMed[i].dosage.ToString();
+                        if (time == ClockTime.DayTime.EVENING)
+                        {
+                            if (npc.eveningMed[i].isActive)
+                            {
+                                evening2.GetComponent<Text>().color = Color.green;
+                            }
+                            else
+                            {
+                                evening2.GetComponent<Text>().color = Color.red;
+                            }
+                        }
                         break;
                     case 2:
                         evening3.text = npc.eveningMed[i].dosage.ToString();
+                        if (time == ClockTime.DayTime.EVENING)
+                        {
+                            if (npc.eveningMed[i].isActive)
+                            {
+                                evening3.GetComponent<Text>().color = Color.green;
+                            }
+                            else
+                            {
+                                evening3.GetComponent<Text>().color = Color.red;
+                            }
+                        }
                         break;
                     case 3:
                         evening4.text = npc.eveningMed[i].dosage.ToString();
+                        if (time == ClockTime.DayTime.EVENING)
+                        {
+                            if (npc.eveningMed[i].isActive)
+                            {
+                                evening4.GetComponent<Text>().color = Color.green;
+                            }
+                            else
+                            {
+                                evening4.GetComponent<Text>().color = Color.red;
+                            }
+                        }
                         break;
                 }
             }
@@ -354,18 +493,63 @@ public class Minigame1 : MonoBehaviour {
                 {
                     case 0:
                         night1.text = npc.nightMed[i].dosage.ToString();
+                        if (time == ClockTime.DayTime.NIGHT)
+                        {
+                            if (npc.nightMed[i].isActive)
+                            {
+                                night1.GetComponent<Text>().color = Color.green;
+                            }
+                            else
+                            {
+                                night1.GetComponent<Text>().color = Color.red;
+                            }
+                        }
                         break;
                     case 1:
                         night2.text = npc.nightMed[i].dosage.ToString();
+                        if (time == ClockTime.DayTime.NIGHT)
+                        {
+                            if (npc.nightMed[i].isActive)
+                            {
+                                night2.GetComponent<Text>().color = Color.green;
+                            }
+                            else
+                            {
+                                night2.GetComponent<Text>().color = Color.red;
+                            }
+                        }
                         break;
                     case 2:
                         night3.text = npc.nightMed[i].dosage.ToString();
+                        if (time == ClockTime.DayTime.NIGHT)
+                        {
+                            if (npc.nightMed[i].isActive)
+                            {
+                                night3.GetComponent<Text>().color = Color.green;
+                            }
+                            else
+                            {
+                                night3.GetComponent<Text>().color = Color.red;
+                            }
+                        }
                         break;
                     case 3:
                         night4.text = npc.nightMed[i].dosage.ToString();
+                        if (time == ClockTime.DayTime.NIGHT)
+                        {
+                            if (npc.nightMed[i].isActive)
+                            {
+                                night4.GetComponent<Text>().color = Color.green;
+                            }
+                            else
+                            {
+                                night4.GetComponent<Text>().color = Color.red;
+                            }
+                        }
                         break;
                 }
             }
+
         }
     }
 
