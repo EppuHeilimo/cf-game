@@ -46,6 +46,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 474eb64dd79be344fbab4a3471ea17be, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  FloatTextGO: {fileID: 169238, guid: e2ee98bc877294d4cacc57a2493422c3, type: 2}
 --- !u!114 &11444494
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -82,7 +83,7 @@ MonoBehaviour:
   m_PhysicalUnit: 3
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
-  m_DynamicPixelsPerUnit: 1
+  m_DynamicPixelsPerUnit: 10
 --- !u!222 &22287712
 CanvasRenderer:
   m_ObjectHideFlags: 1

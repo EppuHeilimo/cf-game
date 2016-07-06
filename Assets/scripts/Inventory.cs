@@ -40,6 +40,8 @@ public class Inventory : MonoBehaviour {
             slots[i].GetComponent<Slot>().id = i;
             slots[i].transform.SetParent(slotPanel.transform);
         }
+        int[] ids = { 0, 1, 2, 3 };
+        AddItems(ids);
 
     }
 

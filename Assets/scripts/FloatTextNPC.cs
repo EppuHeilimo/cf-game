@@ -25,24 +25,41 @@ public class FloatTextNPC : MonoBehaviour {
 
     public GameObject FloatTextCanvas;
     public List<FloatText> floatingTexts = new List<FloatText>();
+    public List<string> floatingStrings = new List<string>();
 
 
     void Update()
     {
-        if(floatingTexts.Count > 0)
+        if(floatingTexts.Count > 0 || floatingStrings.Count > 0)
         {
+           
             Vector3 pos = new Vector3(transform.position.x, transform.position.y + 100, transform.position.z);
             Quaternion rot = Quaternion.Euler(new Vector3(45, 45, 0));
             GameObject canvas = Instantiate(FloatTextCanvas, pos, rot) as GameObject;
-            canvas.GetComponent<FloatTextCanvas>().Init(floatingTexts);
-            floatingTexts.Clear();
+            if (floatingTexts.Count > 0)
+            {
+                canvas.GetComponent<FloatTextCanvas>().Init(floatingTexts);
+                floatingTexts.Clear();
+            }
+            if (floatingStrings.Count > 0)
+            {
+                canvas.GetComponent<FloatTextCanvas>().Init(floatingStrings);
+                floatingStrings.Clear();
+            }
         }
+
     }
 
     public void addFloatText(FloatText text)
     {
         if(!floatingTexts.Contains(text))
             floatingTexts.Add(text);
+    }
+
+    public void addFloatText(string text)
+    {
+        if (!floatingStrings.Contains(text))
+            floatingStrings.Add(text);
     }
 
     public void addFloatText(List<FloatText> txts)

@@ -1563,12 +1563,14 @@ public class NPCV2 : MonoBehaviour
                         if(meds[j].isActive)
                         {
                             incorrect++;
-                            GetComponent<FloatTextNPC>().addFloatText(FloatText.IncorrectMedicine);
+                            //GetComponent<FloatTextNPC>().addFloatText(FloatText.IncorrectMedicine);
+                            GetComponent<FloatTextNPC>().addFloatText("Overdose of " + med[i] + "!");
                         }
                         else if (dosage[i] == meds[j].dosage)
                         {
                             found = true;
                             meds[j].isActive = true;
+                            GetComponent<FloatTextNPC>().addFloatText("Correct Medicine! " + med[i]);
                             correct++;
                         }
                     }
@@ -1580,7 +1582,8 @@ public class NPCV2 : MonoBehaviour
                 if (!found)
                 {
                     wrongmeds.Add(med[i]);
-                    GetComponent<FloatTextNPC>().addFloatText(FloatText.IncorrectMedicine);
+                    //GetComponent<FloatTextNPC>().addFloatText(FloatText.IncorrectMedicine);
+                    GetComponent<FloatTextNPC>().addFloatText("Incorrect Medicine! " + med[i]);
                 }
             }
             for (int i = 0; i < wrongmeds.Count; i++)
@@ -1592,28 +1595,27 @@ public class NPCV2 : MonoBehaviour
 
             float temp = correct / medcount;
             float correctratio = temp - (incorrect / medcount);
-
+            
             if(correctratio > 0)
             {
                 if (correctratio > 0 && correctratio <= 0.25f)
                 {
-                    GetComponent<FloatTextNPC>().addFloatText(FloatText.Plus5);
+                    GetComponent<FloatTextNPC>().addFloatText("+ 5");
                     myHp += 5;
                 }
                 else if (correctratio > 0.25f && correctratio <= 0.5f)
                 {
-                    GetComponent<FloatTextNPC>().addFloatText(FloatText.Plus10);
+                    GetComponent<FloatTextNPC>().addFloatText("+ 10");
                     myHp += 10;
                 }
                 else if (correctratio > 0.5f && correctratio <= 0.75f)
                 {
-                    GetComponent<FloatTextNPC>().addFloatText(FloatText.Plus10);
-                    GetComponent<FloatTextNPC>().addFloatText(FloatText.Plus5);
+                    GetComponent<FloatTextNPC>().addFloatText("+ 15");
                     myHp += 15;
                 }
                 else if (correctratio > 0.75f && correctratio <= 1f)
                 {
-                    GetComponent<FloatTextNPC>().addFloatText(FloatText.Plus10);
+                    GetComponent<FloatTextNPC>().addFloatText("+ 20");
                     myHp += 20;
                 }
             }
@@ -1621,27 +1623,26 @@ public class NPCV2 : MonoBehaviour
             {
                 if (correctratio < 0 && correctratio >= -0.25f)
                 {
-                    GetComponent<FloatTextNPC>().addFloatText(FloatText.Minus5);
+                    GetComponent<FloatTextNPC>().addFloatText("- 5");
                     myHp -= 5;
                 }
                 else if (correctratio < -0.25f && correctratio >= -0.5f)
                 {
-                    GetComponent<FloatTextNPC>().addFloatText(FloatText.Minus10);
+                    GetComponent<FloatTextNPC>().addFloatText("- 10");
                     myHp -= 10;
                 }
                 else if (correctratio < -0.5f && correctratio >= -0.75f)
                 {
-                    GetComponent<FloatTextNPC>().addFloatText(FloatText.Minus10);
-                    GetComponent<FloatTextNPC>().addFloatText(FloatText.Minus5);
+                    GetComponent<FloatTextNPC>().addFloatText("- 15");
                     myHp -= 15;
                 }
                 else if (correctratio < -0.75f && correctratio >= -1f)
                 {
-                    GetComponent<FloatTextNPC>().addFloatText(FloatText.Minus20);
+                    GetComponent<FloatTextNPC>().addFloatText("- 20");
                     myHp -= 20;
                 }
             }
-
+            
             scoreSystem.addToScore(correctratio);
             return true;
         }
@@ -1672,6 +1673,7 @@ public class NPCV2 : MonoBehaviour
     {
         dialogZone = transform.FindChild("ContactZone").transform.gameObject;
     }
+
     private bool approx(float a, float b, float accuracy)
     {
         float sub = a - b;
