@@ -24,20 +24,27 @@ public class MedCup : MonoBehaviour {
     RaycastHit hit;
     Text medsInThisCupTxt;
 
+    Med lastMed;
+    int lastPill;
+
     void OnTriggerEnter2D(Collider2D other)
     {
-        if (isColliding) return;
-        isColliding = true;
-        GameObject pillObj = other.gameObject;   
-        Pill pill = pillObj.GetComponent<Pill>();
-        Med med = new Med();
-        med.name = pill.medName;
-        med.dosage = pill.dosage;
-        Add(med);
-        pills.Add(other.gameObject);
-        other.gameObject.tag = "disabledPill";
-        Invoke("DisableRotation", 1f);
-        UpdateText();
+        if (other.gameObject.tag == "Pill")
+        {
+            if (isColliding) return;
+            isColliding = true;
+            GameObject pillObj = other.gameObject;   
+            Pill pill = pillObj.GetComponent<Pill>();
+            Med med = new Med();
+            med.name = pill.medName;
+            med.dosage = pill.dosage;
+            Add(med);
+            pills.Add(other.gameObject);
+            lastPill = pills.Count - 1;
+            other.gameObject.tag = "disabledPill";
+            Invoke("DisableRotation", 1f);
+            UpdateText();
+        }
     }
 
     void Update()
@@ -47,6 +54,7 @@ public class MedCup : MonoBehaviour {
 
     public void Add(Med m)
     {
+        lastMed = m;
         if (medsInThisCup.Count == 0)
             medsInThisCup.Add(m);
         else
@@ -73,6 +81,31 @@ public class MedCup : MonoBehaviour {
         UpdateText();
     }
 
+    public void DeleteLast()
+    {
+        if (lastMed == null)
+        {
+            Reset();
+        }
+        else
+        {
+            for (int i = 0; i < medsInThisCup.Count; i++)
+            {
+                if (medsInThisCup[i].name == lastMed.name)
+                {
+                    medsInThisCup[i].dosage -= lastMed.dosage;
+                    if (medsInThisCup[i].dosage <= 0)
+                        medsInThisCup.RemoveAt(i);
+                    lastMed = null;
+                    break;
+                }
+            }
+            Destroy(pills[lastPill]);
+            pills.RemoveAt(lastPill);
+            UpdateText();
+        }
+    }
+
     public void DestroyPills()
     {
         foreach (GameObject pill in pills)
@@ -97,7 +130,7 @@ public class MedCup : MonoBehaviour {
         medsInThisCupTxt.text = "";
         for (int i = 0; i < medsInThisCup.Count; i++)
         {
-            medsInThisCupTxt.text += medsInThisCup[i].name + " " + medsInThisCup[i].dosage + "\n";
+            medsInThisCupTxt.text += medsInThisCup[i].name + " " + medsInThisCup[i].dosage + " mg" + "\n";
         }
     }
 }

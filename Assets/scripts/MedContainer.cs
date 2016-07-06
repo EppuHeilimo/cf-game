@@ -4,6 +4,7 @@ using System.Collections;
 public class MedContainer : MonoBehaviour {
     public string medName;
     public int defaultDos;
+    public int canSplit;
     GameObject minigameObj;
     Minigame1 minigame;
 
@@ -21,7 +22,7 @@ public class MedContainer : MonoBehaviour {
         }
         else
         {
-            minigame.startDosingGame(medName, defaultDos);
+            minigame.startDosingGame(medName, defaultDos, canSplit);
         }
     }
 }

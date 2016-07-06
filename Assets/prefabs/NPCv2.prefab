@@ -78,6 +78,7 @@ GameObject:
   - 114: {fileID: 11443626}
   - 120: {fileID: 12050100}
   - 114: {fileID: 11404356}
+  - 114: {fileID: 11447438}
   m_Layer: 9
   m_Name: NPCv2
   m_TagString: NPC
@@ -1008,7 +1009,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 113848}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0, y: 4.4, z: 102}
+  m_LocalPosition: {x: 694, y: 4.4, z: -131}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children:
@@ -1845,6 +1846,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerInZone: 0
   npcInZone: 0
+--- !u!114 &11447438
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 113848}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f921e4d6771b85942ac4582cf3fd43d7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  FloatTextCanvas: {fileID: 170024, guid: c8ae5930dba51a848a03429ff540b57f, type: 2}
+  floatingTexts: 
 --- !u!114 &11479876
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1872,6 +1886,7 @@ MonoBehaviour:
   prevState: 0
   myState: 0
   myBed: {fileID: 0}
+  taskCompleted: 1
   talking: 0
   sleeping: 0
   cantFindBed: 0

@@ -39,11 +39,11 @@ public class NurseAI : MonoBehaviour {
                 {
                     interaction.setTarget(targetNPC);
                     NavMeshHit hit;
-                    NavMesh.SamplePosition(targetNPC.transform.position, out hit, 200.0f, (1 << 7));
+                    NavMesh.SamplePosition(targetNPC.transform.position, out hit, 100.0f, (1 << 7));
                     dest = hit.position;
                     moveToDest();
                 }
-                else if(arrivedToDestination(100.0f) && !readyToLeave)
+                else if(arrivedToDestination(20.0f) && !readyToLeave)
                 {
                     agent.Stop();
                     readyForLift = true;
@@ -67,7 +67,7 @@ public class NurseAI : MonoBehaviour {
                 else if (partner.readyForLift && !arrivedToDestination(50.0f) && !readyToLeave)
                 {
                     timer += Time.deltaTime;
-                    if (timer > 1.0f)
+                    if (timer > 4.0f)
                     {
                         agent.Warp(agent.destination);
                     }
@@ -95,7 +95,7 @@ public class NurseAI : MonoBehaviour {
                         {
                             timer += Time.deltaTime;
                         }
-                        if (timer > 1.0f)
+                        if (timer > 2.0f)
                         {
                             readyToLeave = true;
                             anim.stoppickfromfloor();
@@ -107,13 +107,8 @@ public class NurseAI : MonoBehaviour {
             }
             if(readyToLeave && arrivedToDestination(30.0f))
             {
-                npcManager.npcList.Remove(gameObject);
-                if (GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerControl>().getTarget() == gameObject)
-                {
-                    GameObject.FindGameObjectWithTag("TextBoxManager").GetComponent<TextBoxManager>().DisableTextBox();
-                }
-                npcManager.removeNpcFromPlayersResponsibilities(gameObject);
-                npcManager.nursesDeployed = false;
+                if(id == 0)
+                    npcManager.nursesDeployed = false;
                 Destroy(gameObject);
             }
         }

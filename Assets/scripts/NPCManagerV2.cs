@@ -43,7 +43,9 @@ public class NPCManagerV2 : MonoBehaviour
     // hard-coded pool for names, probably changed later
     string[] namePool = { "Aleksi", "Pekka", "Matti", "Kalle", "Jorma" };
 
-    const int MAX_NPCS = 30; 
+    const int MAX_NPCS = 30;
+    public static int MAX_NPCS_IN_WARD_AREA = 12;
+    public int currentNpcsInWard = 0;
 
     List<string> usedIds; // IDs already used
 
@@ -193,20 +195,21 @@ public class NPCManagerV2 : MonoBehaviour
 
     public void spawnNurseToFetchNPC(GameObject npc)
     {
+        if(!nursesDeployed)
+        {
+            GameObject newNurse = Instantiate(nurseWithTrolleyPrefab, nurseSpawn, Quaternion.identity) as GameObject;
+            GameObject newNurse2 = Instantiate(nursePrefab, nurseSpawn2, Quaternion.identity) as GameObject;
 
-        GameObject newNurse = Instantiate(nurseWithTrolleyPrefab, nurseSpawn, Quaternion.identity) as GameObject;
-        GameObject newNurse2 = Instantiate(nursePrefab, nurseSpawn2, Quaternion.identity) as GameObject;
+            newNurse.GetComponent<HeadChange>().ChangeToRandomHead();
+            newNurse2.GetComponent<HeadChange>().ChangeToRandomHead();
+            newNurse.GetComponent<NurseAI>().partner = newNurse2.GetComponent<NurseAI>();
+            newNurse2.GetComponent<NurseAI>().partner = newNurse.GetComponent<NurseAI>();
 
-        newNurse.GetComponent<HeadChange>().ChangeToRandomHead();
-        newNurse2.GetComponent<HeadChange>().ChangeToRandomHead();
-        newNurse.GetComponent<NurseAI>().partner = newNurse2.GetComponent<NurseAI>();
-        newNurse2.GetComponent<NurseAI>().partner = newNurse.GetComponent<NurseAI>();
+            newNurse.GetComponent<NurseAI>().Init(npc, 0);
+            newNurse2.GetComponent<NurseAI>().Init(npc, 1);
 
-        newNurse.GetComponent<NurseAI>().Init(npc, 0);
-        newNurse2.GetComponent<NurseAI>().Init(npc, 1);
-
-        nursesDeployed = true;
-
-
+            nursesDeployed = true;
+            currentNpcsInWard--;
+        }
     }
 }

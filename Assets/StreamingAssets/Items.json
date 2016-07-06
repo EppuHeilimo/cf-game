@@ -10,20 +10,22 @@
 			"medium": 400,
 			"high": 800
 		},
-        "dosagesPerDay": 0
+        "dosagesPerDay": 0,
+		"canSplit": 1
 	},
 	{
 		"id": 1,
 		"title": "Warfarin",
 		"desc": "Anticoagulant",
 		"usage": "Blood clot", 
-		"defaultDos": 3,
+		"defaultDos": 2,
 		"dosages": {
-			"small": 2,
-			"medium": 3,
+			"small": 1,
+			"medium": 2,
 			"high": 4
 		},
-        "dosagesPerDay": 1
+        "dosagesPerDay": 1,
+		"canSplit": 1
 	},
 	{
 		"id": 2,
@@ -32,11 +34,12 @@
 		"usage": "Urinary tract infection",
 		"defaultDos": 200,
 		"dosages": {
-			"small": 200,
-			"medium": 400,
-			"high": 600
+			"small": 100,
+			"medium": 200,
+			"high": 400
 		},
-        "dosagesPerDay": 2
+        "dosagesPerDay": 2,
+		"canSplit": 0
 	},
 	{
 		"id": 3,
@@ -45,11 +48,12 @@
 		"usage": "Otitis media",
 		"defaultDos": 250,
 		"dosages": {
-			"small": 250,
-			"medium": 375,
+			"small": 125,
+			"medium": 250,
 			"high": 500
 		},
-        "dosagesPerDay": 3
+        "dosagesPerDay": 3,
+		"canSplit": 0
 	},
 
 	{
@@ -59,37 +63,40 @@
 		"usage": "Upper respiratory tract infection",
 		"defaultDos": 660,
 		"dosages": {
-			"small": 660,
+			"small": 330,
 			"medium": 660,
-			"high": 660
+			"high": 1320
 		},
-        "dosagesPerDay": 3
+        "dosagesPerDay": 3,
+		"canSplit": 0
 	},
 	{
 		"id": 5,
 		"title": "Simvastatin",
 		"desc": "Cardiovascular agent",
 		"usage": "Dyslipidemia",
-		"defaultDos": 10,
+		"defaultDos": 20,
 		"dosages": {
 			"small": 10,
 			"medium": 20,
 			"high": 40
 		},
-        "dosagesPerDay": 1
+        "dosagesPerDay": 1,
+		"canSplit": 0
 	},
     {
 		"id": 6,
 		"title": "Levothyroxine",
 		"desc": "Hormones",
 		"usage": "Hypothyroidism",
-		"defaultDos": 1,
+		"defaultDos": 2,
 		"dosages": {
 			"small": 1,
-			"medium": 1,
-			"high": 1
+			"medium": 2,
+			"high": 4
 		},
-        "dosagesPerDay": 1
+        "dosagesPerDay": 1,
+		"canSplit": 0
 	},
     {
 		"id": 7,
@@ -99,10 +106,11 @@
 		"defaultDos": 10,
 		"dosages": {
 			"small": 5,
-			"medium": 5,
-			"high": 10
+			"medium": 10,
+			"high": 20
 		},
-        "dosagesPerDay": 1
+        "dosagesPerDay": 1,
+		"canSplit": 1
 	},
     {
 		"id": 8,
@@ -111,24 +119,26 @@
 		"usage": "Gastroesophageal reflux disease",
 		"defaultDos": 20,
 		"dosages": {
-			"small": 20,
+			"small": 10,
 			"medium": 20,
-			"high": 20
+			"high": 40
 		},
-        "dosagesPerDay": 1
+        "dosagesPerDay": 1,
+		"canSplit": 0
 	},
     {
 		"id": 9,
 		"title": "Lisinopril",
 		"desc": "Cardiovascular agent",
 		"usage": "Hypertension",
-		"defaultDos": 10,
+		"defaultDos": 20,
 		"dosages": {
 			"small": 10,
 			"medium": 20,
 			"high": 40
 		},
-        "dosagesPerDay": 1
+        "dosagesPerDay": 1,
+		"canSplit": 0
 	},
     {
 		"id": 10,
@@ -141,7 +151,8 @@
 			"medium": 40,
 			"high": 80
 		},
-        "dosagesPerDay": 2
+        "dosagesPerDay": 2,
+		"canSplit": 1
 	},
     {
 		"id": 11,
@@ -150,23 +161,25 @@
 		"usage": "Diabetes type 2",
 		"defaultDos": 500,
 		"dosages": {
-			"small": 500,
+			"small": 250,
 			"medium": 500,
-			"high": 500
+			"high": 1000
 		},
-        "dosagesPerDay": 2
+        "dosagesPerDay": 2,
+		"canSplit": 0
 	},
     {
 		"id": 12,
 		"title": "Prednisone",
 		"desc": "Hormones",
 		"usage": "Asthma",
-		"defaultDos": 5,
+		"defaultDos": 20,
 		"dosages": {
 			"small": 10,
 			"medium": 20,
-			"high": 30
+			"high": 40
 		},
-        "dosagesPerDay": 2
+        "dosagesPerDay": 2,
+		"canSplit": 1
 	}
 ]
