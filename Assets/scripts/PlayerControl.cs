@@ -11,15 +11,17 @@ public class PlayerControl : MonoBehaviour {
     ObjectManager objManager;
     IiroAnimBehavior anim;
     Tooltip tooltip;
+    NavMeshPath dest;
 
     bool sitting = false;
     bool sleeping = false;
     bool followNpc = false;
     bool pickingup = false;
-    bool movingtomedcabinet = false; 
+    bool movingToTarget = false; 
 
     // Use this for initialization
     void Start () {
+        dest = new NavMeshPath();
         interaction = GetComponent<ObjectInteraction>();
         anim = GetComponent<IiroAnimBehavior>();
         objManager = GameObject.FindGameObjectWithTag("ObjectManager").GetComponent<ObjectManager>();
@@ -39,6 +41,8 @@ public class PlayerControl : MonoBehaviour {
                 }
             }
         }
+
+
         if(pickingup)
         {
             if (target != null)
@@ -54,23 +58,19 @@ public class PlayerControl : MonoBehaviour {
             }
         }
 
-        if(movingtomedcabinet)
+        if(movingToTarget)
         {
-            if(arrivedToDestination(10.0f))
+            if (arrivedToDestination(10.0f) && target != null)
             {
-                if(target != null && target.tag == "MedCabinet")
+                if (target.tag == "MedCabinet")
                 {
                     GameObject.Find("Minigame1").GetComponent<Minigame1>().startMinigame();
-                    movingtomedcabinet = false;
+                    movingToTarget = false;
                 }
-                else
+                else if(target.tag == "Computer")
                 {
-                    movingtomedcabinet = false;
+                    movingToTarget = false;
                 }
-            }
-            if(target == null || target.tag != "MedCabinet")
-            {
-                movingtomedcabinet = false;
             }
         }
 
@@ -96,7 +96,6 @@ public class PlayerControl : MonoBehaviour {
                                 anim.sit();
                             }
                         }
-
                     }
                 }
                 else
@@ -165,7 +164,6 @@ public class PlayerControl : MonoBehaviour {
                 }
             }  
         }
-
         handleInput();
     }
 
@@ -195,8 +193,6 @@ public class PlayerControl : MonoBehaviour {
             }
             anim.stopPickup();
             RaycastHit hit2;
-            //Create a Ray on the tapped / clicked position
-
             //Layer mask
             LayerMask layerMask = (1 << 8) | (1 << 11);
             LayerMask layerMaskNpc = (1 << 9) | (1 << 10);
@@ -216,9 +212,9 @@ public class PlayerControl : MonoBehaviour {
             rays = Physics.RaycastAll(ray, 10000.0f, layerMaskNpc);
             List<RaycastHit> hits = new List<RaycastHit>();
             bool npcwashit = false;
+            movingToTarget = false;
             if (rays.Length > 0)
             {
-                
                 if (!isMouseOverUI())
                 {
                     pickingup = false;
@@ -236,7 +232,7 @@ public class PlayerControl : MonoBehaviour {
                             npcwashit = true;
                             if ((target == hit.transform.gameObject) || (temp != null && target == temp))
                             {
-                                agent.SetDestination(new Vector3(target.transform.position.x, target.transform.position.y, target.transform.position.z));
+                                moveTo(new Vector3(target.transform.position.x, target.transform.position.y, target.transform.position.z));
                                 followNpc = true;
                             }
                             else
@@ -289,11 +285,11 @@ public class PlayerControl : MonoBehaviour {
                                     interaction.setCurrentChair(interaction.getTarget());
                                     if (target.tag == "Chair2")
                                     {
-                                        agent.SetDestination(interaction.getDestToTargetObjectSide(1, 16.0f));
+                                       moveTo(interaction.getDestToTargetObjectSide(1, 16.0f));
                                     }
                                     else
                                     {
-                                        agent.SetDestination(interaction.getDestToTargetObjectSide(0, 16.0f));
+                                        moveTo(interaction.getDestToTargetObjectSide(0, 16.0f));
                                     }
                                     sitting = true;
                                     disableMoveIndicator();
@@ -305,7 +301,7 @@ public class PlayerControl : MonoBehaviour {
                                 if(objManager.bookTargetObject(target, gameObject))
                                 {
                                     interaction.setBookedBed(interaction.getTarget());
-                                    agent.SetDestination(interaction.getDestToTargetObjectSide(1, 16.0f));
+                                    moveTo(interaction.getDestToTargetObjectSide(1, 16.0f));
                                     sleeping = true;
                                     disableMoveIndicator();
                                 }
@@ -314,15 +310,15 @@ public class PlayerControl : MonoBehaviour {
                             {
                                 interaction.setTarget(target);
                                 pickingup = true;
-                                agent.SetDestination(target.transform.position);
+                                moveTo(target.transform.position);
                                 disableMoveIndicator();
                             }
-                            else if (target.tag == "MedCabinet")
+                            else if (target.tag == "MedCabinet" || target.tag == "Computer")
                             {
                                 interaction.setTarget(target);
-                                agent.SetDestination(target.transform.position);
+                                moveTo(target.transform.position);
                                 disableMoveIndicator();
-                                movingtomedcabinet = true;
+                                movingToTarget = true;
                             }
                         }
                         else
@@ -375,7 +371,7 @@ public class PlayerControl : MonoBehaviour {
                     //get position of hit and move there
                     Vector3 pos = new Vector3(hit2.point.x, 0, hit2.point.z);
                     enableMoveIndicator(pos);
-                    agent.SetDestination(pos);
+                    moveTo(pos);
                     if (sitting == true)
                     {
                         sitting = false;
@@ -416,7 +412,7 @@ public class PlayerControl : MonoBehaviour {
         }
         else
         {
-            agent.SetDestination(new Vector3(target.transform.position.x - 20, target.transform.position.y, target.transform.position.z));
+            moveTo(new Vector3(target.transform.position.x - 20, target.transform.position.y, target.transform.position.z));
             return false;
         }
     }
@@ -504,5 +500,36 @@ public class PlayerControl : MonoBehaviour {
                 }
             }
         }
+    }
+    /*
+     * Tests if player can move to the point, tries to get better point. If can't try to go the destination anyway.
+     * Also Calculates the path for navmeshagent synchonously (Only player, this is slow process) 
+     */
+    public void moveTo(Vector3 dest)
+    {
+        
+        if (agent.enabled)
+        {
+            NavMeshHit hit;
+            if (NavMesh.SamplePosition(dest, out hit, 10.0f, agent.areaMask))
+            {
+                NavMesh.CalculatePath(transform.position, hit.position, agent.areaMask, this.dest);
+                agent.SetPath(this.dest);
+            }
+            else
+            {
+                if(NavMesh.CalculatePath(transform.position, dest, agent.areaMask, this.dest))
+                {
+                    agent.SetPath(this.dest);
+                }
+                else
+                {
+                    //if everything else fails, force it to move to dest
+                    agent.SetDestination(dest);
+                }
+                
+            }    
+        }
+
     }
 }
