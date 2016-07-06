@@ -19,7 +19,7 @@ public class SplitPill : MonoBehaviour {
                 }
                 Time.timeScale = 0.2f;
                 Time.fixedDeltaTime = 0.02F * Time.timeScale;
-                Invoke("endSlowMo", 0.4f);
+                Invoke("endSlowMo", 0.2f);
             }
         }
     }
