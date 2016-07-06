@@ -46,6 +46,7 @@ TagManager:
   - ScoringSystem
   - FloatingText
   - MedInfo
+  - Ground
   layers:
   - Default
   - TransparentFX

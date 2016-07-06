@@ -13,7 +13,10 @@ public class SplitPill : MonoBehaviour {
             {
                 pill = other.gameObject.GetComponent<Pill>();
                 if (pill != null)
+                {
                     pill.splitPill(true);
+                    pill.GetComponent<CircleCollider2D>().radius = Constants.PillColliderRadiusBig;
+                }
                 Time.timeScale = 0.2f;
                 Time.fixedDeltaTime = 0.02F * Time.timeScale;
                 Invoke("endSlowMo", 0.4f);
@@ -24,7 +27,10 @@ public class SplitPill : MonoBehaviour {
     void endSlowMo()
     {
         if (pill != null)
+        {
             pill.splitPill(false);
+            pill.GetComponent<CircleCollider2D>().radius = Constants.PillColliderRadiusNormal;
+        }
         Time.timeScale = 1.0f;
         Time.fixedDeltaTime = 0.02F * Time.timeScale;
     }

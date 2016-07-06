@@ -1,25 +1,31 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.EventSystems;
+using Assets.Scripts;
+
+public static class Constants
+{
+    public static readonly float MinVelocity = 0.05f;
+
+    /// <summary>
+    /// The collider of the pill is bigger when on idle state
+    /// This will make it easier for the user to tap on it
+    /// </summary>
+    public static readonly float PillColliderRadiusNormal = 5f;
+    public static readonly float PillColliderRadiusBig = 10f;
+}
 
 public class Pill : MonoBehaviour
 {
+    public PillState State
+    {
+        get;
+        private set;
+    }
+
     public string medName;
     public int dosage;
     public int canSplit;
-
-    public float maxStretch = 24.0f;
-    float maxStretchSqr;
-    bool clickedOn;
-    bool isFlying;
-
-    public LineRenderer Line;
-    SpringJoint2D spring;
-    Transform catapult;
-    Rigidbody2D rigbody;
-    Ray rayToMouse;  
-    Vector2 force;
-    Ray catapultToProjectileRay;
 
     bool pillSplitOn;
     bool splitted;
@@ -31,70 +37,72 @@ public class Pill : MonoBehaviour
         this.medName = medName;
         this.dosage = dosage;
         this.canSplit = canSplit;
-        transform.position = pos;
+        //transform.position = pos - new Vector3(2,2,0);
         gameObject.GetComponent<SpriteRenderer>().sprite = pillSprite;
         if (canSplit != 0)
             pillSpriteHalf = Resources.Load<Sprite>("Sprites/Meds/" + medName + "_tab_half");
         transform.localScale = new Vector3(0.1f, 0.1f, 0f); //scale sprite smaller
-        isFlying = false;
         Time.timeScale = 1.0f;
         Time.fixedDeltaTime = 0.02F * Time.timeScale;
+        GetComponent<CircleCollider2D>().radius = Constants.PillColliderRadiusBig;
+        State = PillState.BeforeThrown;
     }
 
     void Awake()
     {
-        GameObject bigMedCont = GameObject.FindGameObjectWithTag("BigMedCont");
-        spring = GetComponent<SpringJoint2D>();
-        Line = bigMedCont.GetComponent<LineRenderer>();
-        rigbody = GetComponent<Rigidbody2D>();
-        catapult = bigMedCont.transform;
-        LineRendererSetup();
-        rayToMouse = new Ray(catapult.position, Vector3.zero);
-        catapultToProjectileRay = new Ray(Line.transform.position, Vector3.zero);
-        maxStretchSqr = maxStretch * maxStretch;       
+        GameObject bigMedCont = GameObject.FindGameObjectWithTag("BigMedCont");   
     }
 
     void OnCollisionEnter2D(Collision2D coll)
     {
         if (coll.gameObject.tag == "Pill" || coll.gameObject.tag == "disabledPill")
             Physics2D.IgnoreCollision(coll.gameObject.GetComponent<CircleCollider2D>(), GetComponent<CircleCollider2D>());
+        if (coll.gameObject.tag == "Ground")
+        {
+            Time.timeScale = 1.0f;
+            Time.fixedDeltaTime = 0.02F * Time.timeScale;
+        }
     }
 
-    void Update()
+    public void splitPill(bool b)
     {
-        if (clickedOn && !isFlying)
-        {
-            Dragging();
-        }
+        pillSplitOn = b;
+    }
 
-        if (spring != null)
+    void FixedUpdate()
+    {
+        //if we've thrown the pill and its not inside a cup (tag has not been changed)
+        //and its speed is very small
+        if (State == PillState.Thrown && gameObject.tag == "Pill" &&
+            GetComponent<Rigidbody2D>().velocity.sqrMagnitude <= Constants.MinVelocity)
         {
-            if (!rigbody.isKinematic)
-            {
-                Destroy(spring);
-                rigbody.velocity = force;
-                rigbody.angularVelocity = force.magnitude * 10f;
-            }
-            LineRendererUpdate();
-        }
-        else
-        {
-            Line.enabled = false;
+            //destroy the pill after 1 second
+            StartCoroutine(DestroyAfter(1));
         }
     }
 
-    void LineRendererSetup()
-    {      
-        Line.SetPosition(0, Line.transform.position);
-        Line.sortingOrder = 5;    
+    IEnumerator DestroyAfter(float seconds)
+    {
+        yield return new WaitForSeconds(seconds);
+        Destroy(gameObject);
+    }
+
+    public void OnThrow()
+    {
+        //play the sound
+        //GetComponent<AudioSource>().Play();
+        //show the trail renderer
+        //GetComponent<TrailRenderer>().enabled = true;
+        //allow for gravity forces
+        GetComponent<Rigidbody2D>().isKinematic = false;
+        //make the collider normal size
+        GetComponent<CircleCollider2D>().radius = Constants.PillColliderRadiusNormal;
+        State = PillState.Thrown;
     }
 
     void OnMouseDown()
     {
-        if (spring != null)
-            spring.enabled = false;
-        clickedOn = true;
-
+        //split the pill's dosage in half and change the sprite if clicked during slow motion
         if (pillSplitOn)
         {
             if (!splitted)
@@ -106,53 +114,6 @@ public class Pill : MonoBehaviour
                 Time.fixedDeltaTime = 0.02F * Time.timeScale;
             }
         }
-    }
-
-    void OnMouseUp()
-    {
-        if (spring != null)
-            spring.enabled = true;
-        rigbody.isKinematic = false;
-        clickedOn = false;
-        isFlying = true;
-        Invoke("StuckCheck", 10);
-    }
-
-    void Dragging()
-    {
-        Vector3 mouseWorldPoint = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        Vector2 catapultToMouse = mouseWorldPoint - catapult.position;
-       
-        if (catapultToMouse.sqrMagnitude > maxStretchSqr)
-        {
-            rayToMouse.direction = catapultToMouse;
-            mouseWorldPoint = rayToMouse.GetPoint(maxStretch);
-        }
-        mouseWorldPoint.z = transform.position.z;
-        catapultToMouse = mouseWorldPoint - catapult.position;
-        transform.position = mouseWorldPoint;
-        force = new Vector2(catapultToMouse.x * catapultToMouse.x * 7, catapultToMouse.y * catapultToMouse.y * 5);
-    }
-
-    void LineRendererUpdate()
-    {
-        Vector2 catapultToProjectile = transform.position - Line.transform.position;
-        catapultToProjectileRay.direction = catapultToProjectile;
-        Vector3 holdPoint = catapultToProjectileRay.GetPoint(catapultToProjectile.magnitude);
-        Line.SetPosition(1, holdPoint);
-        if (Line.enabled == false)
-            Line.enabled = true;
-    }
-
-    public void splitPill(bool b)
-    {
-        pillSplitOn = b;
-    }
-
-    public void StuckCheck()
-    {
-        if (isFlying && gameObject.tag == "Pill")
-            Destroy(gameObject);
     }
 
 }

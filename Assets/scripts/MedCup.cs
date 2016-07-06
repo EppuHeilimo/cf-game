@@ -20,10 +20,8 @@ public class MedCup : MonoBehaviour {
     public List<GameObject> pills = new List<GameObject>();
     public string cupName;
     bool isColliding;
-    Ray ray;
-    RaycastHit hit;
-    Text medsInThisCupTxt;
 
+    Text medsInThisCupTxt;
     Med lastMed;
     int lastPill;
 
@@ -42,7 +40,6 @@ public class MedCup : MonoBehaviour {
             pills.Add(other.gameObject);
             lastPill = pills.Count - 1;
             other.gameObject.tag = "disabledPill";
-            Invoke("DisableRotation", 1f);
             UpdateText();
         }
     }
@@ -112,16 +109,6 @@ public class MedCup : MonoBehaviour {
             if (pill != null)
                 Destroy(pill);
         pills.Clear();
-    }
-
-    void DisableRotation()
-    {
-        if (pills.Count > 0)
-        { 
-            foreach (GameObject pill in pills)
-                if (pill != null)
-                    pill.GetComponent<Rigidbody2D>().freezeRotation = true;
-        }
     }
 
     void UpdateText()

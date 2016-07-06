@@ -3,6 +3,8 @@ using System.Collections;
 using UnityEngine.EventSystems;
 using System;
 using UnityEngine.UI;
+using Assets.Scripts;
+
 public class BigMedCont : MonoBehaviour
 {
     public string medName;
@@ -12,10 +14,12 @@ public class BigMedCont : MonoBehaviour
     GameObject minigameObj;
     Sprite pillSprite;
     public bool spawnPills;
+    GameManager gameManager;
 
     void Start()
     {
         minigameObj = GameObject.Find("Minigame1");
+        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
     }
 
     public void Init(string medName, int defaultDosage, int canSplit)
@@ -35,6 +39,7 @@ public class BigMedCont : MonoBehaviour
         spawnPill();
         GameObject.FindGameObjectWithTag("Pill").GetComponent<Pill>().Init(this.medName, this.defaultDosage, pillSprite, canSplit, transform.position);
         spawnPills = true;
+        gameManager.CurrentMiniGameState = MiniGameState.Start;
     }
 
     void Update()
@@ -61,9 +66,9 @@ public class BigMedCont : MonoBehaviour
         {
             GameObject pillObj = Instantiate(pillPrefab);
             pillObj.transform.SetParent(minigameObj.transform);
-            pillObj.transform.position = gameObject.transform.position + new Vector3(-1, -1, 0);
-            pillObj.GetComponent<SpringJoint2D>().connectedBody = gameObject.GetComponent<Rigidbody2D>();
+            pillObj.transform.position = gameObject.transform.position;
             pillObj.GetComponent<Pill>().Init(this.medName, this.defaultDosage, pillSprite, canSplit, transform.position);
+            gameManager.CurrentMiniGameState = MiniGameState.Start;
         }
     }
 
