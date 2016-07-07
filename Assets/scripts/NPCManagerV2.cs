@@ -153,24 +153,19 @@ public class NPCManagerV2 : MonoBehaviour
 
     public void nextDay()
     {
-        for(int i = 0; i < npcList.Count; i++)
+        GameObject[] npcs = npcList.ToArray();
+        for(int i = 0; i < npcs.Length; i++)
         {
-            NPCV2 npc = npcList[i].GetComponent<NPCV2>();
+            NPCV2 npc = npcs[i].GetComponent<NPCV2>();
             if(npc.diagnosed)
-            {
                 npc.dayReset();
-            }
             else
             {
-                Destroy(npcList[i]);
-                npcList.RemoveAt(i);
+                npcList.Remove(npcs[i]);
+                Destroy(npcs[i]);
             }
         }
-        foreach(GameObject npc in npcList)
-        {
-            NPCV2 script = npc.GetComponent<NPCV2>();
-            script.dayReset();
-        }
+        
         paused = true;
     }
 

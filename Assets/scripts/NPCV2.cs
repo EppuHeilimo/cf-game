@@ -158,15 +158,6 @@ public class NPCV2 : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        //Weird bug caused stateQueue to be set to null if game window was not focused, so lets check if dictionary is null and create new empty one to reset npc behavior
-        if(stateQueue == null)
-        {
-            stateQueue = new Dictionary<int, Queue<NPCState>>();
-            stateQueue.Add(1, new Queue<NPCState>());
-            stateQueue.Add(2, new Queue<NPCState>());
-            stateQueue.Add(3, new Queue<NPCState>());
-        }
-
         if(paused)
         {
             if(!agentPaused)
@@ -578,8 +569,8 @@ public class NPCV2 : MonoBehaviour
                     int r = Random.Range(1, 10);
                     if (r > 1 && npcManager.currentNpcsInWard < NPCManagerV2.MAX_NPCS_IN_WARD_AREA)
                     {
-                        // Randomize 1-4 DIFFERENT problems for the NPC
-                        int numProblems = UnityEngine.Random.Range(1, 5);
+                        // Randomize 2-4 DIFFERENT problems for the NPC
+                        int numProblems = UnityEngine.Random.Range(2, 5);
                         Item[] randMeds = new Item[4];
                         // Fetch random medicine items from database
                         for (int i = 0; i < randMeds.Length; i++)
@@ -900,6 +891,7 @@ public class NPCV2 : MonoBehaviour
      */
     public void dayReset()
     {
+
         if (playersResponsibility)
         {
             //TODO: if player played morning shift check if player has actually distributed night and evening shift medicines to the cups
@@ -937,13 +929,14 @@ public class NPCV2 : MonoBehaviour
         talking = false;
 
         agent.ResetPath();
-        agent.Stop();
+        
         if (myBed == null)
         {
             myBed = objectManager.bookBed(gameObject);
         }
         interactionComponent.setTarget(myBed);
-        transform.position = interactionComponent.getDestToTargetObjectSide(1, 25.0f);
+        agent.Warp(interactionComponent.getDestToTargetObjectSide(1, 25.0f));
+        agent.Stop();
         interactionComponent.RotateAwayFromNOW(myBed.transform);
         GetComponent<IiroAnimBehavior>().sleep();
         lockstate = true;
@@ -953,8 +946,6 @@ public class NPCV2 : MonoBehaviour
         stateQueue.Add(2, new Queue<NPCState>());
         stateQueue.Add(3, new Queue<NPCState>());
         myState = NPCState.STATE_DEFAULT;
-
-
     }
     /*
      * This is called when players shift starts
@@ -1620,6 +1611,7 @@ public class NPCV2 : MonoBehaviour
             if(myHp >= 100)
             {
                 addStateToQueue(3, NPCState.STATE_LEAVE_HOSPITAL);
+                objectManager.unbookObject(myBed);
                 taskCompleted = true;
                 GetComponent<FloatTextNPC>().addFloatText("Health excellent! Leaving Hospital!");
                 scoreSystem.addToScore(5);

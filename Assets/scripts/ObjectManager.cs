@@ -132,6 +132,7 @@ public class ObjectManager : MonoBehaviour {
     public void unbookObject(GameObject go)
     {
         if(go != null)
-            bookableObjects[go] = null;
+            if(bookableObjects.ContainsKey(go))
+                bookableObjects[go] = null;
     }
 }
