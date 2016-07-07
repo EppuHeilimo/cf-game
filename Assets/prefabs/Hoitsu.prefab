@@ -108,7 +108,7 @@ GameObject:
   - 114: {fileID: 11439108}
   m_Layer: 0
   m_Name: Hoitsu
-  m_TagString: Untagged
+  m_TagString: Nurse
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1875,7 +1875,7 @@ NavMeshAgent:
   m_AutoRepath: 1
   m_Height: 56
   m_BaseOffset: 0
-  m_WalkableMask: 247
+  m_WalkableMask: 503
   m_ObstacleAvoidanceType: 0
 --- !u!1001 &100100000
 Prefab:

@@ -46,6 +46,9 @@ TagManager:
   - ScoringSystem
   - FloatingText
   - MedInfo
+  - Computer
+  - Nurse
+  - DayChangeCanvas
   - Ground
   layers:
   - Default

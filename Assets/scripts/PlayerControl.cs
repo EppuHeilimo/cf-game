@@ -12,6 +12,7 @@ public class PlayerControl : MonoBehaviour {
     IiroAnimBehavior anim;
     Tooltip tooltip;
     NavMeshPath dest;
+    Vector3 defaultPosition;
 
     bool sitting = false;
     bool sleeping = false;
@@ -27,6 +28,7 @@ public class PlayerControl : MonoBehaviour {
         objManager = GameObject.FindGameObjectWithTag("ObjectManager").GetComponent<ObjectManager>();
         agent = GetComponent<NavMeshAgent>();
         tooltip = GameObject.Find("Inventory").GetComponent<Tooltip>();
+        defaultPosition = transform.position;
     }
 	
 	// Update is called once per frame
@@ -165,6 +167,12 @@ public class PlayerControl : MonoBehaviour {
             }  
         }
         handleInput();
+    }
+
+    public void resetPlayerPosition()
+    {
+        transform.position = defaultPosition;
+        agent.ResetPath();
     }
 
     private bool arrivedToDestination(float accuracy)

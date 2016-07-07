@@ -4,61 +4,54 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 public class ScoringSystem : MonoBehaviour {
 
-
-
-    GameObject FloatingTextCanvas;
-    List<GameObject> floatingimages;
-    public float score = 50.0f;
-    float defaulty = 0;
+    int score = 50;
+    bool scoreWasAltered = false;
+    int prevscore = 50;
+    GameObject negativebar;
 	// Use this for initialization
 	void Start () {
-        FloatingTextCanvas = GameObject.FindGameObjectWithTag("FloatingText");
-        floatingimages = new List<GameObject>();
-	}
+        negativebar = GameObject.FindGameObjectWithTag("ScoreBar").transform.FindChild("Negative").gameObject;
+    }
 	
 	// Update is called once per frame
 	void Update () {
-	    for(int i = 0; i < floatingimages.Count; i++)
+        if(scoreWasAltered)
         {
-
-            floatingimages[i].transform.localPosition = new Vector3(floatingimages[i].transform.localPosition.x,
-                floatingimages[i].transform.localPosition.y + Time.deltaTime * 10.5f,
-                floatingimages[i].transform.localPosition.z);
-
-            if (floatingimages[i].transform.position.y > defaulty + 100.0f)
+            prevscore = score;
+            scoreWasAltered = false;
+            Vector2 size = negativebar.GetComponent<RectTransform>().sizeDelta;
+            negativebar.GetComponent<RectTransform>().sizeDelta = new Vector2(100 - score, size.y);
+        }
+        else
+        {
+            if(prevscore != score)
             {
-                GameObject temp = floatingimages[i];
-                floatingimages.RemoveAt(i);
-                Destroy(temp);
+                prevscore = score;
+                scoreWasAltered = false;
+                score = 50;
+                Vector2 size = negativebar.GetComponent<RectTransform>().sizeDelta;
+                size = new Vector2(100 - score, size.y);
             }
         }
 	}
 
-    public void floatImage(FloatText text)
+    public void addToScore(int add)
     {
-        switch (text)
+        if(add < 0)
         {
-            case FloatText.Succesfull:
-                GameObject go = new GameObject();
-
-                go.AddComponent<Image>();
-                go.GetComponent<Image>().sprite = Resources.Load<Sprite>("Sprites/Items/FloatingSuccess");
-                go.GetComponent<Image>().preserveAspect = true;
-                go.transform.SetParent(FloatingTextCanvas.transform);
-                go.transform.localPosition = Vector3.zero;
-                floatingimages.Add(go);
-                defaulty = go.transform.position.y;
-                break;
+            if(score > 0)
+                score += add;
+            if (score < 0)
+                score = 0;
         }
+        else if (add > 0)
+        {
+            if (score < 100)
+                score += add;
+            if (score > 100)
+                score = 100;
+        }
+        scoreWasAltered = true;
     }
 
-    public void addToScore(float add)
-    {
-        score += add;
-    }
-
-    public void reduceFromScore(float sub)
-    {
-        score -= sub;
-    }
 }

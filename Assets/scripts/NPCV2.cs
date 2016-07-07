@@ -23,6 +23,7 @@ public class NPCV2 : MonoBehaviour
         STATE_GO_WC,
         STATE_IDLE_SIT,
         STATE_DEFAULT //Do nothing
+
     }
 
     /* basic stuff */
@@ -548,6 +549,10 @@ public class NPCV2 : MonoBehaviour
         if(arrivedToDestination(100.0f))
         {
             npcManager.deleteNpcFromList(gameObject);
+            if(playersResponsibility)
+            {
+                npcManager.responsibilityNpcs.Remove(gameObject);
+            }
             Destroy(gameObject);
         }
     }
@@ -707,7 +712,6 @@ public class NPCV2 : MonoBehaviour
             {
                 sleeping = true;
             }
-
         }
 
         if (sleeping)
@@ -853,8 +857,16 @@ public class NPCV2 : MonoBehaviour
         //if there is a npc in dialogzone and it has target to this, assume it's talking to this
         if (talking)
         {
-            interactionComponent.setTarget(dialogZone.GetComponent<DialogV2>().getNpcTargetingMe());
-            interactionComponent.RotateTowards(interactionComponent.getTarget().transform);
+            if(dialogZone.GetComponent<DialogV2>().getNpcTargetingMe() != null)
+            {
+                interactionComponent.setTarget(dialogZone.GetComponent<DialogV2>().getNpcTargetingMe());
+                interactionComponent.RotateTowards(interactionComponent.getTarget().transform);
+            }
+            else
+            {
+                talking = false;
+            }
+
         }
         else if (dest == Vector3.zero)
         {
@@ -881,10 +893,64 @@ public class NPCV2 : MonoBehaviour
             }
         }
     }
+    /*
+     * This is called when players shift ends.
+     */
+    public void dayReset()
+    {
+        if(playersResponsibility)
+        {
+            //TODO: if player played morning shift check if player has actually distributed night and evening shift medicines to the cups
+            if ((myState == NPCState.STATE_DEAD || myState == NPCState.STATE_LEAVE_HOSPITAL))
+            {
+                if(npcManager.nursesDeployed)
+                {
+                    npcManager.nursesDeployed = false;
+                    GameObject[] nurses = GameObject.FindGameObjectsWithTag("Nurse");
+                    foreach(GameObject nurse in nurses)
+                    {
+                        Destroy(nurse);
+                    }
+                }
+                npcManager.removeNpcFromPlayersResponsibilities(gameObject);
+                npcManager.npcList.Remove(gameObject);
+                Destroy(gameObject);
+            }
+        }
+        sitting = false;
+        talking = false;
+        transform.position = interactionComponent.getDestToTargetObjectSide(1, 25.0f);
+        agent.ResetPath();
+        agent.Stop();
+        if (interactionComponent.RotateAwayFrom(myBed.transform))
+        {
+            sleeping = true;
+        }
+        GetComponent<IiroAnimBehavior>().sleep();
+        myState = NPCState.STATE_DEFAULT;
+        taskCompleted = true;
+        lockstate = true;
+        //reset queues
+        stateQueue = new Dictionary<int, Queue<NPCState>>();
+        stateQueue.Add(1, new Queue<NPCState>());
+        stateQueue.Add(2, new Queue<NPCState>());
+        stateQueue.Add(3, new Queue<NPCState>());
+    }
+    /*
+     * This is called when players shift starts
+     */
+    public void stopDayReset()
+    {
+        lockstate = false;
+        sleeping = false;
+        sitting = false;
+        agent.Resume();
+        GetComponent<IiroAnimBehavior>().stopSleep();
+
+    }
 
     private void die()
     {
-
         lockstate = true;
         if (sleeping)
         {
@@ -1188,7 +1254,8 @@ public class NPCV2 : MonoBehaviour
                 if (talking)
                 {
                     stopTalking();
-                    interactionComponent.getTarget().GetComponent<NPCV2>().stopTalking();
+                    if (interactionComponent.getTarget() != null)
+                        interactionComponent.getTarget().GetComponent<NPCV2>().stopTalking();
                 }
                 //if currenttaskpriority is higher than 1 we will resume the task after new task is complete
                 if (currentTaskPriority > 1)
@@ -1209,7 +1276,8 @@ public class NPCV2 : MonoBehaviour
                     if (talking)
                     {
                         stopTalking();
-                        interactionComponent.getTarget().GetComponent<NPCV2>().stopTalking();
+                        if(interactionComponent.getTarget() != null)
+                            interactionComponent.getTarget().GetComponent<NPCV2>().stopTalking();
                     }
                     //save current state info so it can be done after the prioritized task is complete
                     prevState = myState;
@@ -1517,6 +1585,12 @@ public class NPCV2 : MonoBehaviour
                 addStateToQueue(3, NPCState.STATE_DEAD);
                 taskCompleted = true;
             }
+            if(myHp >= 100)
+            {
+                addStateToQueue(3, NPCState.STATE_LEAVE_HOSPITAL);
+                taskCompleted = true;
+                GetComponent<FloatTextNPC>().addFloatText("Health excellent! Leaving Hospital!");
+            }
         }
         
     }
@@ -1573,6 +1647,17 @@ public class NPCV2 : MonoBehaviour
                             GetComponent<FloatTextNPC>().addFloatText("Correct Medicine! " + med[i]);
                             correct++;
                         }
+                        else
+                        {
+                            if(dosage[i] > meds[j].dosage)
+                            {
+                                GetComponent<FloatTextNPC>().addFloatText("Overdose of " + med[i] + "!");
+                            }
+                            else if (dosage[i] < meds[j].dosage)
+                            {
+                                GetComponent<FloatTextNPC>().addFloatText("dosage of " + med[i] + " was too small!");
+                            }
+                        }
                     }
                     if (found)
                     {
@@ -1601,21 +1686,25 @@ public class NPCV2 : MonoBehaviour
                 if (correctratio > 0 && correctratio <= 0.25f)
                 {
                     GetComponent<FloatTextNPC>().addFloatText("+ 5");
+                    scoreSystem.addToScore(2);
                     myHp += 5;
                 }
                 else if (correctratio > 0.25f && correctratio <= 0.5f)
                 {
                     GetComponent<FloatTextNPC>().addFloatText("+ 10");
+                    scoreSystem.addToScore(5);
                     myHp += 10;
                 }
                 else if (correctratio > 0.5f && correctratio <= 0.75f)
                 {
                     GetComponent<FloatTextNPC>().addFloatText("+ 15");
+                    scoreSystem.addToScore(7);
                     myHp += 15;
                 }
                 else if (correctratio > 0.75f && correctratio <= 1f)
                 {
                     GetComponent<FloatTextNPC>().addFloatText("+ 20");
+                    scoreSystem.addToScore(10);
                     myHp += 20;
                 }
             }
@@ -1624,26 +1713,28 @@ public class NPCV2 : MonoBehaviour
                 if (correctratio < 0 && correctratio >= -0.25f)
                 {
                     GetComponent<FloatTextNPC>().addFloatText("- 5");
+                    scoreSystem.addToScore(-2);
                     myHp -= 5;
                 }
                 else if (correctratio < -0.25f && correctratio >= -0.5f)
                 {
                     GetComponent<FloatTextNPC>().addFloatText("- 10");
+                    scoreSystem.addToScore(-5);
                     myHp -= 10;
                 }
                 else if (correctratio < -0.5f && correctratio >= -0.75f)
                 {
                     GetComponent<FloatTextNPC>().addFloatText("- 15");
+                    scoreSystem.addToScore(-7);
                     myHp -= 15;
                 }
                 else if (correctratio < -0.75f && correctratio >= -1f)
                 {
                     GetComponent<FloatTextNPC>().addFloatText("- 20");
+                    scoreSystem.addToScore(-10);
                     myHp -= 20;
                 }
             }
-            
-            scoreSystem.addToScore(correctratio);
             return true;
         }
         else return false;

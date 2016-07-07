@@ -76,7 +76,6 @@ public class FloatTextCanvas : MonoBehaviour {
             offset += img.GetComponent<RectTransform>().sizeDelta.y / 2;
         }
         go.transform.localPosition = new Vector3(0.0f, -50.0f + offset, 0.0f);
-        print(go.transform.localPosition);
         go.transform.localRotation = Quaternion.identity;
         floatingimages.Add(go);
         defaulty = go.transform.position.y;
@@ -156,8 +155,6 @@ public class FloatTextCanvas : MonoBehaviour {
         }
 
          go.transform.localPosition = new Vector3(0.0f, -50.0f + offset, 0.0f);
-
-        print(go.transform.localPosition);
 
         go.transform.localRotation = Quaternion.identity;        
         floatingimages.Add(go);
