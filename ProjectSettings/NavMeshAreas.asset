@@ -21,7 +21,7 @@ NavMeshAreas:
     cost: 2
   - name: BiggerAgentArea
     cost: 1
-  - name: 
+  - name: OnlyNPCNurseArea
     cost: 1
   - name: 
     cost: 1

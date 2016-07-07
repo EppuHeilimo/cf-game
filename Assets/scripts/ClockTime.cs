@@ -7,7 +7,7 @@ public class ClockTime : MonoBehaviour {
     int currentHours;
     //conversion ratio from real second to game time minute
     //change this to change game time speed
-    float secToGameMin = 1.0f;
+    float secToGameMin = 0.3f;
 
     //start day
     int day = 1;
@@ -17,7 +17,7 @@ public class ClockTime : MonoBehaviour {
 
     float dayLength;
     //day start hour in minutes (60 * 1 to 24)
-    int startHour = 7;
+    int startHour = 6;
     float startHourInSeconds;
     Text textref;
     string currentText;
@@ -33,6 +33,15 @@ public class ClockTime : MonoBehaviour {
     const string AFTERNOON_CHANGE = "13:00";
     const string EVENING_CHANGE = "15:00";
     const string NIGHT_CHANGE = "20:00";
+
+    /*
+     * Working shift:
+     * 0 = Morning: 06:00 - 15:00
+     * 1 = Afternoon: 10:00 - 19:00
+     * 2 = Evening: 13:00 - 22:00
+     * 3 = Night: 20:00 - 06:00
+     */
+    int shift = 0;
 
     public enum DayTime
     {
@@ -54,6 +63,7 @@ public class ClockTime : MonoBehaviour {
         currentText = textref.text;
         GameObject NPCManagerObj = GameObject.Find("NPCManager");
         NPCManager = NPCManagerObj.GetComponent<NPCManagerV2>();
+        shift = 0;
     }
 	
 	// Update is called once per frame
@@ -66,7 +76,6 @@ public class ClockTime : MonoBehaviour {
             {
                 currentTime = 0;
                 currentHours = 0;
-                day++;
                 startHourInSeconds = 0;
                 startHour = 0;
             }
@@ -109,8 +118,33 @@ public class ClockTime : MonoBehaviour {
                 currentDayTime = DayTime.EVENING;
             else
                 currentDayTime = DayTime.NIGHT;
+
+
+            /*
+             * Working shift:
+             * 0 = Morning: 06:00 - 15:00
+             * 1 = Afternoon: 10:00 - 19:00
+             * 2 = Evening: 13:00 - 22:00
+             * 3 = Night: 20:00 - 06:00
+             */
+            if (shift == 0 && currentHours >= 15)
+            {
+                changeDay();
+            }
+            //TODO: OTHER SHIFTS
         }
-       
+    }
+
+    void changeDay()
+    {
+        GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerControl>().resetPlayerPosition();
+        GameObject.FindGameObjectWithTag("NPCManager").GetComponent<NPCManagerV2>().resetDay();
+        currentTime = 0;
+        currentHours = 0;
+        startHourInSeconds = 0;
+        startHour = 6;
+        //GameObject.FindGameObjectWithTag("UIManager").GetComponent<UIManager>().pause(true);
+        
     }
 
     string getTimeString()

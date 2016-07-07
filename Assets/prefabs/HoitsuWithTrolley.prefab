@@ -172,7 +172,7 @@ GameObject:
   - 114: {fileID: 11401532}
   m_Layer: 0
   m_Name: HoitsuWithTrolley
-  m_TagString: Untagged
+  m_TagString: Nurse
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1968,7 +1968,7 @@ NavMeshAgent:
   m_AutoRepath: 1
   m_Height: 56
   m_BaseOffset: 0
-  m_WalkableMask: 128
+  m_WalkableMask: 384
   m_ObstacleAvoidanceType: 0
 --- !u!1001 &100100000
 Prefab:

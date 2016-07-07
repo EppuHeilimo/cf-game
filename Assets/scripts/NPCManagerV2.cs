@@ -151,6 +151,16 @@ public class NPCManagerV2 : MonoBehaviour
         return true;
     }
 
+    public void resetDay()
+    {
+        foreach(GameObject npc in npcList)
+        {
+            NPCV2 script = npc.GetComponent<NPCV2>();
+            if (script.diagnosed)
+                script.dayReset();
+        }
+    }
+
     public Item RandomItem(Item[] randMeds)
     {
         Item randItem = database.FetchItemByID(UnityEngine.Random.Range(0, database.database.Count));
