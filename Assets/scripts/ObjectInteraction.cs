@@ -91,6 +91,14 @@ public class ObjectInteraction : MonoBehaviour {
         return false;
     }
 
+    //rotates instantly
+    public void RotateAwayFromNOW(Transform target)
+    {
+        Vector3 direction = (target.position - transform.position).normalized;
+        Quaternion lookRotation = Quaternion.LookRotation(-direction);
+        transform.rotation = lookRotation;
+    }
+
     /* Gets Vector3 position next to the bed left side */
     /* Side: 0 - front, 1 - left, 2 - back, 3 - right */
     public Vector3 getDestToTargetObjectSide(int side, float offset)

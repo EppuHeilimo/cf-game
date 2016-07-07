@@ -50,6 +50,7 @@ TagManager:
   - Nurse
   - DayChangeCanvas
   - Ground
+  - ScoreBar
   layers:
   - Default
   - TransparentFX

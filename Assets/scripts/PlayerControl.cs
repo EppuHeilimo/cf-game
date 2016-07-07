@@ -190,6 +190,19 @@ public class PlayerControl : MonoBehaviour {
         {
             disableTarget();
         }
+        if (Input.GetKeyDown(KeyCode.O))
+        {
+            Time.timeScale += 0.5f;
+        }
+        if (Input.GetKeyDown(KeyCode.P))
+        {
+            Time.timeScale -= 0.5f;
+        }
+        if (Input.GetKeyDown(KeyCode.I))
+        {
+            Time.timeScale = 1.0f;
+        }
+
         if ((Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began) || (Input.GetMouseButtonDown(0)))
         {
             if(!isMouseOverUI())

@@ -127,24 +127,38 @@ public class ClockTime : MonoBehaviour {
              * 2 = Evening: 13:00 - 22:00
              * 3 = Night: 20:00 - 06:00
              */
-            if (shift == 0 && currentHours >= 15)
-            {
-                changeDay();
-            }
             //TODO: OTHER SHIFTS
         }
     }
 
-    void changeDay()
+    public bool isWorkShiftOver()
     {
-        GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerControl>().resetPlayerPosition();
-        GameObject.FindGameObjectWithTag("NPCManager").GetComponent<NPCManagerV2>().resetDay();
+        if(shift == 0 && currentHours >= 16)
+        {
+            return true;
+        }
+        return false;
+    }
+
+    public void changeDay()
+    {
+        GameObject player = GameObject.FindGameObjectWithTag("Player");
+        player.GetComponent<PlayerControl>().resetPlayerPosition();
+        player.GetComponent<PlayerControl>().enabled = false;
+        GameObject.FindGameObjectWithTag("NPCManager").GetComponent<NPCManagerV2>().nextDay();
         currentTime = 0;
         currentHours = 0;
         startHourInSeconds = 0;
         startHour = 6;
-        //GameObject.FindGameObjectWithTag("UIManager").GetComponent<UIManager>().pause(true);
+        paused = true;
         
+    }
+
+    public void resumeAfterDayChange()
+    {
+        
+        GameObject.FindGameObjectWithTag("NPCManager").GetComponent<NPCManagerV2>().nextDayResume();
+        paused = false;
     }
 
     string getTimeString()

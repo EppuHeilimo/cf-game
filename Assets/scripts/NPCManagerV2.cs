@@ -151,13 +151,36 @@ public class NPCManagerV2 : MonoBehaviour
         return true;
     }
 
-    public void resetDay()
+    public void nextDay()
     {
+        for(int i = 0; i < npcList.Count; i++)
+        {
+            NPCV2 npc = npcList[i].GetComponent<NPCV2>();
+            if(npc.diagnosed)
+            {
+                npc.dayReset();
+            }
+            else
+            {
+                Destroy(npcList[i]);
+                npcList.RemoveAt(i);
+            }
+        }
         foreach(GameObject npc in npcList)
         {
             NPCV2 script = npc.GetComponent<NPCV2>();
-            if (script.diagnosed)
-                script.dayReset();
+            script.dayReset();
+        }
+        paused = true;
+    }
+
+    public void nextDayResume()
+    {
+        paused = false;
+        for (int i = 0; i < npcList.Count; i++)
+        {
+            NPCV2 npc = npcList[i].GetComponent<NPCV2>();
+            npc.stopDayReset();
         }
     }
 

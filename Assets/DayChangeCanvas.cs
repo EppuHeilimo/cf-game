@@ -12,4 +12,9 @@ public class DayChangeCanvas : MonoBehaviour {
 	void Update () {
 	
 	}
+
+    public void continueButton()
+    {
+        GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>().continueToNextDay();
+    }
 }

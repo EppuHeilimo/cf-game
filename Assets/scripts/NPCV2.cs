@@ -684,6 +684,7 @@ public class NPCV2 : MonoBehaviour
                 //but stay in idle until 
                 //fatique is too high
                 cantFindBed = true;
+                taskCompleted = true;
             }
         }
 
@@ -716,7 +717,8 @@ public class NPCV2 : MonoBehaviour
 
         if (sleeping)
         {
-            GetComponent<IiroAnimBehavior>().sleep();
+            if (!GetComponent<IiroAnimBehavior>().sleeping)
+                GetComponent<IiroAnimBehavior>().sleep();
             timer += Time.deltaTime;
             if (timer > SLEEP_TIME)
             {
@@ -898,16 +900,16 @@ public class NPCV2 : MonoBehaviour
      */
     public void dayReset()
     {
-        if(playersResponsibility)
+        if (playersResponsibility)
         {
             //TODO: if player played morning shift check if player has actually distributed night and evening shift medicines to the cups
             if ((myState == NPCState.STATE_DEAD || myState == NPCState.STATE_LEAVE_HOSPITAL))
             {
-                if(npcManager.nursesDeployed)
+                if (npcManager.nursesDeployed)
                 {
                     npcManager.nursesDeployed = false;
                     GameObject[] nurses = GameObject.FindGameObjectsWithTag("Nurse");
-                    foreach(GameObject nurse in nurses)
+                    foreach (GameObject nurse in nurses)
                     {
                         Destroy(nurse);
                     }
@@ -917,24 +919,42 @@ public class NPCV2 : MonoBehaviour
                 Destroy(gameObject);
             }
         }
-        sitting = false;
+        if(!agent.enabled)
+        {
+            agent.enabled = true;
+        }
+        if (sitting)
+        {
+            GetComponent<IiroAnimBehavior>().stopSit();
+            sitting = false;
+        }
+
+        if (sleeping)
+        {
+            GetComponent<IiroAnimBehavior>().stopSleep();
+            sleeping = false;
+        }
         talking = false;
-        transform.position = interactionComponent.getDestToTargetObjectSide(1, 25.0f);
+
         agent.ResetPath();
         agent.Stop();
-        if (interactionComponent.RotateAwayFrom(myBed.transform))
+        if (myBed == null)
         {
-            sleeping = true;
+            myBed = objectManager.bookBed(gameObject);
         }
+        interactionComponent.setTarget(myBed);
+        transform.position = interactionComponent.getDestToTargetObjectSide(1, 25.0f);
+        interactionComponent.RotateAwayFromNOW(myBed.transform);
         GetComponent<IiroAnimBehavior>().sleep();
-        myState = NPCState.STATE_DEFAULT;
-        taskCompleted = true;
         lockstate = true;
         //reset queues
-        stateQueue = new Dictionary<int, Queue<NPCState>>();
+        stateQueue.Clear();
         stateQueue.Add(1, new Queue<NPCState>());
         stateQueue.Add(2, new Queue<NPCState>());
         stateQueue.Add(3, new Queue<NPCState>());
+        myState = NPCState.STATE_DEFAULT;
+
+
     }
     /*
      * This is called when players shift starts
@@ -942,11 +962,10 @@ public class NPCV2 : MonoBehaviour
     public void stopDayReset()
     {
         lockstate = false;
-        sleeping = false;
         sitting = false;
-        agent.Resume();
-        GetComponent<IiroAnimBehavior>().stopSleep();
-
+        sleeping = true;
+        taskCompleted = true;
+        addStateToQueue(3, NPCState.STATE_SLEEP);
     }
 
     private void die()
@@ -1117,6 +1136,8 @@ public class NPCV2 : MonoBehaviour
     }
     public void stopTalking()
     {
+        if (!agent.enabled)
+            agent.enabled = true;
         agent.Resume();
         talking = false;
         taskCompleted = true;
@@ -1246,6 +1267,17 @@ public class NPCV2 : MonoBehaviour
         }
         else if (!prevStateUncompleted)
         {
+            if(!agent.enabled)
+            {
+                if(GetComponent<IiroAnimBehavior>().sleeping)
+                {
+                    GetComponent<IiroAnimBehavior>().stopSleep();
+                }
+                else if (GetComponent<IiroAnimBehavior>().sitting)
+                {
+                    GetComponent<IiroAnimBehavior>().stopSit();
+                }
+            }
             Queue<NPCState> queue = new Queue<NPCState>();
             //Dequeue a task from priority 3 queue if it has a task and the current task is less important
             stateQueue.TryGetValue(3, out queue);
@@ -1590,6 +1622,7 @@ public class NPCV2 : MonoBehaviour
                 addStateToQueue(3, NPCState.STATE_LEAVE_HOSPITAL);
                 taskCompleted = true;
                 GetComponent<FloatTextNPC>().addFloatText("Health excellent! Leaving Hospital!");
+                scoreSystem.addToScore(5);
             }
         }
         
