@@ -24,18 +24,4 @@ public class MedCabinet : MonoBehaviour
     {
         miniGame.GetComponent<Minigame1>().startMinigame();
     }
-
-    /*
-    public void AddItem()
-    {
-        title = input.text.ToString();
-        Item itemToAdd = database.FetchItemByTitle(title);
-        if (itemToAdd == null)
-        {
-            print(title + " nimistä lääkettä ei ole olemassa.");
-            return;
-        }
-        playerInv.AddItem(itemToAdd.ID);
-    }
-    */
 }
