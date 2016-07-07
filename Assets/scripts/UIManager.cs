@@ -60,7 +60,7 @@ public class UIManager : MonoBehaviour {
             }
             GameObject.FindGameObjectWithTag("Clock").GetComponent<ClockTime>().paused = true;
             npcmanager.paused = true;
-
+            //player.GetComponent<PlayerControl>().enabled = false;
         }
         else
         {
@@ -72,6 +72,7 @@ public class UIManager : MonoBehaviour {
                     npc.GetComponent<NPCV2>().paused = false;
             }
             GameObject.FindGameObjectWithTag("Clock").GetComponent<ClockTime>().paused = false;
+            //player.GetComponent<PlayerControl>().enabled = true;
         }
     }
 }

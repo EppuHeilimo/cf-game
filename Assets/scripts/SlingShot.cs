@@ -124,6 +124,7 @@ public class SlingShot : MonoBehaviour {
     private void InitializePill()
     {
         //initialization of the ready to be thrown pill
+        if (PillToThrow == null) return;
         PillToThrow.transform.position = PillWaitPosition.position;
         slingshotState = SlingshotState.Idle;
         SetSlingshotLineRenderersActive(true);
@@ -131,6 +132,7 @@ public class SlingShot : MonoBehaviour {
 
     void DisplaySlingshotLineRenderers()
     {
+        if (PillToThrow == null) return;
         SlingshotLineRenderer1.SetPosition(1, PillToThrow.transform.position);
         SlingshotLineRenderer2.SetPosition(1, PillToThrow.transform.position);
     }
