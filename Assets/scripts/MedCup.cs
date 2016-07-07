@@ -33,6 +33,7 @@ public class MedCup : MonoBehaviour {
             isColliding = true;
             GameObject pillObj = other.gameObject;   
             Pill pill = pillObj.GetComponent<Pill>();
+            pill.doNotDestroy = true;
             Med med = new Med();
             med.name = pill.medName;
             med.dosage = pill.dosage;

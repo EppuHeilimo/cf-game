@@ -29,6 +29,7 @@ public class Pill : MonoBehaviour
 
     bool pillSplitOn;
     bool splitted;
+    public bool doNotDestroy;
 
     Sprite pillSpriteHalf;
 
@@ -84,15 +85,16 @@ public class Pill : MonoBehaviour
     IEnumerator DestroyAfter(float seconds)
     {
         yield return new WaitForSeconds(seconds);
-        Destroy(gameObject);
+        if (!doNotDestroy)
+            Destroy(gameObject);
     }
 
     public void OnThrow()
     {
         //play the sound
-        //GetComponent<AudioSource>().Play();
+        GetComponent<AudioSource>().Play();
         //show the trail renderer
-        //GetComponent<TrailRenderer>().enabled = true;
+        GetComponent<TrailRenderer>().enabled = true;
         //allow for gravity forces
         GetComponent<Rigidbody2D>().isKinematic = false;
         //make the collider normal size
