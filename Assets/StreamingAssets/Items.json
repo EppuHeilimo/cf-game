@@ -96,7 +96,7 @@
 			"high": 4
 		},
         "dosagesPerDay": 1,
-		"canSplit": 0
+		"canSplit": 1
 	},
     {
 		"id": 7,
