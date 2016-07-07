@@ -28,7 +28,7 @@ public class KasiDesi : MonoBehaviour {
 
     public void StartBlinking()
     {
-        kasDesTxt.text = "Use hand disinfectant first!";
+        kasDesTxt.text = "Use hand disinfectant!";
         blink = true;
     }
 

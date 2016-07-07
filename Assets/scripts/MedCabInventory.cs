@@ -22,11 +22,12 @@ public class MedCabInventory : MonoBehaviour {
             medContainer.medName = itemToAdd.Title;
             medContainer.defaultDos = itemToAdd.DefaultDosage;
             medContainer.canSplit = itemToAdd.canSplit;
-            medContainerObj.GetComponentInChildren<Text>().text = itemToAdd.Title + " " + itemToAdd.DefaultDosage + " mg";
+            medContainerObj.GetComponentInChildren<Text>().text = itemToAdd.Title + "\n" + itemToAdd.DefaultDosage + " mg";
             Sprite medContainerSprite = Resources.Load<Sprite>("Sprites/Meds/" + itemToAdd.Title);
             if (medContainerSprite == null)
                 medContainerSprite = Resources.Load<Sprite>("Sprites/Meds/null");
             medContainerObj.GetComponent<Image>().sprite = medContainerSprite;
+            medContainerObj.transform.localScale = new Vector3(1, 1, 1);
         }
     }
 
