@@ -49,6 +49,7 @@ TagManager:
   - Computer
   - Nurse
   - DayChangeCanvas
+  - Ground
   layers:
   - Default
   - TransparentFX

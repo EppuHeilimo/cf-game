@@ -2,9 +2,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
+using Assets.Scripts;
 
 public class Minigame1 : MonoBehaviour {
-
 
     ClockTime.DayTime time;
     bool active = false;
@@ -52,6 +52,7 @@ public class Minigame1 : MonoBehaviour {
     public Text night4 = null;
 
     CameraMovement mCamera;
+    GameManager gameManager;
 
     /* animation stuff */
     public GameObject kasDesObj;
@@ -61,7 +62,7 @@ public class Minigame1 : MonoBehaviour {
 
     void Start()
     {
-        
+        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         invObj = GameObject.Find("Inventory");
         playerInv = invObj.GetComponent<Inventory>();
         database = invObj.GetComponent<ItemDatabase>();
@@ -77,8 +78,7 @@ public class Minigame1 : MonoBehaviour {
         npcManagerObj = GameObject.FindGameObjectWithTag("NPCManager");
         npcManager = npcManagerObj.GetComponent<NPCManagerV2>();
         mCamera = GameObject.Find("Main Camera").GetComponent<CameraMovement>();
-        npcList = new List<GameObject>();
-        
+        npcList = new List<GameObject>();        
     }
 
     void Update()
@@ -565,10 +565,12 @@ public class Minigame1 : MonoBehaviour {
         else
             splittable = "Splittable";
         GameObject.FindGameObjectWithTag("MedInfo").GetComponent<Text>().text = medName + " " + defaultDosage + " mg" + "\n" + splittable;
+        gameManager.CurrentMiniGameState = MiniGameState.Start;
     }
 
     public void quitDosingGame()
     {
+        gameManager.CurrentMiniGameState = MiniGameState.Inactive;
         gameObject.transform.Find("BigMedCont").GetComponent<BigMedCont>().spawnPills = false;
         GameObject pill = GameObject.FindGameObjectWithTag("Pill");
         if (pill != null)

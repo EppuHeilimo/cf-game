@@ -11,7 +11,6 @@ GameObject:
   - 212: {fileID: 21286080}
   - 114: {fileID: 11420294}
   - 50: {fileID: 5089234}
-  - 231: {fileID: 23199230}
   - 58: {fileID: 5820034}
   m_Layer: 0
   m_Name: Pill
@@ -43,7 +42,7 @@ Rigidbody2D:
   m_UseAutoMass: 0
   m_Mass: 1
   m_LinearDrag: 0
-  m_AngularDrag: 0.05
+  m_AngularDrag: 5
   m_GravityScale: 1
   m_IsKinematic: 1
   m_Interpolate: 0
@@ -78,8 +77,6 @@ MonoBehaviour:
   medName: 
   dosage: 0
   canSplit: 0
-  maxStretch: 2
-  Line: {fileID: 0}
 --- !u!212 &21286080
 SpriteRenderer:
   m_ObjectHideFlags: 1
@@ -110,25 +107,6 @@ SpriteRenderer:
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
---- !u!231 &23199230
-SpringJoint2D:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 185684}
-  m_Enabled: 1
-  serializedVersion: 4
-  m_EnableCollision: 0
-  m_ConnectedRigidBody: {fileID: 0}
-  m_BreakForce: Infinity
-  m_BreakTorque: Infinity
-  m_AutoConfigureConnectedAnchor: 0
-  m_Anchor: {x: 0, y: 0}
-  m_ConnectedAnchor: {x: 0, y: 0}
-  m_AutoConfigureDistance: 0
-  m_Distance: 0.005
-  m_DampingRatio: 0
-  m_Frequency: 5
 --- !u!1001 &100100000
 Prefab:
   m_ObjectHideFlags: 1
