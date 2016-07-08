@@ -74,6 +74,8 @@ public class NPCManagerV2 : MonoBehaviour
 
     public void deleteNpcFromList(GameObject go)
     {
+        if (go.GetComponent<NPCV2>().diagnosed)
+            currentNpcsInWard--;
         npcList.Remove(go);
     }
 
@@ -111,7 +113,6 @@ public class NPCManagerV2 : MonoBehaviour
                 }
             }
         }
-
     }
 
     void spawnNPC()
@@ -124,8 +125,7 @@ public class NPCManagerV2 : MonoBehaviour
         //change to random head
         string headname = newNpc.GetComponent<HeadChange>().ChangeToRandomHead();
         //set the file name of the 2d sprite of the head
-        newNpc.GetComponent<NPCV2>().myHead2d = Resources.Load<Sprite>("Sprites/heads/" + headname + ".2d");
-        
+        newNpc.GetComponent<NPCV2>().myHead2d = Resources.Load<Sprite>("Sprites/heads/" + headname + ".2d");  
         npcList.Add(newNpc);
     }
 
@@ -154,18 +154,39 @@ public class NPCManagerV2 : MonoBehaviour
     public void nextDay()
     {
         GameObject[] npcs = npcList.ToArray();
-        for(int i = 0; i < npcs.Length; i++)
+        if (nursesDeployed)
+        {
+            nursesDeployed = false;
+            GameObject[] nurses = GameObject.FindGameObjectsWithTag("Nurse");
+            foreach (GameObject nurse in nurses)
+            {
+                Destroy(nurse);
+            }
+        }
+        for (int i = 0; i < npcs.Length; i++)
         {
             NPCV2 npc = npcs[i].GetComponent<NPCV2>();
-            if(npc.diagnosed)
+            if(npc.diagnosed && npc.myState != NPCV2.NPCState.STATE_DEAD && npc.myState != NPCV2.NPCState.STATE_LEAVE_HOSPITAL)
                 npc.dayReset();
             else
             {
-                npcList.Remove(npcs[i]);
+                if(npc.getTarget() != null)
+                {
+                    GameObject.FindGameObjectWithTag("ObjectManager").GetComponent<ObjectManager>().unbookObject(npc.getTarget());
+                }
+                if(npc.myBed != null)
+                {
+                    GameObject.FindGameObjectWithTag("ObjectManager").GetComponent<ObjectManager>().unbookObject(npc.myBed);
+                }
+                if(npc.playersResponsibility)
+                {
+                    Destroy(npc.responsibilityIndicator);
+                    responsibilityNpcs.Remove(npcs[i]);             
+                }
+                deleteNpcFromList(npcs[i]);
                 Destroy(npcs[i]);
             }
         }
-        
         paused = true;
     }
 
@@ -176,6 +197,10 @@ public class NPCManagerV2 : MonoBehaviour
         {
             NPCV2 npc = npcList[i].GetComponent<NPCV2>();
             npc.stopDayReset();
+        }
+        if(currentNpcsInWard == MAX_NPCS_IN_WARD_AREA)
+        {
+            //TODO Add random npc to playersresponsibility
         }
     }
 

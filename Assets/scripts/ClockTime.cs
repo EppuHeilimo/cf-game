@@ -10,7 +10,7 @@ public class ClockTime : MonoBehaviour {
     float secToGameMin = 0.3f;
 
     //start day
-    int day = 1;
+    public int day = 1;
     public bool paused = false;
     
     float dayLengthInRealHours = 24;
@@ -159,6 +159,7 @@ public class ClockTime : MonoBehaviour {
         
         GameObject.FindGameObjectWithTag("NPCManager").GetComponent<NPCManagerV2>().nextDayResume();
         paused = false;
+        day++;
     }
 
     string getTimeString()

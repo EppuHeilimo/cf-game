@@ -37,6 +37,11 @@ public class NurseAI : MonoBehaviour {
             {
                 if(dest == Vector3.zero)
                 {
+                    if (targetNPC == null || partner == null)
+                    {
+                        npcManager.nursesDeployed = false;
+                        Destroy(gameObject);
+                    }
                     interaction.setTarget(targetNPC);
                     NavMeshHit hit;
                     NavMesh.SamplePosition(targetNPC.transform.position, out hit, 100.0f, (1 << 7));
@@ -69,6 +74,7 @@ public class NurseAI : MonoBehaviour {
                     timer += Time.deltaTime;
                     if (timer > 4.0f)
                     {
+                        timer = 0;
                         agent.Warp(agent.destination);
                     }
                 }
@@ -98,6 +104,7 @@ public class NurseAI : MonoBehaviour {
                         if (timer > 2.0f)
                         {
                             readyToLeave = true;
+                            timer = 0;
                             anim.stoppickfromfloor();
                             dest = new Vector3(733, 0, -742);
                             moveToDest();
@@ -108,9 +115,25 @@ public class NurseAI : MonoBehaviour {
             if(readyToLeave && arrivedToDestination(30.0f))
             {
                 if(id == 0)
+                {
                     npcManager.nursesDeployed = false;
+                }
+
                 Destroy(gameObject);
             }
+            else if(readyToLeave && partner == null)
+            {
+                timer += Time.deltaTime;
+                if(timer > 5.0f)
+                {
+                    if (id == 0)
+                    {
+                        npcManager.nursesDeployed = false;
+                    }
+                    Destroy(gameObject);
+                }
+            }
+            
         }
 	}
 

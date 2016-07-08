@@ -122,6 +122,7 @@ public class Minigame1 : MonoBehaviour {
         if (npcList.Count == 0)
             return;
         GameObject npcObj = npcList[currNpc];
+        if (npcObj == null) return;
         NPCV2 npc = npcObj.GetComponent<NPCV2>();
         showMedCard(npc);   
     }

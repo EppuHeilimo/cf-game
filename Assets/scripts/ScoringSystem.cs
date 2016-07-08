@@ -4,7 +4,8 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 public class ScoringSystem : MonoBehaviour {
 
-    int score = 50;
+    public int score = 50;
+    public int totalscore = 0;
     bool scoreWasAltered = false;
     int prevscore = 50;
     GameObject negativebar;

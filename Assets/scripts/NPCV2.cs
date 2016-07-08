@@ -67,7 +67,7 @@ public class NPCV2 : MonoBehaviour
     public bool cantFindBed = false;
     private bool wcqueued = false;
     bool prevStateUncompleted = false;
-    bool playersResponsibility = false;
+    public bool playersResponsibility = false;
     private bool sleepingqueued = false;
     ScoringSystem scoreSystem;
 
@@ -892,25 +892,6 @@ public class NPCV2 : MonoBehaviour
     public void dayReset()
     {
 
-        if (playersResponsibility)
-        {
-            //TODO: if player played morning shift check if player has actually distributed night and evening shift medicines to the cups
-            if ((myState == NPCState.STATE_DEAD || myState == NPCState.STATE_LEAVE_HOSPITAL))
-            {
-                if (npcManager.nursesDeployed)
-                {
-                    npcManager.nursesDeployed = false;
-                    GameObject[] nurses = GameObject.FindGameObjectsWithTag("Nurse");
-                    foreach (GameObject nurse in nurses)
-                    {
-                        Destroy(nurse);
-                    }
-                }
-                npcManager.removeNpcFromPlayersResponsibilities(gameObject);
-                npcManager.npcList.Remove(gameObject);
-                Destroy(gameObject);
-            }
-        }
         if(!agent.enabled)
         {
             agent.enabled = true;
@@ -985,9 +966,9 @@ public class NPCV2 : MonoBehaviour
                 interactionComponent.setTarget(null);
             }
             //When arrived to good position, set npc to dead and rmeove from npclists
-            else if (arrivedToDestination(5.0f))
+            else if (arrivedToDestination(1.0f))
             {
-                npcManager.npcList.Remove(gameObject);
+                npcManager.deleteNpcFromList(gameObject);
                 //if this npc is players target, make sure textboxmanager disables UI showing npc status
                 if (GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerControl>().getTarget() == gameObject)
                 {
