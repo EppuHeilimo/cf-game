@@ -106,7 +106,6 @@ public class Minigame1 : MonoBehaviour {
         spawnDrops = true;
         active = true;
 
-        player.GetComponent<PlayerControl>().enabled = false;
         foreach (GameObject n in npcManager.npcList)
         {
             if (n != null)
@@ -136,7 +135,6 @@ public class Minigame1 : MonoBehaviour {
         minigameCanvas.SetActive(false);
         minigameCanvas2.SetActive(false);    
         uiManager.pause(false);
-        player.GetComponent<PlayerControl>().enabled = true;
         EnableDropsAnim(true);
     }
 

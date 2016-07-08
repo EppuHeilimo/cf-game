@@ -7,7 +7,7 @@ public class ClockTime : MonoBehaviour {
     int currentHours;
     //conversion ratio from real second to game time minute
     //change this to change game time speed
-    float secToGameMin = 0.3f;
+    float secToGameMin = 1f;
 
     //start day
     public int day = 1;
