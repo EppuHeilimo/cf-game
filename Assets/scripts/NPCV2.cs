@@ -918,7 +918,8 @@ public class NPCV2 : MonoBehaviour
         interactionComponent.setTarget(myBed);
         agent.Warp(interactionComponent.getDestToTargetObjectSide(1, 25.0f));
         agent.Stop();
-        interactionComponent.RotateAwayFromNOW(myBed.transform);
+        if (interactionComponent != null && myBed != null)
+            interactionComponent.RotateAwayFromNOW(myBed.transform);
         GetComponent<IiroAnimBehavior>().sleep();
         lockstate = true;
         //reset queues
