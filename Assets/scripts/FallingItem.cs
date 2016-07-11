@@ -29,8 +29,4 @@ public class FallingItem : MonoBehaviour {
             .setIterations(-1, GoLoopType.RestartFromBeginning));
     }
 
-    void Update()
-    {
-
-    }
 }
