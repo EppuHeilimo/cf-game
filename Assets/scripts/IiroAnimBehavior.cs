@@ -33,6 +33,25 @@ public class IiroAnimBehavior : MonoBehaviour {
         }
     }
 
+    public void StopAll()
+    {
+        agent.enabled = true;
+        animator.SetBool("fall", false);
+        animator.SetBool("sleep", false);
+        animator.SetBool("sit", false);
+        animator.SetBool("pickupbothhands", false);
+        animator.SetBool("pickupfloor", false);
+        animator.SetBool("sitAndRotate", false);
+        animator.SetBool("pickup", false);
+        sleeping = false;
+        sitting = false;
+        sittingwithrotation = false;
+        falling = false;
+        pickingup = false;
+        agent.Resume();
+
+    }
+
     public void walk()
     {
         isWalking = true;

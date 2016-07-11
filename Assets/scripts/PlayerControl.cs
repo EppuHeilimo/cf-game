@@ -171,17 +171,9 @@ public class PlayerControl : MonoBehaviour {
 
     public void resetPlayerPosition()
     {
-        if(!agent.enabled)
-        {
-            if (anim.sleeping)
-                anim.stopSleep();
-            if (anim.sitting)
-                anim.stopSit();
-            if (anim.falling)
-                anim.stopfall();
-            if (anim.pickingup)
-                anim.stopPickup();
-        }
+        anim.StopAll();
+        sitting = false;
+        sleeping = false;
         agent.Warp(defaultPosition);
         agent.ResetPath();
     }

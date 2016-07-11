@@ -10,7 +10,7 @@ public class DialogV2 : MonoBehaviour
     public bool playerInZone = false;
     public bool npcInZone = false;
     Dictionary<GameObject, float> timers = new Dictionary<GameObject, float>();
-    GameObject npcTargetingThis;
+    GameObject WhoIsTargetingMe;
 
 
     void Start()
@@ -25,9 +25,9 @@ public class DialogV2 : MonoBehaviour
 
     }
 
-    public GameObject getNpcTargetingMe()
+    public GameObject getWhoIsTargetingMe()
     {
-        return npcTargetingThis;
+        return WhoIsTargetingMe;
     }
 
     void OnTriggerEnter(Collider other)
@@ -39,6 +39,7 @@ public class DialogV2 : MonoBehaviour
             target = other.GetComponent<PlayerControl>().getTarget();
             if (target == transform.parent.gameObject)
             {
+                WhoIsTargetingMe = other.gameObject;
                 playerInZone = true;
                 if (parent.diagnosed)
                 {
@@ -55,7 +56,7 @@ public class DialogV2 : MonoBehaviour
             target = other.GetComponent<NPCV2>().getTarget();
             if (target == transform.parent.gameObject)
             {
-                npcTargetingThis = other.gameObject;
+                WhoIsTargetingMe = other.gameObject;
                 npcInZone = true;
             }
         }
@@ -71,6 +72,7 @@ public class DialogV2 : MonoBehaviour
             target = other.GetComponent<PlayerControl>().getTarget();
             if (target == transform.parent.gameObject)
             {
+                WhoIsTargetingMe = other.gameObject;
                 playerInZone = true;
                 if (parent != null)
                 {
@@ -91,6 +93,14 @@ public class DialogV2 : MonoBehaviour
                 playerInZone = false;
             }
         }
+        if(other.tag == "NPC" && other.gameObject == WhoIsTargetingMe)
+        {
+            NPCV2 npc = other.GetComponent<NPCV2>();
+            if(npc.myState == NPCV2.NPCState.STATE_DEAD)
+            {
+                WhoIsTargetingMe = null;
+            } 
+        }
     }
 
     void OnTriggerExit(Collider other)
@@ -99,6 +109,8 @@ public class DialogV2 : MonoBehaviour
         GameObject target;
         if (other.tag == "Player")
         {
+            if(other.gameObject == WhoIsTargetingMe)
+                WhoIsTargetingMe = null;
             playerInZone = false;
             if (parent.diagnosed)
             {
@@ -109,13 +121,12 @@ public class DialogV2 : MonoBehaviour
                 textBoxManager.DisableTextBoxNotDiagnozed();
             }
         }
-        if (other.tag == "NPC" && other == npcTargetingThis)
+        if (other.tag == "NPC" && other.gameObject == WhoIsTargetingMe)
         {
             target = other.GetComponent<NPCV2>().getTarget();
             if (target == transform.parent.gameObject)
             {
-                parent.talking = false;
-                npcTargetingThis = null;
+                WhoIsTargetingMe = null;
                 npcInZone = false;
             }
         }

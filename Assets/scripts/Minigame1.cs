@@ -106,14 +106,11 @@ public class Minigame1 : MonoBehaviour {
         spawnDrops = true;
         active = true;
 
-        foreach (GameObject n in npcManager.npcList)
+        foreach (GameObject n in npcManager.responsibilityNpcs)
         {
             if (n != null)
             {
-                if(n.GetComponent<NPCV2>().diagnosed)
-                {
-                    npcList.Add(n);
-                }
+                 npcList.Add(n);
             }
         }
         currNpc = 0;

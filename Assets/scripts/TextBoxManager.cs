@@ -129,7 +129,6 @@ public class TextBoxManager : MonoBehaviour {
                 switch (i)
                 {
                     case 0:
-
                         morning1.text = npc.morningMed[i].dosage.ToString();
                         if (clock.currentDayTime == ClockTime.DayTime.MORNING)
                         {

@@ -139,6 +139,8 @@ public class NPCManagerV2 : MonoBehaviour
 
     public void removeNpcFromPlayersResponsibilities(GameObject go)
     {
+        if (go.GetComponent<NPCV2>().responsibilityIndicator != null)
+            Destroy(go.GetComponent<NPCV2>().responsibilityIndicatorclone);
         responsibilityNpcs.Remove(go);
     }
 
@@ -153,6 +155,7 @@ public class NPCManagerV2 : MonoBehaviour
 
     public void nextDay()
     {
+        
         GameObject[] npcs = npcList.ToArray();
         if (nursesDeployed)
         {
@@ -166,42 +169,71 @@ public class NPCManagerV2 : MonoBehaviour
         for (int i = 0; i < npcs.Length; i++)
         {
             NPCV2 npc = npcs[i].GetComponent<NPCV2>();
-            if(npc.diagnosed && npc.myState != NPCV2.NPCState.STATE_DEAD && npc.myState != NPCV2.NPCState.STATE_LEAVE_HOSPITAL)
-                npc.dayReset();
-            else
+            if (!npc.diagnosed || npc.myState == NPCV2.NPCState.STATE_DEAD || npc.myState == NPCV2.NPCState.STATE_LEAVE_HOSPITAL)
             {
-                if(npc.getTarget() != null)
+                if (npc.getTarget() != null)
                 {
                     GameObject.FindGameObjectWithTag("ObjectManager").GetComponent<ObjectManager>().unbookObject(npc.getTarget());
                 }
-                if(npc.myBed != null)
+                if (npc.myBed != null)
                 {
                     GameObject.FindGameObjectWithTag("ObjectManager").GetComponent<ObjectManager>().unbookObject(npc.myBed);
                 }
-                if(npc.playersResponsibility)
+                if (npc.playersResponsibility)
                 {
-                    Destroy(npc.responsibilityIndicator);
-                    responsibilityNpcs.Remove(npcs[i]);             
+                    removeNpcFromPlayersResponsibilities(npc.gameObject);
                 }
                 deleteNpcFromList(npcs[i]);
                 Destroy(npcs[i]);
             }
+            else if (npc.diagnosed)
+            {
+                npc.addStateToQueue(3, NPCV2.NPCState.STATE_DAY_CHANGE);
+                npc.taskCompleted = true;
+            }
+                
+
         }
         paused = true;
     }
 
     public void nextDayResume()
     {
+        docBusy = false;
         paused = false;
         for (int i = 0; i < npcList.Count; i++)
         {
             NPCV2 npc = npcList[i].GetComponent<NPCV2>();
             npc.stopDayReset();
         }
-        if(currentNpcsInWard == MAX_NPCS_IN_WARD_AREA)
+        targetResponsibilityLevel++;
+
+        /*
+         * fulfill players responsibility level (If not enough npcs in ward, the new ones from QUE will be added)
+        */
+
+        //how many more responsibility patients are needed
+        int sub = targetResponsibilityLevel - responsibilityNpcs.Count;
+        
+        if(sub > 0)
         {
-            //TODO Add random npc to playersresponsibility
-        }
+            int i = 0;
+            foreach (GameObject go in npcList)
+            {
+                NPCV2 npc = go.GetComponent<NPCV2>();
+                if (npc.diagnosed && !npc.playersResponsibility)
+                {
+                    npc.addNpcToResponsibilities();
+                    //reset health for the new patient
+                    npc.myHp = 50;
+                    i++;
+                }
+                if (i == sub)
+                {
+                    break;
+                }
+            }
+        } 
     }
 
     public Item RandomItem(Item[] randMeds)

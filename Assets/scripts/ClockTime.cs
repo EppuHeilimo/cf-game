@@ -151,7 +151,6 @@ public class ClockTime : MonoBehaviour {
         startHourInSeconds = 0;
         startHour = 6;
         paused = true;
-        
     }
 
     public void resumeAfterDayChange()
@@ -160,6 +159,7 @@ public class ClockTime : MonoBehaviour {
         GameObject.FindGameObjectWithTag("NPCManager").GetComponent<NPCManagerV2>().nextDayResume();
         paused = false;
         day++;
+        resetMeds();
     }
 
     string getTimeString()
@@ -208,8 +208,16 @@ public class ClockTime : MonoBehaviour {
                 {
                     if (npc.morningMed[i].title != null)
                     {
-                        if (!npc.morningMed[i].isActive)
-                            npc.isLosingHp = true;
+                        if(!npc.playersResponsibility)
+                        {
+                            if (Random.Range(1, 10) < 2)
+                                npc.isLosingHp = true;
+                        }
+                        else
+                        {
+                            if (!npc.morningMed[i].isActive)
+                                npc.isLosingHp = true;
+                        }
                     }
                 }
             }
@@ -227,8 +235,16 @@ public class ClockTime : MonoBehaviour {
                 {
                     if (npc.afternoonMed[i].title != null)
                     {
-                        if (!npc.afternoonMed[i].isActive)
-                            npc.isLosingHp = true;
+                        if (!npc.playersResponsibility)
+                        {
+                            if (Random.Range(1, 10) < 2)
+                                npc.isLosingHp = true;
+                        }
+                        else
+                        {
+                            if (!npc.morningMed[i].isActive)
+                                npc.isLosingHp = true;
+                        }
                     }
                 }
             }
@@ -246,8 +262,16 @@ public class ClockTime : MonoBehaviour {
                 {
                     if (npc.eveningMed[i].title != null)
                     {
-                        if (!npc.eveningMed[i].isActive)
-                            npc.isLosingHp = true;
+                        if (!npc.playersResponsibility)
+                        {
+                            if (Random.Range(1, 10) < 2)
+                                npc.isLosingHp = true;
+                        }
+                        else
+                        {
+                            if (!npc.morningMed[i].isActive)
+                                npc.isLosingHp = true;
+                        }
                     }
                 }
             }
@@ -265,8 +289,16 @@ public class ClockTime : MonoBehaviour {
                 {
                     if (npc.nightMed[i].title != null)
                     {
-                        if (!npc.nightMed[i].isActive)
-                            npc.isLosingHp = true;
+                        if (!npc.playersResponsibility)
+                        {
+                            if (Random.Range(1, 10) < 2)
+                                npc.isLosingHp = true;
+                        }
+                        else
+                        {
+                            if (!npc.morningMed[i].isActive)
+                                npc.isLosingHp = true;
+                        }
                     }
                 }
             }

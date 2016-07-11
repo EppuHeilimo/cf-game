@@ -10,6 +10,7 @@ public class NurseAI : MonoBehaviour {
     ObjectInteraction interaction;
     IiroAnimBehavior anim;
     Vector3 dest = Vector3.zero;
+    NavMeshPath path;
     bool initialized = false;
     Transform trolley;
     bool readyToLeave = false;
@@ -21,6 +22,7 @@ public class NurseAI : MonoBehaviour {
 	void Start ()
     {
         npcManager = GameObject.FindGameObjectWithTag("NPCManager").GetComponent<NPCManagerV2>();
+        
     }
 	
     void moveToDest()
@@ -31,24 +33,23 @@ public class NurseAI : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 
-	    if(initialized)
+        if (initialized)
         {
+            if (targetNPC == null || partner == null)
+            {
+                npcManager.nursesDeployed = false;
+                Destroy(gameObject);
+            }
             if (id == 0)
             {
                 if(dest == Vector3.zero)
                 {
-                    if (targetNPC == null || partner == null)
-                    {
-                        npcManager.nursesDeployed = false;
-                        Destroy(gameObject);
-                    }
+                    dest = targetNPC.transform.position;
                     interaction.setTarget(targetNPC);
-                    NavMeshHit hit;
-                    NavMesh.SamplePosition(targetNPC.transform.position, out hit, 100.0f, (1 << 7));
-                    dest = hit.position;
-                    moveToDest();
+                    agent.SetDestination(dest);
                 }
-                else if(arrivedToDestination(20.0f) && !readyToLeave)
+
+                else if(arrivedToDestination(50.0f) && !readyToLeave)
                 {
                     agent.Stop();
                     readyForLift = true;
@@ -95,7 +96,8 @@ public class NurseAI : MonoBehaviour {
                             readyForLift = true;
                         if (!anim.pickingup && !readyToLeave && partner.readyForLift)
                         {
-                            anim.pickfromfloor();
+                            if(interaction.RotateTowards(targetNPC.transform))
+                                anim.pickfromfloor();
                         }
                         else if (anim.pickingup)
                         {
@@ -150,6 +152,7 @@ public class NurseAI : MonoBehaviour {
         {
             trolley = transform.FindChild("Trolley");
         }
+        anim.setWalkAnimSpeed(150f);
     }
 
     private bool arrivedToDestination(float accuracy)

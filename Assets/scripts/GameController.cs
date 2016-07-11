@@ -21,8 +21,10 @@ public class GameController : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+
 	    if(clock.isWorkShiftOver() && !changingday)
         {
+            GameObject.FindGameObjectWithTag("TextBoxManager").GetComponent<TextBoxManager>().DisableTextBox();
             daychangeCanvas = Instantiate(daychangeCanvasPrefab);
             daychangecanvasgroup = daychangeCanvas.GetComponent<CanvasGroup>();
             daychangecanvasgroup.alpha = 0;
@@ -53,7 +55,7 @@ public class GameController : MonoBehaviour {
             }
             
         }
-
+        
 	}
 
     public void continueToNextDay()
