@@ -21,7 +21,7 @@ public class GameController : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        /*
+
 	    if(clock.isWorkShiftOver() && !changingday)
         {
             GameObject.FindGameObjectWithTag("TextBoxManager").GetComponent<TextBoxManager>().DisableTextBox();
@@ -55,7 +55,7 @@ public class GameController : MonoBehaviour {
             }
             
         }
-        */
+        
         
 	}
 
