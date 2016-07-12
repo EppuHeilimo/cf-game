@@ -25,7 +25,7 @@ public class FloatTextNPC : MonoBehaviour {
 
     public GameObject FloatTextCanvas;
     public List<FloatText> floatingTexts = new List<FloatText>();
-    public List<string> floatingStrings = new List<string>();
+    public Dictionary<string, bool> floatingStrings = new Dictionary<string, bool>();
 
 
     void Update()
@@ -56,10 +56,10 @@ public class FloatTextNPC : MonoBehaviour {
             floatingTexts.Add(text);
     }
 
-    public void addFloatText(string text)
+    public void addFloatText(string text, bool positive)
     {
-        if (!floatingStrings.Contains(text))
-            floatingStrings.Add(text);
+        if (!floatingStrings.ContainsKey(text))
+            floatingStrings.Add(text, positive);
     }
 
     public void addFloatText(List<FloatText> txts)

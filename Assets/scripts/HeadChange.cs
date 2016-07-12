@@ -38,4 +38,5 @@ public class HeadChange : MonoBehaviour {
         return heads[rand].name;
     }
 
+
 }

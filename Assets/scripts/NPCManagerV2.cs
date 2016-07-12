@@ -13,9 +13,10 @@ public class NPCManagerV2 : MonoBehaviour
     GameObject nursePrefab;
     [SerializeField]
     GameObject nurseWithTrolleyPrefab;
-    Vector3 nurseSpawn = new Vector3(733, 0, -742);
-    Vector3 nurseSpawn2 = new Vector3(700, 0, -700);
-    public bool nursesDeployed = false;
+    Vector3 nurseSpawn2 = new Vector3(685, 0, -845);
+    Vector3 nurseSpawn = new Vector3(733, 0, -832);
+    List<KeyValuePair<GameObject, GameObject>> nurses = new List<KeyValuePair<GameObject, GameObject>>();
+    List<KeyValuePair<GameObject, GameObject>> doomednurses = new List<KeyValuePair<GameObject, GameObject>>();
 
     public bool paused = false;
 
@@ -113,6 +114,21 @@ public class NPCManagerV2 : MonoBehaviour
                 }
             }
         }
+        if(nurses.Count > 0)
+        {
+           
+            for(int i = 0; i < nurses.Count; i++)
+            {
+                bool ready = false;
+                ready = nurses[i].Key.GetComponent<NurseAI>().allDone && nurses[i].Value.GetComponent<NurseAI>().allDone;
+                if(ready)
+                {
+                    Destroy(nurses[i].Key);
+                    Destroy(nurses[i].Value);
+                    nurses.RemoveAt(i);
+                }
+            }
+        }
     }
 
     void spawnNPC()
@@ -157,15 +173,7 @@ public class NPCManagerV2 : MonoBehaviour
     {
         
         GameObject[] npcs = npcList.ToArray();
-        if (nursesDeployed)
-        {
-            nursesDeployed = false;
-            GameObject[] nurses = GameObject.FindGameObjectsWithTag("Nurse");
-            foreach (GameObject nurse in nurses)
-            {
-                Destroy(nurse);
-            }
-        }
+
         for (int i = 0; i < npcs.Length; i++)
         {
             NPCV2 npc = npcs[i].GetComponent<NPCV2>();
@@ -278,23 +286,24 @@ public class NPCManagerV2 : MonoBehaviour
         return s;
     }
 
-    public void spawnNurseToFetchNPC(GameObject npc)
+    public bool spawnNurseToFetchNPC(GameObject npc)
     {
-        if(!nursesDeployed)
+        if(nurses.Count < 4)
         {
+            if (npc == null)
+                return false;
             GameObject newNurse = Instantiate(nurseWithTrolleyPrefab, nurseSpawn, Quaternion.identity) as GameObject;
             GameObject newNurse2 = Instantiate(nursePrefab, nurseSpawn2, Quaternion.identity) as GameObject;
-
             newNurse.GetComponent<HeadChange>().ChangeToRandomHead();
             newNurse2.GetComponent<HeadChange>().ChangeToRandomHead();
             newNurse.GetComponent<NurseAI>().partner = newNurse2.GetComponent<NurseAI>();
             newNurse2.GetComponent<NurseAI>().partner = newNurse.GetComponent<NurseAI>();
-
             newNurse.GetComponent<NurseAI>().Init(npc, 0);
             newNurse2.GetComponent<NurseAI>().Init(npc, 1);
-
-            nursesDeployed = true;
+            nurses.Add(new KeyValuePair<GameObject, GameObject>(newNurse, newNurse2));
             currentNpcsInWard--;
+            return true;
         }
+        return false;
     }
 }

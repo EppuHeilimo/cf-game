@@ -29,6 +29,7 @@ public class NPCV2 : MonoBehaviour
     }
 
     /* basic stuff */
+    bool nursesDeployedForMe = false;
     bool lockstate = false;
     public bool paused = false;
     ClockTime clock;
@@ -667,6 +668,7 @@ public class NPCV2 : MonoBehaviour
                         if (!npcManager.isPlayerResponsibilityLevelFulfilled())
                         {
                             addNpcToResponsibilities();
+                            GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CameraMovement>().lockCameraToThisTransformForXTime(transform, 5f);
                         }
                         npcManager.currentNpcsInWard++;
                     }
@@ -1025,7 +1027,7 @@ public class NPCV2 : MonoBehaviour
                     npcManager.removeNpcFromPlayersResponsibilities(gameObject);
                     Destroy(responsibilityIndicatorclone);
                 }
-                    
+                   
                 dead = true;
             }
         }
@@ -1034,9 +1036,10 @@ public class NPCV2 : MonoBehaviour
             if (gameObject == null)
                 return;
             //if dead and nurses aren't already deployed to fetch someone, release the nurses
-            if (!npcManager.nursesDeployed)
-                npcManager.spawnNurseToFetchNPC(gameObject);
-            timer += Time.deltaTime;
+            if(!nursesDeployedForMe)
+            {
+                nursesDeployedForMe = npcManager.spawnNurseToFetchNPC(gameObject);
+            }
             //if not already fallen, fall
             if (!anim.falling)
             {
@@ -1625,7 +1628,7 @@ public class NPCV2 : MonoBehaviour
                 addStateToQueue(3, NPCState.STATE_LEAVE_HOSPITAL);
                 objectManager.unbookObject(myBed);
                 taskCompleted = true;
-                GetComponent<FloatTextNPC>().addFloatText("Health excellent! Leaving Hospital!");
+                GetComponent<FloatTextNPC>().addFloatText("Health excellent! Leaving Hospital!", true);
                 scoreSystem.addToScore(5);
             }
         }
@@ -1675,24 +1678,24 @@ public class NPCV2 : MonoBehaviour
                         {
                             incorrect++;
                             //GetComponent<FloatTextNPC>().addFloatText(FloatText.IncorrectMedicine);
-                            GetComponent<FloatTextNPC>().addFloatText("Overdose of " + med[i] + "!");
+                            GetComponent<FloatTextNPC>().addFloatText("Overdose of " + med[i] + "!", false);
                         }
                         else if (dosage[i] == meds[j].dosage)
                         {
                             found = true;
                             meds[j].isActive = true;
-                            GetComponent<FloatTextNPC>().addFloatText("Correct Medicine! " + med[i]);
+                            GetComponent<FloatTextNPC>().addFloatText("Correct Medicine! " + med[i], true);
                             correct++;
                         }
                         else
                         {
                             if(dosage[i] > meds[j].dosage)
                             {
-                                GetComponent<FloatTextNPC>().addFloatText("Overdose of " + med[i] + "!");
+                                GetComponent<FloatTextNPC>().addFloatText("Overdose of " + med[i] + "!", false);
                             }
                             else if (dosage[i] < meds[j].dosage)
                             {
-                                GetComponent<FloatTextNPC>().addFloatText("dosage of " + med[i] + " was too small!");
+                                GetComponent<FloatTextNPC>().addFloatText("dosage of " + med[i] + " was too small!", false);
                             }
                         }
                     }
@@ -1705,7 +1708,7 @@ public class NPCV2 : MonoBehaviour
                 {
                     wrongmeds.Add(med[i]);
                     //GetComponent<FloatTextNPC>().addFloatText(FloatText.IncorrectMedicine);
-                    GetComponent<FloatTextNPC>().addFloatText("Incorrect Medicine! " + med[i]);
+                    GetComponent<FloatTextNPC>().addFloatText("Incorrect Medicine! " + med[i], false);
                 }
             }
             for (int i = 0; i < wrongmeds.Count; i++)
@@ -1722,28 +1725,28 @@ public class NPCV2 : MonoBehaviour
             {
                 if (correctratio > 0 && correctratio <= 0.25f)
                 {
-                    GetComponent<FloatTextNPC>().addFloatText("+ 5");
+                    GetComponent<FloatTextNPC>().addFloatText("+ 5", true);
                     if(playersResponsibility)
                         scoreSystem.addToScore(2);
                     myHp += 5;
                 }
                 else if (correctratio > 0.25f && correctratio <= 0.5f)
                 {
-                    GetComponent<FloatTextNPC>().addFloatText("+ 10");
+                    GetComponent<FloatTextNPC>().addFloatText("+ 10", true);
                     if (playersResponsibility)
                         scoreSystem.addToScore(5);
                     myHp += 10;
                 }
                 else if (correctratio > 0.5f && correctratio <= 0.75f)
                 {
-                    GetComponent<FloatTextNPC>().addFloatText("+ 15");
+                    GetComponent<FloatTextNPC>().addFloatText("+ 15", true);
                     if (playersResponsibility)
                         scoreSystem.addToScore(7);
                     myHp += 15;
                 }
                 else if (correctratio > 0.75f && correctratio <= 1f)
                 {
-                    GetComponent<FloatTextNPC>().addFloatText("+ 20");
+                    GetComponent<FloatTextNPC>().addFloatText("+ 20", true);
                     if (playersResponsibility)
                         scoreSystem.addToScore(10);
                     myHp += 20;
@@ -1753,25 +1756,25 @@ public class NPCV2 : MonoBehaviour
             {
                 if (correctratio < 0 && correctratio >= -0.25f)
                 {
-                    GetComponent<FloatTextNPC>().addFloatText("- 5");
+                    GetComponent<FloatTextNPC>().addFloatText("- 5", false);
                     scoreSystem.addToScore(-2);
                     myHp -= 5;
                 }
                 else if (correctratio < -0.25f && correctratio >= -0.5f)
                 {
-                    GetComponent<FloatTextNPC>().addFloatText("- 10");
+                    GetComponent<FloatTextNPC>().addFloatText("- 10", false);
                     scoreSystem.addToScore(-5);
                     myHp -= 10;
                 }
                 else if (correctratio < -0.5f && correctratio >= -0.75f)
                 {
-                    GetComponent<FloatTextNPC>().addFloatText("- 15");
+                    GetComponent<FloatTextNPC>().addFloatText("- 15", false);
                     scoreSystem.addToScore(-7);
                     myHp -= 15;
                 }
                 else if (correctratio < -0.75f && correctratio >= -1f)
                 {
-                    GetComponent<FloatTextNPC>().addFloatText("- 20");
+                    GetComponent<FloatTextNPC>().addFloatText("- 20", false);
                     scoreSystem.addToScore(-10);
                     myHp -= 20;
                 }

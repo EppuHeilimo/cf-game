@@ -54,21 +54,25 @@ public class FloatTextCanvas : MonoBehaviour {
 
     }
 
-    public void Init(List<string> txts)
+    public void Init(Dictionary<string, bool> txts)
     {
         //Because C# loves references and we need to delete FloatTextNPC's version of floatingtexts after this.
-        foreach (string txt in txts)
+        foreach (KeyValuePair<string,bool> txt in txts)
         {
             floatString(txt);
         }
 
     }
 
-    public void floatString(string text)
+    public void floatString(KeyValuePair<string, bool> text)
     {
         GameObject go = Instantiate(FloatTextGO, Vector3.zero, Quaternion.identity) as GameObject;
         go.transform.SetParent(transform.FindChild("Panel"));
-        go.GetComponent<Text>().text = text;
+        if(text.Value)
+            go.GetComponent<Text>().color = Color.green;
+        else
+            go.GetComponent<Text>().color = Color.red;
+        go.GetComponent<Text>().text = text.Key;
 
         float offset = 0;
         foreach (GameObject img in floatingimages)
