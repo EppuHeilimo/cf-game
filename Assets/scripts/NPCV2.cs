@@ -1025,6 +1025,8 @@ public class NPCV2 : MonoBehaviour
                 //if this npc was players responsibility, remove from responsibilities
                 if(playersResponsibility)
                 {
+                    npcManager.respNpcsWhoLeftOrDied.Add(new NPCINFO(myName, myHead2d, true));
+                    GameObject.FindGameObjectWithTag("ScoringSystem").GetComponent<ScoringSystem>().responsibilityNPCDied();
                     playersResponsibility = false;
                     npcManager.removeNpcFromPlayersResponsibilities(gameObject);
                     Destroy(responsibilityIndicatorclone);

@@ -108,6 +108,8 @@ public class ObjectManager : MonoBehaviour {
 
     public bool bookTargetObject(GameObject target, GameObject targetee)
     {
+        if(!bookableObjects.ContainsKey(target))
+            return false;
         if (bookableObjects[target] == null)
         {
             bookableObjects[target] = targetee;

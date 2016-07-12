@@ -6,35 +6,16 @@ public class ScoringSystem : MonoBehaviour {
 
     public int score = 50;
     public int totalscore = 0;
-    bool scoreWasAltered = false;
-    int prevscore = 50;
-    GameObject negativebar;
+    public int oldtotalscore = 0;
+    int medinactivepunishment = -2;
+    int respnpcdeathpunishment = -5;
+    public bool gameover = false;
+
+    GameObject positivebar;
 	// Use this for initialization
 	void Start () {
-        negativebar = GameObject.FindGameObjectWithTag("ScoreBar").transform.FindChild("Negative").gameObject;
+        positivebar = GameObject.FindGameObjectWithTag("ScoreBar").transform.FindChild("Positive").gameObject;
     }
-	
-	// Update is called once per frame
-	void Update () {
-        if(scoreWasAltered)
-        {
-            prevscore = score;
-            scoreWasAltered = false;
-            Vector2 size = negativebar.GetComponent<RectTransform>().sizeDelta;
-            negativebar.GetComponent<RectTransform>().sizeDelta = new Vector2(100 - score, size.y);
-        }
-        else
-        {
-            if(prevscore != score)
-            {
-                prevscore = score;
-                scoreWasAltered = false;
-                score = 50;
-                Vector2 size = negativebar.GetComponent<RectTransform>().sizeDelta;
-                size = new Vector2(100 - score, size.y);
-            }
-        }
-	}
 
     public void addToScore(int add)
     {
@@ -42,8 +23,12 @@ public class ScoringSystem : MonoBehaviour {
         {
             if(score > 0)
                 score += add;
-            if (score < 0)
+            if (score <= 0)
+            {
                 score = 0;
+                gameover = true;
+            }
+                
         }
         else if (add > 0)
         {
@@ -52,7 +37,29 @@ public class ScoringSystem : MonoBehaviour {
             if (score > 100)
                 score = 100;
         }
-        scoreWasAltered = true;
+        positivebar.GetComponent<RectTransform>().sizeDelta = new Vector2(score * 2, 25.0f);
+
     }
+
+    public void medInactive()
+    {
+        addToScore(medinactivepunishment);
+    }
+
+    public void responsibilityNPCDied()
+    {
+        addToScore(respnpcdeathpunishment);
+    }
+
+    public void endDay()
+    {
+        totalscore += score * 10;
+    }
+
+    public void nextDay()
+    {
+        oldtotalscore = totalscore;
+    }
+
 
 }

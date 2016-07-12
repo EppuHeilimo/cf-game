@@ -67,6 +67,7 @@ public class PlayerControl : MonoBehaviour {
                 if (target.tag == "MedCabinet")
                 {
                     GameObject.Find("Minigame1").GetComponent<Minigame1>().startMinigame();
+                    disableTarget();
                     movingToTarget = false;
                 }
                 else if(target.tag == "Computer")
@@ -455,6 +456,7 @@ public class PlayerControl : MonoBehaviour {
                 followNpc = false;
             }
         }
+        interaction.setTarget(null);
         target = null;
     }
 

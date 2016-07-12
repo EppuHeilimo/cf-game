@@ -3,6 +3,20 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 
+public struct NPCINFO
+{
+    public string name;
+    public Sprite headimage;
+    public bool dead;
+
+    public NPCINFO(string name, Sprite head, bool dead)
+    {
+        this.name = name;
+        headimage = head;
+        this.dead = dead;
+    }
+}
+
 public class NPCManagerV2 : MonoBehaviour
 {
     // serialized variable for linking to the prefab object
@@ -17,6 +31,8 @@ public class NPCManagerV2 : MonoBehaviour
     Vector3 nurseSpawn = new Vector3(733, 0, -832);
     List<KeyValuePair<GameObject, GameObject>> nurses = new List<KeyValuePair<GameObject, GameObject>>();
     List<KeyValuePair<GameObject, GameObject>> doomednurses = new List<KeyValuePair<GameObject, GameObject>>();
+
+    public List<NPCINFO> respNpcsWhoLeftOrDied = new List<NPCINFO>();
 
     public bool paused = false;
 
@@ -247,6 +263,10 @@ public class NPCManagerV2 : MonoBehaviour
                 Destroy(nurses[i].Value);
                 nurses.RemoveAt(i);
             }
+        }
+        if(respNpcsWhoLeftOrDied.Count > 0)
+        {
+            respNpcsWhoLeftOrDied.Clear();
         }
         paused = true;
     }

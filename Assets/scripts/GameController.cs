@@ -25,6 +25,7 @@ public class GameController : MonoBehaviour {
 	    if(clock.isWorkShiftOver() && !changingday)
         {
             GameObject.FindGameObjectWithTag("TextBoxManager").GetComponent<TextBoxManager>().DisableTextBox();
+            GameObject.FindGameObjectWithTag("ScoringSystem").GetComponent<ScoringSystem>().endDay();
             daychangeCanvas = Instantiate(daychangeCanvasPrefab);
             daychangecanvasgroup = daychangeCanvas.GetComponent<CanvasGroup>();
             daychangecanvasgroup.alpha = 0;
@@ -61,6 +62,7 @@ public class GameController : MonoBehaviour {
 
     public void continueToNextDay()
     {
+        GameObject.FindGameObjectWithTag("ScoringSystem").GetComponent<ScoringSystem>().nextDay();
         GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerControl>().enabled = true;
         clock.resumeAfterDayChange();
         resuminggame = true;
