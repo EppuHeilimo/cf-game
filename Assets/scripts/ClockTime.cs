@@ -138,7 +138,7 @@ public class ClockTime : MonoBehaviour {
 
     public bool isWorkShiftOver()
     {
-        if(shift == 0 && currentHours >= 15)
+        if(shift == 0 && currentHours >= 22)
         {
             return true;
         }

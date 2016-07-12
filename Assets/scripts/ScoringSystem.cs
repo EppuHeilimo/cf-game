@@ -11,10 +11,13 @@ public class ScoringSystem : MonoBehaviour {
     int respnpcdeathpunishment = -5;
     public bool gameover = false;
 
+
     GameObject positivebar;
+    Text percentage;
 	// Use this for initialization
 	void Start () {
         positivebar = GameObject.FindGameObjectWithTag("ScoreBar").transform.FindChild("Positive").gameObject;
+        percentage = GameObject.FindGameObjectWithTag("ScoreBar").transform.FindChild("Percentage").GetComponent<Text>();
     }
 
     public void addToScore(int add)
@@ -26,7 +29,7 @@ public class ScoringSystem : MonoBehaviour {
             if (score <= 0)
             {
                 score = 0;
-                gameover = true;
+                GameObject.FindGameObjectWithTag("UIManager").GetComponent<UIManager>().gameOver(totalscore);
             }
                 
         }
@@ -38,7 +41,7 @@ public class ScoringSystem : MonoBehaviour {
                 score = 100;
         }
         positivebar.GetComponent<RectTransform>().sizeDelta = new Vector2(score * 2, 25.0f);
-
+        percentage.text = score + "%";
     }
 
     public void medInactive()
