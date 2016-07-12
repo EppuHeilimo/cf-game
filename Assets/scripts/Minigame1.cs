@@ -593,16 +593,16 @@ public class Minigame1 : MonoBehaviour {
         MedCup nightCup = nightCupObj.GetComponent<MedCup>();
 
         if (morningCup.medsInThisCup.Count > 0)
-            playerInv.AddItems(morningCup.medsInThisCup);
+            playerInv.AddItems(morningCup.medsInThisCup, 0);
 
         if (afternoonCup.medsInThisCup.Count > 0)
-            playerInv.AddItems(afternoonCup.medsInThisCup);
+            playerInv.AddItems(afternoonCup.medsInThisCup, 1);
 
         if (eveningCup.medsInThisCup.Count > 0)
-            playerInv.AddItems(eveningCup.medsInThisCup);
+            playerInv.AddItems(eveningCup.medsInThisCup, 2);
 
         if (nightCup.medsInThisCup.Count > 0)
-            playerInv.AddItems(nightCup.medsInThisCup);
+            playerInv.AddItems(nightCup.medsInThisCup, 3);
 
         morningCup.Reset();
         afternoonCup.Reset();

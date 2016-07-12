@@ -6,7 +6,6 @@ using System;
 public class ItemData : MonoBehaviour,/* IBeginDragHandler,  IDragHandler, IEndDragHandler,*/ IPointerDownHandler, IPointerEnterHandler, IPointerExitHandler {
     public ItemContainer item;
     public int slot;
-    public int amount;
 
     float taptimer = 0;
     bool tapped = false;

@@ -8,11 +8,10 @@ public class ItemContainer
     public int ID;
     public List<Item> medicine = new List<Item>();
     public Sprite mySprite;
-
+    
     public ItemContainer()
     {
         ID = -1;
-        mySprite = Resources.Load<Sprite>("Sprites/Items/null");
     }
 }
 
@@ -25,6 +24,7 @@ public class Inventory : MonoBehaviour {
     int slotAmount;
     public List<ItemContainer> items = new List<ItemContainer>();
     public List<GameObject> slots = new List<GameObject>();
+    public Sprite[] cupSprites = new Sprite[4];
 
     void Start()
     {
@@ -43,40 +43,7 @@ public class Inventory : MonoBehaviour {
 
     }
 
-    public void AddItem(int id)
-    {
-        Item itemToAdd = database.FetchItemByID(id);
-        ItemContainer container = new ItemContainer();
-        bool foundEmptySlot = false;
-        for (int i = 0; i < items.Count; i++)
-        {
-            // ID -1 = empty slot
-            if (items[i].ID == -1)
-            {
-                items[i].ID = 1;
-                foundEmptySlot = true;
-                items[i].medicine.Add(itemToAdd);
-                GameObject itemObj = Instantiate(inventoryItem);
-                itemObj.GetComponent<ItemData>().item = items[i];
-                itemObj.GetComponent<ItemData>().slot = i;
-                // make the object child of the corresponding slot
-                itemObj.transform.SetParent(slots[i].transform);
-                //itemObj.transform.position = slots[i].transform.position;
-                itemObj.transform.localScale = Vector3.one;
-                itemObj.GetComponent<RectTransform>().sizeDelta = Vector2.zero;
-                itemObj.GetComponent<RectTransform>().anchoredPosition = Vector2.zero;
-                itemObj.GetComponent<Image>().sprite = itemToAdd.Sprite;
-                break;
-            }
-        }
-        if (!foundEmptySlot)
-        {
-            // no empty slots, show "inventory full" -message
-            Debug.Log("Inventaario on täynnä!");
-        }
-    }
-
-    public void AddItems(List<MedCup.Med> itemsInCup)
+    public void AddItems(List<MedCup.Med> itemsInCup, int cupNum)
     {
         Item[] itemsToAdd = new Item[itemsInCup.Count];
         int i = 0;
@@ -88,7 +55,6 @@ public class Inventory : MonoBehaviour {
             itemsToAdd[i] = newItem;
             i++;
         }
-        ItemContainer container = new ItemContainer();
         bool foundEmptySlot = false;
         for (i = 0; i < items.Count; i++)
         {
@@ -110,103 +76,15 @@ public class Inventory : MonoBehaviour {
                 itemObj.transform.localScale = Vector3.one;
                 itemObj.GetComponent<RectTransform>().sizeDelta = Vector2.zero;
                 itemObj.GetComponent<RectTransform>().anchoredPosition = Vector2.zero;
-                itemObj.GetComponent<Image>().sprite = items[i].mySprite;
+                itemObj.GetComponent<Image>().sprite = cupSprites[cupNum];
                 break;
             }
         }
         if (!foundEmptySlot)
         {
-            // no empty slots, show "inventory full" -message
-            Debug.Log("Inventaario on täynnä!");
+            GameObject.FindGameObjectWithTag("Player").GetComponent<FloatTextNPC>().addFloatText("Inventory is full!", false);
         }
     }
-
-
-    public void AddItems(int[] ids)
-    {
-        Item[] itemsToAdd = new Item[ids.Length];
-        int i = 0;
-        foreach (int id in ids)
-        {
-            itemsToAdd[i] = database.FetchItemByID(id);
-            i++;
-        }    
-        ItemContainer container = new ItemContainer();
-        bool foundEmptySlot = false;
-        for (i = 0; i < items.Count; i++)
-        {
-            // ID -1 = empty slot
-            if (items[i].ID == -1)
-            {
-                items[i].ID = 1;
-                foundEmptySlot = true;
-                for(int j = 0; j < itemsToAdd.Length; j++)
-                {
-                    items[i].medicine.Add(itemsToAdd[j]);
-                }
-                GameObject itemObj = Instantiate(inventoryItem);
-                itemObj.GetComponent<ItemData>().item = items[i];
-                itemObj.GetComponent<ItemData>().slot = i;
-                // make the object child of the corresponding slot
-                itemObj.transform.SetParent(slots[i].transform);
-                //itemObj.transform.position = slots[i].transform.position;
-                itemObj.transform.localScale = Vector3.one;
-                itemObj.GetComponent<RectTransform>().sizeDelta = Vector2.zero;
-                itemObj.GetComponent<RectTransform>().anchoredPosition = Vector2.zero;
-                itemObj.GetComponent<Image>().sprite = items[i].mySprite;
-                break;
-            }
-        }
-        if (!foundEmptySlot)
-        {
-            // no empty slots, show "inventory full" -message
-            Debug.Log("Inventaario on täynnä!");
-        }
-    }
-
-    public void AddItems(List<string> titles, List<int> dosages)
-    {
-        Item[] itemsToAdd = new Item[titles.Count];
-        int i = 0;
-        foreach (string title in titles)
-        {
-            itemsToAdd[i] = database.FetchItemByTitle(title);
-            itemsToAdd[i].currentDosage = dosages[i];
-            i++;
-        }
-        ItemContainer container = new ItemContainer();
-        bool foundEmptySlot = false;
-        for (i = 0; i < items.Count; i++)
-        {
-            // ID -1 = empty slot
-            if (items[i].ID == -1)
-            {
-                items[i].ID = 1;
-                foundEmptySlot = true;
-                for (int j = 0; j < itemsToAdd.Length; j++)
-                {
-                    items[i].medicine.Add(itemsToAdd[j]);
-                }
-                GameObject itemObj = Instantiate(inventoryItem);
-                itemObj.GetComponent<ItemData>().item = items[i];
-                itemObj.GetComponent<ItemData>().slot = i;
-                // make the object child of the corresponding slot
-                itemObj.transform.SetParent(slots[i].transform);
-                //itemObj.transform.position = slots[i].transform.position;
-                itemObj.transform.localScale = Vector3.one;
-                itemObj.GetComponent<RectTransform>().sizeDelta = Vector2.zero;
-                itemObj.GetComponent<RectTransform>().anchoredPosition = Vector2.zero;
-                itemObj.GetComponent<Image>().sprite = items[i].mySprite;
-                break;
-            }
-        }
-        if (!foundEmptySlot)
-        {
-            // no empty slots, show "inventory full" -message
-            Debug.Log("Inventaario on täynnä!");
-        }
-    }
-
 
     public void RemoveItem(int id)
     {
