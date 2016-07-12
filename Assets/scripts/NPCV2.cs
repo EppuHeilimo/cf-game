@@ -37,6 +37,7 @@ public class NPCV2 : MonoBehaviour
     IiroAnimBehavior anim;
     public string myName;
     public string myId;
+    public int myGender; // 0 = female, 1 = male
     public int myHp = 50;
     public int myHappiness = 50;
     int currentTaskPriority = 0;
@@ -206,6 +207,7 @@ public class NPCV2 : MonoBehaviour
         anim = agent.GetComponent<IiroAnimBehavior>();
         scoreSystem = GameObject.FindGameObjectWithTag("ScoringSystem").GetComponent<ScoringSystem>();
     }
+
     // Update is called once per frame
     void Update()
     {
@@ -1328,10 +1330,11 @@ public class NPCV2 : MonoBehaviour
         }  
     }
 
-    public void Init(string myName, string myId)
+    public void Init(string myName, string myId, int myGender)
     {
         this.myName = myName;
-        this.myId = myId;    
+        this.myId = myId;
+        this.myGender = myGender;
     }
 
     public void rePath()
