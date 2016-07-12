@@ -52,6 +52,7 @@ TagManager:
   - Ground
   - ScoreBar
   - MenuPanel
+  - ScoreTxt
   layers:
   - Default
   - TransparentFX
