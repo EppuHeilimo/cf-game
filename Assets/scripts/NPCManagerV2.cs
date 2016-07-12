@@ -40,8 +40,10 @@ public class NPCManagerV2 : MonoBehaviour
     // interval between spawning new NPCs
     float spawnTime;
 
-    // hard-coded pool for names, probably changed later
-    string[] namePool = { "Aleksi", "Pekka", "Matti", "Kalle", "Jorma" };
+    // name pools for males and females, MUST BE SAME LENGTH!
+    const int NAMEPOOL_LENGTH = 5;
+    string[] namePoolMale = new string[NAMEPOOL_LENGTH] { "Aleksi", "Pekka", "Matti", "Kalle", "Jorma" };
+    string[] namePoolFemale = new string[NAMEPOOL_LENGTH] { "Anna", "Kaisa", "Veera", "Iina", "Elsa" };
 
     const int MAX_NPCS = 30;
     public static int MAX_NPCS_IN_WARD_AREA = 12;
@@ -117,13 +119,19 @@ public class NPCManagerV2 : MonoBehaviour
 
     void spawnNPC()
     {
-        int nameIndex = UnityEngine.Random.Range(0, namePool.Length);
-        string myName = namePool[nameIndex];
-        string myId = RandomString(4);
+        int nameIndex = Random.Range(0, NAMEPOOL_LENGTH);
+        string myId = CreateID();
+        int myGender = Random.Range(0, 2);
+        string myName = "";
+        if (myGender == 0)
+            myName = namePoolFemale[nameIndex];
+        else
+            myName = namePoolMale[nameIndex];
+
         GameObject newNpc = Instantiate(npcPrefab, spawnPoint, Quaternion.identity) as GameObject; // the method that copies the prefab object
-        newNpc.GetComponent<NPCV2>().Init(myName, myId); // initialize the npc
-        //change to random head
-        string headname = newNpc.GetComponent<HeadChange>().ChangeToRandomHead();
+        newNpc.GetComponent<NPCV2>().Init(myName, myId, myGender); // initialize the npc
+        //change head according to gender
+        string headname = newNpc.GetComponent<HeadChange>().ChangeHead(myGender);
         //set the file name of the 2d sprite of the head
         newNpc.GetComponent<NPCV2>().myHead2d = Resources.Load<Sprite>("Sprites/heads/" + headname + ".2d");  
         npcList.Add(newNpc);
@@ -278,6 +286,61 @@ public class NPCManagerV2 : MonoBehaviour
         return s;
     }
 
+    string CreateID()
+    {
+        // pp
+        int randDayInt;
+        string randDayStr;
+        randDayInt = Random.Range(1, 31);
+        if (randDayInt < 10)
+            randDayStr = "0" + randDayInt.ToString();
+        else
+            randDayStr = randDayInt.ToString();
+
+        // kk
+        int randMonthInt;
+        string randMonthStr;
+        randMonthInt = Random.Range(1, 13);
+        if (randMonthInt < 10)
+            randMonthStr = "0" + randMonthInt.ToString();
+        else
+            randMonthStr = randMonthInt.ToString();
+
+        // vv
+        int randYearInt;
+        string randYearStr;
+        randYearInt = Random.Range(40, 100);
+        randYearStr = randYearInt.ToString();
+
+        // y = -
+
+        // nnn
+        int randNumInt;
+        string randNumStr;
+        randNumInt = Random.Range(2, 900);
+        if (randNumInt < 10)
+            randNumStr = "00" + randNumInt.ToString();
+        else if (randNumInt >= 10 && randNumInt < 100)
+            randNumStr = "0" + randNumInt.ToString();
+        else
+            randNumStr = randNumInt.ToString();
+
+        // t
+        char[] tArr = new char[16] { 'H', 'J', 'K', 'L', 'M', 'N', 'P', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'F' };
+        int randCharInt = Random.Range(0, 16);
+        char t = tArr[randCharInt];
+
+
+        string id = randDayStr + randMonthStr + randYearStr + "-" + randNumStr + t;
+        for (int i = 0; i < usedIds.Count; i++)
+        {
+            if (usedIds[i] == id)
+                return CreateID();
+        }
+        usedIds.Add(id);
+        return id;
+    }
+
     public void spawnNurseToFetchNPC(GameObject npc)
     {
         if(!nursesDeployed)
@@ -285,8 +348,8 @@ public class NPCManagerV2 : MonoBehaviour
             GameObject newNurse = Instantiate(nurseWithTrolleyPrefab, nurseSpawn, Quaternion.identity) as GameObject;
             GameObject newNurse2 = Instantiate(nursePrefab, nurseSpawn2, Quaternion.identity) as GameObject;
 
-            newNurse.GetComponent<HeadChange>().ChangeToRandomHead();
-            newNurse2.GetComponent<HeadChange>().ChangeToRandomHead();
+            newNurse.GetComponent<HeadChange>().ChangeHead(0);
+            newNurse2.GetComponent<HeadChange>().ChangeHead(1);
             newNurse.GetComponent<NurseAI>().partner = newNurse2.GetComponent<NurseAI>();
             newNurse2.GetComponent<NurseAI>().partner = newNurse.GetComponent<NurseAI>();
 
