@@ -58,9 +58,10 @@ public class NPCManagerV2 : MonoBehaviour
     float spawnTime;
 
     // name pools for males and females, MUST BE SAME LENGTH!
-    const int NAMEPOOL_LENGTH = 5;
-    string[] namePoolMale = new string[NAMEPOOL_LENGTH] { "Aleksi", "Pekka", "Matti", "Kalle", "Jorma" };
-    string[] namePoolFemale = new string[NAMEPOOL_LENGTH] { "Anna", "Kaisa", "Veera", "Iina", "Elsa" };
+    // name pools for males and females, MUST BE SAME LENGTH!
+    const int NAMEPOOL_LENGTH = 40;
+    string[] namePoolMale = new string[NAMEPOOL_LENGTH] { "Aleksi", "Pekka", "Matti", "Kalle", "Jorma", "Risto", "Torsti", "Markus", "Antti", "Pentti", "Pertti", "Vertti", "Jussi", "Janne", "Kari", "Tommi", "Timo", "Tomi", "Toni", "Roni", "Henri", "Tuomas", "Miro", "Mikko", "Johannes", "Risto", "Panu", "Åke", "Oskari", "Vesa", "Ville", "Kalevi", "Väinö", "Mikael", "Pasi", "Henrik", "Sami", "Teemu", "Anton", "Riku" };
+    string[] namePoolFemale = new string[NAMEPOOL_LENGTH] { "Anna", "Anni", "Aino", "Kaisa", "Veera", "Vilma", "Iina", "Tiina", "Elsa", "Elisa", "Milja", "Mari", "Maria", "Hanna", "Sanna", "Saana", "Saara", "Sara", "Noora", "Laura", "Mia", "Henna", "Leena", "Päivi", "Hannele", "Ella", "Emilia", "Piia", "Anneli", "Birgitta", "Henrietta", "Aune", "Martta", "Taina", "Tuija", "Tuire", "Katariina", "Susanna", "Saija", "Eija" };
 
     const int MAX_NPCS = 30;
     public static int MAX_NPCS_IN_WARD_AREA = 12;

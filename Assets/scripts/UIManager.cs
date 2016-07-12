@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour {
 
@@ -8,11 +9,14 @@ public class UIManager : MonoBehaviour {
     GameObject inv;
     bool showInventory = true;
     bool paused = false;
+    GameObject gameOverCanvas;
 
 	// Use this for initialization
 	void Start () {
         player = GameObject.FindGameObjectWithTag("Player");
         inv = GameObject.FindGameObjectWithTag("Inventory");
+        gameOverCanvas = GameObject.Find("GameOver Canvas");
+        gameOverCanvas.SetActive(false);
 	}
 
     public bool giveMed(string[] med, float[] dosage)
@@ -74,5 +78,12 @@ public class UIManager : MonoBehaviour {
             GameObject.FindGameObjectWithTag("Clock").GetComponent<ClockTime>().paused = false;
             //player.GetComponent<PlayerControl>().enabled = true;
         }
+    }
+
+    public void gameOver(int score)
+    {
+        gameOverCanvas.SetActive(true);      
+        GameObject.FindGameObjectWithTag("ScoreTxt").GetComponent<Text>().text = "Your score:\n" + score.ToString();
+        Time.timeScale = 0;
     }
 }

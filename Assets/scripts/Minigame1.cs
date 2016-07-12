@@ -96,7 +96,8 @@ public class Minigame1 : MonoBehaviour {
     public void startMinigame()
     {
         kasiDesi = false;
-        time = GameObject.FindGameObjectWithTag("Clock").GetComponent<ClockTime>().currentDayTime;
+        if (GameObject.FindGameObjectWithTag("Clock").GetComponent<ClockTime>() != null)
+            time = GameObject.FindGameObjectWithTag("Clock").GetComponent<ClockTime>().currentDayTime;
         uiManager.pause(true);
         minigameCanvas.SetActive(true);
         uiCanvas.SetActive(false);
