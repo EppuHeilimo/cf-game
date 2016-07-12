@@ -59,7 +59,6 @@ public class NPCManagerV2 : MonoBehaviour
 
     Queue<GameObject> docQueue = new Queue<GameObject>();
 
-    int docque = 0;
     public bool docBusy = false;
 
     // head change
@@ -213,9 +212,7 @@ public class NPCManagerV2 : MonoBehaviour
 
     public void nextDay()
     {
-        
         GameObject[] npcs = npcList.ToArray();
-
         for (int i = 0; i < npcs.Length; i++)
         {
             NPCV2 npc = npcs[i].GetComponent<NPCV2>();
@@ -241,8 +238,15 @@ public class NPCManagerV2 : MonoBehaviour
                 npc.addStateToQueue(3, NPCV2.NPCState.STATE_DAY_CHANGE);
                 npc.taskCompleted = true;
             }
-                
-
+        }
+        if(nurses.Count > 0)
+        {
+            for (int i = 0; i < nurses.Count; i++)
+            {
+                Destroy(nurses[i].Key);
+                Destroy(nurses[i].Value);
+                nurses.RemoveAt(i);
+            }
         }
         paused = true;
     }
@@ -399,7 +403,6 @@ public class NPCManagerV2 : MonoBehaviour
             newNurse.GetComponent<NurseAI>().Init(npc, 0);
             newNurse2.GetComponent<NurseAI>().Init(npc, 1);
             nurses.Add(new KeyValuePair<GameObject, GameObject>(newNurse, newNurse2));
-            currentNpcsInWard--;
             return true;
         }
         return false;
