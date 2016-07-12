@@ -146,7 +146,26 @@ public class NPCV2 : MonoBehaviour
         new Vector3(310, 0, 134),
         new Vector3(574, 0, 134),
         new Vector3(482, 0, -263),
-        new Vector3(220, 0, -263)
+        new Vector3(220, 0, -263),
+        new Vector3(220, 0, -210),
+        new Vector3(220, 0, -253),
+        new Vector3(220, 0, -243),
+        new Vector3(220, 0, -320),
+        new Vector3(220, 0, -300),
+        new Vector3(309, 0, 21),
+        new Vector3(309, 0, 40),
+        new Vector3(309, 0, 60),
+        new Vector3(309, 0, 80),
+        new Vector3(309, 0, 100),
+        new Vector3(309, 0, 120),
+        new Vector3(309, 0, 140),
+        new Vector3(309, 0, 160),
+        new Vector3(564, 0, 25),
+        new Vector3(564, 0, 45),
+        new Vector3(564, 0, 65),
+        new Vector3(564, 0, 85),
+        new Vector3(564, 0, 105),
+        new Vector3(564, 0, 125),
     };
 
     // Use this for initialization
