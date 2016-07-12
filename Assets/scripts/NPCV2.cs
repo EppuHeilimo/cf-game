@@ -206,6 +206,7 @@ public class NPCV2 : MonoBehaviour
         anim = agent.GetComponent<IiroAnimBehavior>();
         scoreSystem = GameObject.FindGameObjectWithTag("ScoringSystem").GetComponent<ScoringSystem>();
     }
+
     // Update is called once per frame
     void Update()
     {

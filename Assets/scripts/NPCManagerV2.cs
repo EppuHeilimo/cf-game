@@ -61,6 +61,12 @@ public class NPCManagerV2 : MonoBehaviour
     int docque = 0;
     public bool docBusy = false;
 
+    // head change
+    List<GameObject> headsMale = new List<GameObject>();
+    List<GameObject> headsFemale = new List<GameObject>();
+    const int NUM_FEMALE_HEADS = 30;
+    const int NUM_MALE_HEADS = 18;
+
     // Use this for initialization
     void Start()
     {
@@ -72,6 +78,28 @@ public class NPCManagerV2 : MonoBehaviour
         invObj = GameObject.Find("Inventory");
         database = invObj.GetComponent<ItemDatabase>();
         clock = GameObject.FindGameObjectWithTag("Clock").GetComponent<ClockTime>();
+        LoadHeads();
+    }
+
+    void LoadHeads()
+    {
+        // load heads from Resources-folder
+        if (headsFemale.Count == 0)
+        {
+            Object[] headstemp = Resources.LoadAll("heads/female");
+            for (int i = 0; i < NUM_FEMALE_HEADS; i++)
+            {
+                headsFemale.Add((GameObject)headstemp[i]);
+            }
+        }
+        if (headsMale.Count == 0)
+        {
+            Object[] headstemp = Resources.LoadAll("heads/male");
+            for (int i = 0; i < NUM_MALE_HEADS; i++)
+            {
+                headsMale.Add((GameObject)headstemp[i]);
+            }
+        }
     }
 
     public void deleteNpcFromList(GameObject go)
@@ -130,8 +158,14 @@ public class NPCManagerV2 : MonoBehaviour
 
         GameObject newNpc = Instantiate(npcPrefab, spawnPoint, Quaternion.identity) as GameObject; // the method that copies the prefab object
         newNpc.GetComponent<NPCV2>().Init(myName, myId, myGender); // initialize the npc
+
         //change head according to gender
-        string headname = newNpc.GetComponent<HeadChange>().ChangeHead(myGender);
+        string headname = "";
+        if (myGender == 0)
+            headname = newNpc.GetComponent<HeadChange>().ChangeHead(headsFemale);
+        else
+            headname = newNpc.GetComponent<HeadChange>().ChangeHead(headsMale);
+
         //set the file name of the 2d sprite of the head
         newNpc.GetComponent<NPCV2>().myHead2d = Resources.Load<Sprite>("Sprites/heads/" + headname + ".2d");  
         npcList.Add(newNpc);
@@ -348,8 +382,8 @@ public class NPCManagerV2 : MonoBehaviour
             GameObject newNurse = Instantiate(nurseWithTrolleyPrefab, nurseSpawn, Quaternion.identity) as GameObject;
             GameObject newNurse2 = Instantiate(nursePrefab, nurseSpawn2, Quaternion.identity) as GameObject;
 
-            newNurse.GetComponent<HeadChange>().ChangeHead(0);
-            newNurse2.GetComponent<HeadChange>().ChangeHead(1);
+            newNurse.GetComponent<HeadChange>().ChangeHead(headsFemale);
+            newNurse2.GetComponent<HeadChange>().ChangeHead(headsMale);
             newNurse.GetComponent<NurseAI>().partner = newNurse2.GetComponent<NurseAI>();
             newNurse2.GetComponent<NurseAI>().partner = newNurse.GetComponent<NurseAI>();
 
