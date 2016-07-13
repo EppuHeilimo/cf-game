@@ -17,11 +17,14 @@ public class Tutorial : MonoBehaviour {
     public ShowPanels showPanels;
     public StartOptions startOptions;
     public TutorialState currentState;
+    public CameraMovement mCamera;
 
     GameObject mascot;
     public Text text;
     public float letterPause = 0.3f;
     string message = "";
+
+    public Transform walkHere;
 
     // Use this for initialization
     void Start () {     
@@ -66,12 +69,13 @@ public class Tutorial : MonoBehaviour {
         switch (currentState)
         {
             case TutorialState.STATE_START:
-                message = "Sup dude! Let's begin the tutorial...";
+                message = "Sup dude!\nLet's begin the tutorial...";
                 StartCoroutine(ChangeState(TutorialState.STATE_WALK_PRACTICE, 6f));
                 break;
 
             case TutorialState.STATE_WALK_PRACTICE:
                 message = "Let's start by walking to the reception to meet your patients!";
+                StartCoroutine(ShowPath());
                 break;
 
             case TutorialState.STATE_TARGET_PRACTICE:
@@ -132,6 +136,12 @@ public class Tutorial : MonoBehaviour {
         yield return new WaitForSeconds(delayTime);
         currentState = newState;
         stateChanged = true;
+    }
+
+    IEnumerator ShowPath()
+    {
+        yield return new WaitForSeconds(8f);
+        mCamera.lockCameraToThisTransformForXTime(walkHere, 5f);
     }
 
 }
