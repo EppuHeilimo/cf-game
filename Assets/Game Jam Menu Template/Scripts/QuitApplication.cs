@@ -19,8 +19,12 @@ public class QuitApplication : MonoBehaviour {
     public void RestartGame()
     {
         GameObject menu = GameObject.Find("Menu");
-        menu.GetComponent<Pause>().UnPause();
-        Destroy(menu);
+        if (menu != null)
+        { 
+            if (menu.GetComponent<Pause>() != null)
+                menu.GetComponent<Pause>().UnPause();
+            Destroy(menu);
+        }
         Scene scene = SceneManager.GetActiveScene();
         SceneManager.LoadScene(scene.name);
     }
