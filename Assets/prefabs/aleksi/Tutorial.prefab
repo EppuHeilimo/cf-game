@@ -138,6 +138,7 @@ MonoBehaviour:
   mCamera: {fileID: 0}
   text: {fileID: 11484774}
   letterPause: 0.1
+  moveIndicatorPrefab: {fileID: 114374, guid: a98066e3a29455947ae0bd815c4763bb, type: 2}
   walkHere: {fileID: 0}
 --- !u!114 &11456304
 MonoBehaviour:
