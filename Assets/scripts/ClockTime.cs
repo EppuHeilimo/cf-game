@@ -28,6 +28,9 @@ public class ClockTime : MonoBehaviour {
     const string EVENING_CHECK = "16:00";
     const string NIGHT_CHECK = "21:00";
 
+    bool someoneislosinghp = false;
+    float timer = 0;
+
     /* DAYTIME CHANGE TIMES */
     const string MORNING_CHANGE = "07:00";
     const string AFTERNOON_CHANGE = "13:00";
@@ -124,15 +127,33 @@ public class ClockTime : MonoBehaviour {
             else
                 currentDayTime = DayTime.NIGHT;
 
+            if(someoneislosinghp)
+            {
+                timer += Time.deltaTime;
+                isStillLosingHP();
+            }
+        }
+    }
 
-            /*
-             * Working shift:
-             * 0 = Morning: 06:00 - 15:00
-             * 1 = Afternoon: 10:00 - 19:00
-             * 2 = Evening: 13:00 - 22:00
-             * 3 = Night: 20:00 - 06:00
-             */
-            //TODO: OTHER SHIFTS
+    public void isStillLosingHP()
+    {
+        bool stilllosinghp = false;
+        foreach(GameObject go in NPCManager.responsibilityNpcs)
+        {
+            NPCV2 npc = go.GetComponent<NPCV2>();
+            if(npc.myState != NPCV2.NPCState.STATE_DEAD || npc.myState != NPCV2.NPCState.STATE_LEAVE_HOSPITAL)
+            {
+                for(int i = 0; i < npc.morningMed.Length; i++)
+                {
+                    if(npc.morningMed[i].title != null)
+                    {
+                        if(!npc.morningMed[i].isActive)
+                        {
+                            stilllosinghp = true;
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -208,6 +229,7 @@ public class ClockTime : MonoBehaviour {
 
     void doMorningCheck()
     {
+        
         morningcheck = true;
         foreach (GameObject npcObj in NPCManager.npcList)
         {
@@ -232,6 +254,7 @@ public class ClockTime : MonoBehaviour {
                                 {
                                     GameObject.FindGameObjectWithTag("ScoringSystem").GetComponent<ScoringSystem>().medInactive();
                                     npc.isLosingHp = true;
+                                    someoneislosinghp = true;
                                     break;
                                 }
                             }
@@ -267,6 +290,7 @@ public class ClockTime : MonoBehaviour {
                                 if (!npc.morningMed[i].isActive)
                                 {
                                     npc.isLosingHp = true;
+                                    someoneislosinghp = true;
                                     GameObject.FindGameObjectWithTag("ScoringSystem").GetComponent<ScoringSystem>().medInactive();
                                     break;
                                 }
@@ -303,6 +327,7 @@ public class ClockTime : MonoBehaviour {
                                 if (!npc.morningMed[i].isActive)
                                 {
                                     npc.isLosingHp = true;
+                                    someoneislosinghp = true;
                                     GameObject.FindGameObjectWithTag("ScoringSystem").GetComponent<ScoringSystem>().medInactive();
                                     print(npc.myName);
                                     break;
@@ -340,6 +365,7 @@ public class ClockTime : MonoBehaviour {
                                 if (!npc.morningMed[i].isActive)
                                 {
                                     npc.isLosingHp = true;
+                                    someoneislosinghp = true;
                                     GameObject.FindGameObjectWithTag("ScoringSystem").GetComponent<ScoringSystem>().medInactive();
                                     break;
                                 }
@@ -353,6 +379,7 @@ public class ClockTime : MonoBehaviour {
 
     public void resetMeds()
     {
+        someoneislosinghp = false;
         foreach (GameObject npcObj in NPCManager.npcList)
         {
             if (npcObj != null)

@@ -51,7 +51,7 @@ public class DialogV2 : MonoBehaviour
                 }
             }
         }
-        if (other.tag == "NPC")
+        else if (other.tag == "NPC")
         {
             target = other.GetComponent<NPCV2>().getTarget();
             if (target == transform.parent.gameObject)
@@ -93,7 +93,7 @@ public class DialogV2 : MonoBehaviour
                 playerInZone = false;
             }
         }
-        if(other.tag == "NPC" && other.gameObject == WhoIsTargetingMe)
+        else if(other.tag == "NPC" && other.gameObject == WhoIsTargetingMe)
         {
             NPCV2 npc = other.GetComponent<NPCV2>();
             if(npc.myState == NPCV2.NPCState.STATE_DEAD)
@@ -121,7 +121,7 @@ public class DialogV2 : MonoBehaviour
                 textBoxManager.DisableTextBoxNotDiagnozed();
             }
         }
-        if (other.tag == "NPC" && other.gameObject == WhoIsTargetingMe)
+        else if (other.tag == "NPC" && other.gameObject == WhoIsTargetingMe)
         {
             target = other.GetComponent<NPCV2>().getTarget();
             if (target == transform.parent.gameObject)

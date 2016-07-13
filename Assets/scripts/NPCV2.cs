@@ -371,7 +371,7 @@ public class NPCV2 : MonoBehaviour
             else if (targeter.tag == "NPC" && !wantsToTalk) 
             {
                 if(myState != NPCState.STATE_TALK_TO_OTHER_NPC)
-                    addStateToQueue(2, NPCState.STATE_TALK_TO_OTHER_NPC);
+                    addStateToQueue(3, NPCState.STATE_TALK_TO_OTHER_NPC);
                 interactionComponent.setTarget(dialogZone.getWhoIsTargetingMe());
                 reguestedToTalk = true;
 
@@ -670,7 +670,6 @@ public class NPCV2 : MonoBehaviour
                         if (!npcManager.isPlayerResponsibilityLevelFulfilled())
                         {
                             addNpcToResponsibilities();
-                            GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CameraMovement>().lockCameraToThisTransformForXTime(transform, 5f);
                         }
                         npcManager.currentNpcsInWard++;
                     }
@@ -1585,14 +1584,25 @@ public class NPCV2 : MonoBehaviour
 
                 // check if medicine has been activated and stop losing hp if so
                 ClockTime.DayTime currTime = GameObject.FindGameObjectWithTag("Clock").GetComponent<ClockTime>().currentDayTime;
-
+                int count = 0;
+                int count2 = 0;
                 // MORNING
                 if (currTime == ClockTime.DayTime.MORNING)
                 {
                     foreach (Medicine med in morningMed)
                     {
+                        if (med.title != null)
+                        {
+                            count++;
+                        }
                         if (med.isActive)
-                            isLosingHp = false;
+                        {
+                            count2++;
+                        }
+                    }
+                    if (count == count2)
+                    {
+                        isLosingHp = false;
                     }
                 }
                 // AFTERNOON
@@ -1600,8 +1610,18 @@ public class NPCV2 : MonoBehaviour
                 {
                     foreach (Medicine med in afternoonMed)
                     {
+                        if(med.title != null)
+                        {
+                            count++;
+                        }
                         if (med.isActive)
-                            isLosingHp = false;
+                        {
+                            count2++;
+                        }
+                    }
+                    if(count == count2)
+                    {
+                        isLosingHp = false;
                     }
                 }
                 // EVENING
@@ -1609,8 +1629,18 @@ public class NPCV2 : MonoBehaviour
                 {
                     foreach (Medicine med in eveningMed)
                     {
+                        if (med.title != null)
+                        {
+                            count++;
+                        }
                         if (med.isActive)
-                            isLosingHp = false;
+                        {
+                            count2++;
+                        }
+                    }
+                    if (count == count2)
+                    {
+                        isLosingHp = false;
                     }
                 }
                 // NIGHT
@@ -1618,10 +1648,21 @@ public class NPCV2 : MonoBehaviour
                 {
                     foreach (Medicine med in nightMed)
                     {
+                        if (med.title != null)
+                        {
+                            count++;
+                        }
                         if (med.isActive)
-                            isLosingHp = false;
+                        {
+                            count2++;
+                        }
+                    }
+                    if (count == count2)
+                    {
+                        isLosingHp = false;
                     }
                 }
+                
             }
             if (myHp <= 0)
             {
@@ -1701,6 +1742,7 @@ public class NPCV2 : MonoBehaviour
                             else if (dosage[i] < meds[j].dosage)
                             {
                                 GetComponent<FloatTextNPC>().addFloatText("dosage of " + med[i] + " was too small!", false);
+
                             }
                         }
                     }
