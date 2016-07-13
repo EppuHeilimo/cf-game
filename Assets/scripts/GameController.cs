@@ -16,11 +16,12 @@ public class GameController : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 
-#if (UNITY_ANDROID || UNITY_IPHONE || UNITY_WP8)
+#if (UNITY_ANDROID || UNITY_IPHONE)
         Application.targetFrameRate = 30;
 #endif
+
         clock = GameObject.FindGameObjectWithTag("Clock").GetComponent<ClockTime>();
-        	    
+        	
 	}
 	
 	// Update is called once per frame
