@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 
 public class Tutorial : MonoBehaviour {
@@ -10,6 +11,7 @@ public class Tutorial : MonoBehaviour {
         STATE_TARGET_PRACTICE,
         STATE_INACTIVE
     }
+    bool stateChanged;
 
     public bool tutorialOn;
     public ShowPanels showPanels;
@@ -17,9 +19,12 @@ public class Tutorial : MonoBehaviour {
     public TutorialState currentState;
 
     GameObject mascot;
+    public Text text;
+    public float letterPause = 0.3f;
+    string message = "";
 
-	// Use this for initialization
-	void Start () {     
+    // Use this for initialization
+    void Start () {     
         mascot = transform.GetChild(0).gameObject;
         currentState = TutorialState.STATE_INACTIVE;
         HideMascot();
@@ -29,16 +34,23 @@ public class Tutorial : MonoBehaviour {
 	void Update () {
         if (tutorialOn)
         {
+            if (stateChanged)
+            {
+                OnStateChange();
+            }
+
             switch (currentState)
             {
                 case TutorialState.STATE_START:
-                    
+                    // do nothing...
                     break;
 
                 case TutorialState.STATE_WALK_PRACTICE:
+                    // check if player has walked to the destination...
                     break;
 
                 case TutorialState.STATE_TARGET_PRACTICE:
+                    // check if player has targeted correct npc...
                     break;
 
                 case TutorialState.STATE_INACTIVE:
@@ -48,13 +60,47 @@ public class Tutorial : MonoBehaviour {
         }
 	}
 
+    void OnStateChange()
+    {
+        text.text = "";
+        switch (currentState)
+        {
+            case TutorialState.STATE_START:
+                message = "Sup dude! Let's begin the tutorial...";
+                StartCoroutine(ChangeState(TutorialState.STATE_WALK_PRACTICE, 6f));
+                break;
+
+            case TutorialState.STATE_WALK_PRACTICE:
+                message = "Let's start by walking to the reception to meet your patients!";
+                break;
+
+            case TutorialState.STATE_TARGET_PRACTICE:
+                break;
+
+            case TutorialState.STATE_INACTIVE:
+                message = "";
+                break;
+        }
+        StartCoroutine(TypeText());
+        stateChanged = false;
+    }
+
+    IEnumerator TypeText()
+    {
+        foreach (char letter in message.ToCharArray())
+        {
+            text.text += letter;
+            yield return new WaitForSeconds(letterPause);
+        }
+    }
+
     public void TutorialYesClicked()
     {
         startOptions.StartButtonClicked();
         showPanels.HideTutorialPanel();
         tutorialOn = true;
         ShowMascot();
-        currentState = TutorialState.STATE_START;
+        StartCoroutine(ChangeState(TutorialState.STATE_START, 1f));
     }
 
     public void TutorialNoClicked()
@@ -79,6 +125,13 @@ public class Tutorial : MonoBehaviour {
     public void HideMascot()
     {
         mascot.SetActive(false);
+    }
+
+    IEnumerator ChangeState(TutorialState newState, float delayTime)
+    {
+        yield return new WaitForSeconds(delayTime);
+        currentState = newState;
+        stateChanged = true;
     }
 
 }
