@@ -22,6 +22,7 @@ public class Tutorial : MonoBehaviour {
         STATE_MINIGAME_PRACTICE_3,
         STATE_MINIGAME_PRACTICE_4,
         STATE_MINIGAME_PRACTICE_5,
+        STATE_MINIGAME_PRACTICE_6,
 
         STATE_INACTIVE
     }
@@ -102,6 +103,18 @@ public class Tutorial : MonoBehaviour {
                     }
                     break;
 
+                case TutorialState.STATE_MINIGAME_PRACTICE_5:
+                    // exited minigame
+                    if (!minigame.active)
+                    {
+                        ChangeState(TutorialState.STATE_MINIGAME_PRACTICE_6);
+                    }
+                    break;
+
+                case TutorialState.STATE_MINIGAME_PRACTICE_6:
+                    // check if medicine given to the patient
+                    break;
+
                 case TutorialState.STATE_INACTIVE:
                     // do nothing...
                     break;
@@ -159,7 +172,7 @@ public class Tutorial : MonoBehaviour {
                 break;
 
             case TutorialState.STATE_MINIGAME_PRACTICE_1:
-                message = "You can see on the patients medicine card that he needs some Ibuprofen.\nLets go get some!";
+                message = "You can see on the patients medicine card that he needs Ibuprofen.\nLets go get some!";
                 StartCoroutine(ChangeState(TutorialState.STATE_MINIGAME_PRACTICE_2, 16f));
                 break;
 
@@ -172,7 +185,7 @@ public class Tutorial : MonoBehaviour {
                 if (indicator != null)
                     Destroy(indicator);
                 medCont = GameObject.FindGameObjectWithTag("BigMedCont").GetComponent<BigMedCont>();
-                message = "Ok, this is the administration minigame!\nFirst use the hand disinfectant, then click Ibuprofen.";
+                message = "This is the administration minigame.\nFirst, use hand disinfectant, then click Ibuprofen.";
                 break;
 
             case TutorialState.STATE_MINIGAME_PRACTICE_4:
@@ -180,11 +193,15 @@ public class Tutorial : MonoBehaviour {
                 afternoonCup = GameObject.FindGameObjectWithTag("afternoonCup").GetComponent<MedCup>();
                 eveningCup = GameObject.FindGameObjectWithTag("eveningCup").GetComponent<MedCup>();
                 nightCup = GameObject.FindGameObjectWithTag("nightCup").GetComponent<MedCup>();
-                message = "You know Angry Birds, right? This works just like that, but you gotta shoot pills into a medicine cup.\nFire away!";
+                message = "Do you know Angry Birds? This works just like that, but you gotta shoot pills to medicine cups.\nFire away!";
                 break;
 
             case TutorialState.STATE_MINIGAME_PRACTICE_5:
-                message = "Nice shot!!\nLets go give your patient his medicine. Click the back-button in the top left corner twice to quit the minigame.";
+                message = "Nice shot!\nLets go give your patient his medicine. Click the back-button in the top left corner twice.";
+                break;
+
+            case TutorialState.STATE_MINIGAME_PRACTICE_6:
+                message = "Find your patient and click him.\nThen click medicine cup in your inventory to give it to the patient.";
                 break;
 
             case TutorialState.STATE_INACTIVE:
