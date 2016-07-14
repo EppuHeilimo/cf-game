@@ -12,6 +12,8 @@ public class ClockTime : MonoBehaviour {
     //start day
     public int day = 1;
     public bool paused = false;
+
+
     
     float dayLengthInRealHours = 24;
 
@@ -76,7 +78,7 @@ public class ClockTime : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-
+        
         if(!paused)
         {
             currentTime += Time.deltaTime;
@@ -183,6 +185,8 @@ public class ClockTime : MonoBehaviour {
         nightcheck = false;
         paused = true;
     }
+
+
 
     public void resumeAfterDayChange()
     {

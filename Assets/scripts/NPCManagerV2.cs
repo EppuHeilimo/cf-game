@@ -84,6 +84,8 @@ public class NPCManagerV2 : MonoBehaviour
     const int NUM_FEMALE_HEADS = 30;
     const int NUM_MALE_HEADS = 18;
 
+    Tutorial tutorial;
+
     // Use this for initialization
     void Start()
     {
@@ -95,6 +97,7 @@ public class NPCManagerV2 : MonoBehaviour
         invObj = GameObject.Find("Inventory");
         database = invObj.GetComponent<ItemDatabase>();
         clock = GameObject.FindGameObjectWithTag("Clock").GetComponent<ClockTime>();
+        tutorial = GameObject.Find("Tutorial").GetComponent<Tutorial>();
         LoadHeads();
     }
 
@@ -141,43 +144,56 @@ public class NPCManagerV2 : MonoBehaviour
         docBusy = false;
     }
 
+    public void spawnTutorialGuy()
+    {
+        spawnNPC();
+    }
+
     // Update is called once per frame
     void Update()
     {
         if(!paused)
         {
-            // spawn new NPC
-            timeSinceLastSpawn += Time.deltaTime;
-            npcCount = npcList.Count;
-
-            if (npcCount < MAX_NPCS && (clock.currentDayTime == ClockTime.DayTime.MORNING || clock.currentDayTime == ClockTime.DayTime.AFTERNOON))
+            if(tutorial.tutorialOn)
             {
-                if (timeSinceLastSpawn > spawnTime)
-                {
-                    timeSinceLastSpawn = 0;
-                    spawnTime = 3;
-                    spawnNPC();
-                }
+                //do something if neededs
             }
-        }
-        if(nurses.Count > 0)
-        {
-           
-            for(int i = 0; i < nurses.Count; i++)
+            else
             {
-                bool ready = false;
-                ready = nurses[i].Key.GetComponent<NurseAI>().allDone && nurses[i].Value.GetComponent<NurseAI>().allDone;
-                if(ready)
+                // spawn new NPC
+                timeSinceLastSpawn += Time.deltaTime;
+                npcCount = npcList.Count;
+
+                if (npcCount < MAX_NPCS && (clock.currentDayTime == ClockTime.DayTime.MORNING || clock.currentDayTime == ClockTime.DayTime.AFTERNOON))
                 {
-                    Destroy(nurses[i].Key);
-                    Destroy(nurses[i].Value);
-                    nurses.RemoveAt(i);
+                    if (timeSinceLastSpawn > spawnTime)
+                    {
+                        timeSinceLastSpawn = 0;
+                        spawnTime = 3;
+                        spawnNPC();
+                    }
+                }
+
+                if (nurses.Count > 0)
+                {
+
+                    for (int i = 0; i < nurses.Count; i++)
+                    {
+                        bool ready = false;
+                        ready = nurses[i].Key.GetComponent<NurseAI>().allDone && nurses[i].Value.GetComponent<NurseAI>().allDone;
+                        if (ready)
+                        {
+                            Destroy(nurses[i].Key);
+                            Destroy(nurses[i].Value);
+                            nurses.RemoveAt(i);
+                        }
+                    }
                 }
             }
         }
     }
 
-    void spawnNPC()
+    public void spawnNPC()
     {
         int nameIndex = Random.Range(0, NAMEPOOL_LENGTH);
         string myId = CreateID();
@@ -309,6 +325,11 @@ public class NPCManagerV2 : MonoBehaviour
                 }
             }
         } 
+    }
+
+    public Item getItemByID(int id)
+    {
+        return database.FetchItemByID(id);
     }
 
     public Item RandomItem(Item[] randMeds)

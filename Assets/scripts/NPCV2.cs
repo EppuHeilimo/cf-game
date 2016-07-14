@@ -140,6 +140,8 @@ public class NPCV2 : MonoBehaviour
     NavMeshPath lastAgentPath;
     bool agentPaused = false;
 
+    Tutorial tutorial;
+
     Vector3[] deathpoints = {
         new Vector3(722, 0, -526),
         new Vector3(722, 0, -254),
@@ -206,6 +208,7 @@ public class NPCV2 : MonoBehaviour
         clock = GameObject.FindGameObjectWithTag("Clock").GetComponent<ClockTime>();
         anim = agent.GetComponent<IiroAnimBehavior>();
         scoreSystem = GameObject.FindGameObjectWithTag("ScoringSystem").GetComponent<ScoringSystem>();
+        tutorial = GameObject.Find("Tutorial").GetComponent<Tutorial>();
     }
 
     // Update is called once per frame
@@ -602,7 +605,8 @@ public class NPCV2 : MonoBehaviour
     {
         if(dest == Vector3.zero)
         {
-            dest = new Vector3(637.0f, transform.position.y, -76.0f);
+            int rand = Random.Range(0, deathpoints.Length - 1);
+            dest = deathpoints[rand];
             moveTo(dest);
         }
         if(arrivedToDestination(100.0f))
@@ -647,41 +651,56 @@ public class NPCV2 : MonoBehaviour
                 timer += Time.deltaTime;
                 if (timer > AT_DOC)
                 {
-                    int r = Random.Range(1, 10);
-                    if (r > 1 && npcManager.currentNpcsInWard < NPCManagerV2.MAX_NPCS_IN_WARD_AREA)
+                    if(tutorial.tutorialOn)
                     {
-                        // Randomize 2-4 DIFFERENT problems for the NPC
-                        int numProblems = UnityEngine.Random.Range(2, 5);
-                        Item[] randMeds = new Item[4];
-                        // Fetch random medicine items from database
-                        for (int i = 0; i < randMeds.Length; i++)
-                        {
-                            if (numProblems > 0)
-                            {
-                                randMeds[i] = npcManager.RandomItem(randMeds);
-                                numProblems--;
-                            }
-                            else
-                                randMeds[i] = null;
-                        }
-                        InitMedication(randMeds);
+                        Item[] ibuprofen = new Item[1];
+                        ibuprofen[0] = npcManager.getItemByID(0);
+                        InitMedication(ibuprofen);
                         addStateToQueue(2, NPCState.STATE_MOVE_TO_WARD_AREA);
                         diagnosed = true;
-                        if (!npcManager.isPlayerResponsibilityLevelFulfilled())
-                        {
-                            addNpcToResponsibilities();
-                        }
+                        addNpcToResponsibilities();
                         npcManager.currentNpcsInWard++;
+                        timer = 0;
+                        taskCompleted = true;
+                        dest = Vector3.zero;
+                        npcManager.setDocFree();
                     }
                     else
                     {
-                        addStateToQueue(3, NPCState.STATE_LEAVE_HOSPITAL);
+                        int r = Random.Range(1, 10);
+                        if (r > 1 && npcManager.currentNpcsInWard < NPCManagerV2.MAX_NPCS_IN_WARD_AREA)
+                        {
+                            // Randomize 2-4 DIFFERENT problems for the NPC
+                            int numProblems = UnityEngine.Random.Range(2, 5);
+                            Item[] randMeds = new Item[4];
+                            // Fetch random medicine items from database
+                            for (int i = 0; i < randMeds.Length; i++)
+                            {
+                                if (numProblems > 0)
+                                {
+                                    randMeds[i] = npcManager.RandomItem(randMeds);
+                                    numProblems--;
+                                }
+                                else
+                                    randMeds[i] = null;
+                            }
+                            InitMedication(randMeds);
+                            addStateToQueue(2, NPCState.STATE_MOVE_TO_WARD_AREA);
+                            diagnosed = true;
+                            if (!npcManager.isPlayerResponsibilityLevelFulfilled())
+                            {
+                                addNpcToResponsibilities();
+                            }
+                            npcManager.currentNpcsInWard++;
+                        }
+                        else
+                        {
+                            addStateToQueue(3, NPCState.STATE_LEAVE_HOSPITAL);
+                        }
+                        timer = 0;
+                        taskCompleted = true;
+                        npcManager.setDocFree();
                     }
-                    timer = 0;
-                    taskCompleted = true;
-                    dest = Vector3.zero;
-                    npcManager.setDocFree();
-
                 }
             }
         }
@@ -1312,6 +1331,7 @@ public class NPCV2 : MonoBehaviour
                 prevTaskPriority = currentTaskPriority;
                 dest = Vector3.zero;
                 taskCompleted = false;
+                timer = 0;
             }
             else 
             {
@@ -1326,6 +1346,7 @@ public class NPCV2 : MonoBehaviour
                     dest = Vector3.zero;
                     prevTaskPriority = currentTaskPriority;
                     taskCompleted = false;
+                    timer = 0;
                 }
             }
         }  
