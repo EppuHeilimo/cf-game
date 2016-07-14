@@ -156,7 +156,7 @@ public class NPCManagerV2 : MonoBehaviour
         {
             if(tutorial.tutorialOn)
             {
-                //do something if neededs
+                //do something if needed
             }
             else
             {
@@ -173,20 +173,19 @@ public class NPCManagerV2 : MonoBehaviour
                         spawnNPC();
                     }
                 }
+            }
+            if (nurses.Count > 0)
+            {
 
-                if (nurses.Count > 0)
+                for (int i = 0; i < nurses.Count; i++)
                 {
-
-                    for (int i = 0; i < nurses.Count; i++)
+                    bool ready = false;
+                    ready = nurses[i].Key.GetComponent<NurseAI>().allDone && nurses[i].Value.GetComponent<NurseAI>().allDone;
+                    if (ready)
                     {
-                        bool ready = false;
-                        ready = nurses[i].Key.GetComponent<NurseAI>().allDone && nurses[i].Value.GetComponent<NurseAI>().allDone;
-                        if (ready)
-                        {
-                            Destroy(nurses[i].Key);
-                            Destroy(nurses[i].Value);
-                            nurses.RemoveAt(i);
-                        }
+                        Destroy(nurses[i].Key);
+                        Destroy(nurses[i].Value);
+                        nurses.RemoveAt(i);
                     }
                 }
             }

@@ -361,7 +361,7 @@ public class NPCV2 : MonoBehaviour
         }*/
         GameObject targeter;
         targeter = dialogZone.getWhoIsTargetingMe();
-        if (targeter != null )
+        if (targeter != null && myState != NPCState.STATE_GO_TO_DOC)
         {
             
             if(targeter.tag == "Player")
@@ -389,7 +389,7 @@ public class NPCV2 : MonoBehaviour
         }
 
         //check status only if has visited the doctor
-        if (diagnosed)
+        if (diagnosed && !tutorial.tutorialOn)
         {
             //check medication every update if player is diagnosed
             checkMed();
@@ -611,7 +611,15 @@ public class NPCV2 : MonoBehaviour
         }
         if(arrivedToDestination(100.0f))
         {
-            taskCompleted = true;
+            if(tutorial.tutorialOn)
+            {
+                agent.Stop();
+            }
+            else
+            {
+                taskCompleted = true;
+            }
+            
         }
     }
 
@@ -645,7 +653,7 @@ public class NPCV2 : MonoBehaviour
                 timer = 0;
                 doctimer = 0;
             }
-            if (arrivedToDestination(30.0f))
+            if (arrivedToDestination(35.0f))
             {
                 doctimer = 0;
                 timer += Time.deltaTime;
@@ -1397,6 +1405,7 @@ public class NPCV2 : MonoBehaviour
     // Init 1-4 random problems and their corresponding medicines
     public void InitMedication(Item[] randMeds)
     {
+
         int drugscount = 0;
         //count how many drugs were generated
         foreach(Item item in randMeds)
@@ -1417,8 +1426,56 @@ public class NPCV2 : MonoBehaviour
 
         for (int i = 0; i < myMedication.Length; i++)
         {
-            float dosage = getRandomDosage(myMedication[i]);
-            if (myMedication[i].timesPerDay > 0)
+            float dosage;
+            if (tutorial.tutorialOn)
+            {
+                dosage = myMedication[i].DefaultDosage;
+            }
+            else
+            {
+                dosage = getRandomDosage(myMedication[i]);
+            }
+
+            //on tutorial just give 1 med for morning with default dosage
+            if(tutorial.tutorialOn)
+            {
+                morningMed[0].title = myMedication[i].Title;
+                morningMed[0].dosage = dosage;
+                morningMed[1].title = null;
+                morningMed[1].dosage = 0;
+                morningMed[2].title = null;
+                morningMed[2].dosage = 0;
+                morningMed[3].title = null;
+                morningMed[3].dosage = 0;
+
+                afternoonMed[0].title = null;
+                afternoonMed[0].dosage = 0;
+                afternoonMed[1].title = null;
+                afternoonMed[1].dosage = 0;
+                afternoonMed[2].title = null;
+                afternoonMed[2].dosage = 0;
+                afternoonMed[3].title = null;
+                afternoonMed[3].dosage = 0;
+
+                eveningMed[0].title = null;
+                eveningMed[0].dosage = 0;
+                eveningMed[1].title = null;
+                eveningMed[1].dosage = 0;
+                eveningMed[2].title = null;
+                eveningMed[2].dosage = 0;
+                eveningMed[3].title = null;
+                eveningMed[3].dosage = 0;
+
+                nightMed[0].title = null;
+                nightMed[0].dosage = 0;
+                nightMed[1].title = null;
+                nightMed[1].dosage = 0;
+                nightMed[2].title = null;
+                nightMed[2].dosage = 0;
+                nightMed[3].title = null;
+                nightMed[3].dosage = 0;
+            }
+            else if (myMedication[i].timesPerDay > 0)
             {
                 List<int> daytimes = new List<int>();
                 daytimes.Add(0);

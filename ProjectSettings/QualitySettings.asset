@@ -124,14 +124,14 @@ QualitySettings:
     shadowCascade2Split: 0.33333334
     shadowCascade4Split: {x: 0.06666667, y: 0.2, z: 0.46666667}
     blendWeights: 4
-    textureQuality: 1
-    anisotropicTextures: 0
-    antiAliasing: 4
+    textureQuality: 0
+    anisotropicTextures: 1
+    antiAliasing: 8
     softParticles: 0
     softVegetation: 1
     realtimeReflectionProbes: 0
     billboardsFaceCameraPosition: 0
-    vSyncCount: 1
+    vSyncCount: 0
     lodBias: 2
     maximumLODLevel: 0
     particleRaycastBudget: 1024
@@ -145,19 +145,19 @@ QualitySettings:
     shadowResolution: 3
     shadowProjection: 0
     shadowCascades: 2
-    shadowDistance: 1000
+    shadowDistance: 600
     shadowNearPlaneOffset: 2
     shadowCascade2Split: 0.33333337
     shadowCascade4Split: {x: 0.06666667, y: 0.19999999, z: 0.46666664}
     blendWeights: 4
-    textureQuality: 1
-    anisotropicTextures: 0
-    antiAliasing: 4
+    textureQuality: 0
+    anisotropicTextures: 1
+    antiAliasing: 8
     softParticles: 0
     softVegetation: 1
     realtimeReflectionProbes: 0
     billboardsFaceCameraPosition: 0
-    vSyncCount: 1
+    vSyncCount: 0
     lodBias: 2
     maximumLODLevel: 0
     particleRaycastBudget: 4096
