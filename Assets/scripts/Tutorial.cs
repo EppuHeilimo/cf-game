@@ -24,6 +24,11 @@ public class Tutorial : MonoBehaviour {
         STATE_MINIGAME_PRACTICE_5,
         STATE_MINIGAME_PRACTICE_6,
 
+        STATE_ENDING_GOOD_1,
+        STATE_ENDING_GOOD_2,
+        STATE_ENDING_BAD_1,
+        STATE_ENDING_BAD_2,
+
         STATE_INACTIVE
     }
     bool stateChanged;
@@ -113,6 +118,28 @@ public class Tutorial : MonoBehaviour {
 
                 case TutorialState.STATE_MINIGAME_PRACTICE_6:
                     // check if medicine given to the patient
+                    if (tutorialNPC.GetComponent<NPCV2>().morningMed[0].isActive)
+                    {
+                        ChangeState(TutorialState.STATE_ENDING_GOOD_1);
+                    }
+                    else if (tutorialNPC.GetComponent<NPCV2>().myHp < 50)
+                    {
+                        ChangeState(TutorialState.STATE_ENDING_BAD_1);
+                    }
+                    break;
+
+                case TutorialState.STATE_ENDING_BAD_1:
+                    // check if medicine given to the patient
+                    if (tutorialNPC.GetComponent<NPCV2>().morningMed[0].isActive)
+                    {
+                        ChangeState(TutorialState.STATE_ENDING_GOOD_1);
+                    }
+                    // check if patient dies
+                    else if (tutorialNPC.GetComponent<NPCV2>().myHp <= 0)
+                    {
+                        ChangeState(TutorialState.STATE_ENDING_BAD_2);
+                    }
+
                     break;
 
                 case TutorialState.STATE_INACTIVE:
@@ -202,6 +229,23 @@ public class Tutorial : MonoBehaviour {
 
             case TutorialState.STATE_MINIGAME_PRACTICE_6:
                 message = "Find your patient and click him.\nThen click medicine cup in your inventory to give it to the patient.";
+                break;
+
+            case TutorialState.STATE_ENDING_GOOD_1:
+                message = "Great job!\nThis is the basic idea of the game, give correct medicine at correct times to your patients.";
+                StartCoroutine(ChangeState(TutorialState.STATE_ENDING_GOOD_2, 16f));
+                break;
+
+            case TutorialState.STATE_ENDING_GOOD_2:
+                message = "Good luck on your first day in the hospital, bye for now!";
+                break;
+
+            case TutorialState.STATE_ENDING_BAD_1:
+                message = "That medicine was incorrect or the dosage was wrong.\nTry again, the patient needs 400 mg of Ibuprofen.";
+                break;
+
+            case TutorialState.STATE_ENDING_BAD_2:
+                message = "You killed the patient.\nYou did that on purpose, didn't you? Are you satisfied now?!";
                 break;
 
             case TutorialState.STATE_INACTIVE:
