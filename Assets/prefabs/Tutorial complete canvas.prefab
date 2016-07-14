@@ -30,6 +30,7 @@ GameObject:
   - 114: {fileID: 11495550}
   - 222: {fileID: 22230596}
   - 114: {fileID: 11412238}
+  - 225: {fileID: 22523326}
   m_Layer: 5
   m_Name: Tutorial complete canvas
   m_TagString: Untagged
@@ -202,6 +203,17 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 400, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!225 &22523326
+CanvasGroup:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 175740}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1001 &100100000
 Prefab:
   m_ObjectHideFlags: 1
