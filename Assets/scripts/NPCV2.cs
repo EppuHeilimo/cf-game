@@ -389,48 +389,52 @@ public class NPCV2 : MonoBehaviour
         }
 
         //check status only if has visited the doctor
-        if (diagnosed && !tutorial.tutorialOn)
+        if (diagnosed)
         {
             //check medication every update if player is diagnosed
             checkMed();
             //sleep at night
-            if (!sleepingqueued && clock.currentDayTime == ClockTime.DayTime.NIGHT)
+            if(!tutorial.tutorialOn)
             {
-                addStateToQueue(2, NPCState.STATE_SLEEP);
-                sleepingqueued = true;
-            }
-            //Increase fatigue every x seconds if state is not sleep
-            //if sleeping already queued, just skip
-            if (!sleepingqueued && !sleeping)
-            {
-                fatiquetimer += Time.deltaTime;
-                if (fatiquetimer > 5.0f)
-                {
-                    fatique += 1f;
-                    fatiquetimer = 0;
-                }
-                //if has bed and fatique over x, queue sleep task
-                if (fatique > 10.0f)
+                if (!sleepingqueued && clock.currentDayTime == ClockTime.DayTime.NIGHT)
                 {
                     addStateToQueue(2, NPCState.STATE_SLEEP);
                     sleepingqueued = true;
                 }
-            }
-            //Don't test need to go to wc if already queued
-            if (!wcqueued)
-            {
-                callofnaturetimer += Time.deltaTime;
-                if (callofnaturetimer > 5.0f)
+                //Increase fatigue every x seconds if state is not sleep
+                //if sleeping already queued, just skip
+                if (!sleepingqueued && !sleeping)
                 {
-                    callofnature += 1;
-                    callofnaturetimer = 0;
+                    fatiquetimer += Time.deltaTime;
+                    if (fatiquetimer > 5.0f)
+                    {
+                        fatique += 1f;
+                        fatiquetimer = 0;
+                    }
+                    //if has bed and fatique over x, queue sleep task
+                    if (fatique > 10.0f)
+                    {
+                        addStateToQueue(2, NPCState.STATE_SLEEP);
+                        sleepingqueued = true;
+                    }
                 }
-                if (callofnature > 10.0f)
+                //Don't test need to go to wc if already queued
+                if (!wcqueued)
                 {
-                    addStateToQueue(2, NPCState.STATE_GO_WC);
-                    wcqueued = true;
+                    callofnaturetimer += Time.deltaTime;
+                    if (callofnaturetimer > 5.0f)
+                    {
+                        callofnature += 1;
+                        callofnaturetimer = 0;
+                    }
+                    if (callofnature > 10.0f)
+                    {
+                        addStateToQueue(2, NPCState.STATE_GO_WC);
+                        wcqueued = true;
+                    }
                 }
             }
+
 
         }
     }
@@ -1650,7 +1654,7 @@ public class NPCV2 : MonoBehaviour
     {
         if(!paused)
         {
-            if (isLosingHp)
+            if (isLosingHp && !tutorial.tutorialOn)
             {
                 // lose hp if no medicine is active, if hp reaches zero -> die
                 deathTimer += Time.deltaTime;
