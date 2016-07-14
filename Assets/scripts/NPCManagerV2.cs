@@ -144,9 +144,9 @@ public class NPCManagerV2 : MonoBehaviour
         docBusy = false;
     }
 
-    public void spawnTutorialGuy()
+    public GameObject spawnTutorialGuy()
     {
-        spawnNPC();
+        return spawnNPC();
     }
 
     // Update is called once per frame
@@ -192,7 +192,7 @@ public class NPCManagerV2 : MonoBehaviour
         }
     }
 
-    public void spawnNPC()
+    public GameObject spawnNPC()
     {
         int nameIndex = Random.Range(0, NAMEPOOL_LENGTH);
         string myId = CreateID();
@@ -216,6 +216,7 @@ public class NPCManagerV2 : MonoBehaviour
         //set the file name of the 2d sprite of the head
         newNpc.GetComponent<NPCV2>().myHead2d = Resources.Load<Sprite>("Sprites/heads/" + headname + ".2d");  
         npcList.Add(newNpc);
+        return newNpc;
     }
 
     public void addNpcToPlayersResponsibilities(GameObject go)

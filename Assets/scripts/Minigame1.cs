@@ -7,7 +7,7 @@ using Assets.Scripts;
 public class Minigame1 : MonoBehaviour {
 
     ClockTime.DayTime time;
-    bool active = false;
+    public bool active = false;
     GameObject invObj;
     Inventory playerInv;
     ItemDatabase database;

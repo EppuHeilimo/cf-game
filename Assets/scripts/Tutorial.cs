@@ -7,9 +7,23 @@ public class Tutorial : MonoBehaviour {
     public enum TutorialState
     {
         STATE_START = 0,
-        STATE_WALK_PRACTICE_FIRST,
-        STATE_WALK_PRACTICE_SECOND,
-        STATE_TARGET_PRACTICE,
+
+        STATE_WALK_PRACTICE_1,
+        STATE_WALK_PRACTICE_2,
+
+        STATE_TARGET_PRACTICE_1,
+        STATE_TARGET_PRACTICE_2,
+        STATE_TARGET_PRACTICE_3,
+        STATE_TARGET_PRACTICE_4,
+        STATE_TARGET_PRACTICE_5,
+
+        STATE_MINIGAME_PRACTICE_1,
+        STATE_MINIGAME_PRACTICE_2,
+        STATE_MINIGAME_PRACTICE_3,
+        STATE_MINIGAME_PRACTICE_4,
+        STATE_MINIGAME_PRACTICE_5,
+        STATE_MINIGAME_PRACTICE_6,
+
         STATE_INACTIVE
     }
     bool stateChanged;
@@ -22,12 +36,20 @@ public class Tutorial : MonoBehaviour {
 
     GameObject mascot;
     public Text text;
-    public float letterPause = 0.1f;
+    public float letterPause = 0.05f;
     string message = "";
 
     GameObject indicator;
     public GameObject moveIndicatorPrefab;
     public GameObject walkHere;
+    GameObject tutorialNPC;
+    GameObject medCab;
+    Minigame1 minigame;
+    BigMedCont medCont;
+    MedCup morningCup;
+    MedCup afternoonCup;
+    MedCup eveningCup;
+    MedCup nightCup;
 
     // Use this for initialization
     void Start () {     
@@ -48,20 +70,49 @@ public class Tutorial : MonoBehaviour {
 
             switch (currentState)
             {
-                case TutorialState.STATE_START:
-                    // do nothing...
+                case TutorialState.STATE_TARGET_PRACTICE_4:
+                    // check if player has targeted the patient
+                    GameObject tp = GameObject.FindGameObjectWithTag("TargetPanel");
+                    if (tp != null)
+                    {
+                        ChangeState(TutorialState.STATE_TARGET_PRACTICE_5);
+                    }
                     break;
 
-                case TutorialState.STATE_WALK_PRACTICE_FIRST:
-                    // check if player has walked to the destination...
+                case TutorialState.STATE_MINIGAME_PRACTICE_2:
+                    // check if player has opened the medicine cabinet
+                    if (minigame.active)
+                    {
+                        ChangeState(TutorialState.STATE_MINIGAME_PRACTICE_3);
+                    }
                     break;
 
-                case TutorialState.STATE_WALK_PRACTICE_SECOND:
-                    // check if player has walked to the destination...
+                case TutorialState.STATE_MINIGAME_PRACTICE_3:
+                    // check if Ibuprofen has been selected
+                    if (medCont.medName == "Ibuprofen")
+                    {
+                        ChangeState(TutorialState.STATE_MINIGAME_PRACTICE_4);
+                    }
                     break;
 
-                case TutorialState.STATE_TARGET_PRACTICE:
-                    // check if player has targeted correct npc...
+                case TutorialState.STATE_MINIGAME_PRACTICE_4:
+                    // check if pill inside any med cup
+                    if (morningCup.medsInThisCup.Count > 0 || afternoonCup.medsInThisCup.Count > 0 || eveningCup.medsInThisCup.Count > 0 || nightCup.medsInThisCup.Count > 0)
+                    {
+                        ChangeState(TutorialState.STATE_MINIGAME_PRACTICE_5);
+                    }
+                    break;
+
+                case TutorialState.STATE_MINIGAME_PRACTICE_5:
+                    // exited minigame
+                    if (!minigame.active)
+                    {
+                        ChangeState(TutorialState.STATE_MINIGAME_PRACTICE_6);
+                    }
+                    break;
+
+                case TutorialState.STATE_MINIGAME_PRACTICE_6:
+                    // check if medicine given to the patient
                     break;
 
                 case TutorialState.STATE_INACTIVE:
@@ -73,29 +124,84 @@ public class Tutorial : MonoBehaviour {
 
     void OnStateChange()
     {
+        StopAllCoroutines();
         text.text = "";
         switch (currentState)
         {
             case TutorialState.STATE_START:
-                message = "Sup dude!\nLet's begin the tutorial...";
-                StartCoroutine(ChangeState(TutorialState.STATE_WALK_PRACTICE_FIRST, 6f));
+                message = "Sup!\nWelcome to the tutorial!";
+                StartCoroutine(ChangeState(TutorialState.STATE_WALK_PRACTICE_1, 5f));
                 break;
 
-            case TutorialState.STATE_WALK_PRACTICE_FIRST:
-                message = "Let's start by walking to the reception to meet your patients!";
+            case TutorialState.STATE_WALK_PRACTICE_1:
+                message = "Lets start by walking to the reception.";
                 StartCoroutine(ShowPath());
-                StartCoroutine(ChangeState(TutorialState.STATE_WALK_PRACTICE_SECOND, 12f));
+                StartCoroutine(ChangeState(TutorialState.STATE_WALK_PRACTICE_2, 12f));
                 break;
 
-            case TutorialState.STATE_WALK_PRACTICE_SECOND:
-                message = "Just click on the ground to move and follow the red path.";
+            case TutorialState.STATE_WALK_PRACTICE_2:
+                message = "Just click on the ground to move.";
                 break;
 
-            case TutorialState.STATE_TARGET_PRACTICE:
+            case TutorialState.STATE_TARGET_PRACTICE_1:
                 if (indicator != null)
                     Destroy(indicator);
                 walkHere.SetActive(false);
-                message = "Great job!\nNow let's do some target practice.";
+                message = "Great job!";
+                StartCoroutine(ChangeState(TutorialState.STATE_TARGET_PRACTICE_2, 3f));
+                break;
+
+            case TutorialState.STATE_TARGET_PRACTICE_2:
+                message = "Here comes a patient!\nPatients go first to the doctor's office to get diagnosed.";
+                ShowNPC();
+                StartCoroutine(ChangeState(TutorialState.STATE_TARGET_PRACTICE_3, 16f));
+                break;
+
+            case TutorialState.STATE_TARGET_PRACTICE_3:
+                message = "The patient has been diagnosed now.\nPatients with red cross above their head are your responsibility.";
+                StartCoroutine(ChangeState(TutorialState.STATE_TARGET_PRACTICE_4, 16f));
+                break;
+
+            case TutorialState.STATE_TARGET_PRACTICE_4:
+                message = "Walk to the patient and click him to see his information.";
+                break;
+
+            case TutorialState.STATE_TARGET_PRACTICE_5:
+                message = "Good job!\n";
+                StartCoroutine(ChangeState(TutorialState.STATE_MINIGAME_PRACTICE_1, 3f));
+                break;
+
+            case TutorialState.STATE_MINIGAME_PRACTICE_1:
+                message = "You can see on the patients medicine card that he needs Ibuprofen.\nLets go get some!";
+                StartCoroutine(ChangeState(TutorialState.STATE_MINIGAME_PRACTICE_2, 16f));
+                break;
+
+            case TutorialState.STATE_MINIGAME_PRACTICE_2:
+                message = "Walk over to the medicine cabinet and click it.";
+                ShowMedCab();
+                break;
+
+            case TutorialState.STATE_MINIGAME_PRACTICE_3:
+                if (indicator != null)
+                    Destroy(indicator);
+                medCont = GameObject.FindGameObjectWithTag("BigMedCont").GetComponent<BigMedCont>();
+                message = "This is the administration minigame.\nFirst, use hand disinfectant, then click Ibuprofen.";
+                break;
+
+            case TutorialState.STATE_MINIGAME_PRACTICE_4:
+                morningCup = GameObject.FindGameObjectWithTag("morningCup").GetComponent<MedCup>();
+                afternoonCup = GameObject.FindGameObjectWithTag("afternoonCup").GetComponent<MedCup>();
+                eveningCup = GameObject.FindGameObjectWithTag("eveningCup").GetComponent<MedCup>();
+                nightCup = GameObject.FindGameObjectWithTag("nightCup").GetComponent<MedCup>();
+                message = "Do you know Angry Birds? This works just like that, but you gotta shoot pills to medicine cups.\nFire away!";
+                break;
+
+            case TutorialState.STATE_MINIGAME_PRACTICE_5:
+                message = "Nice shot!\nLets go give your patient his medicine. Click the back-button in the top left corner twice.";
+                break;
+
+            case TutorialState.STATE_MINIGAME_PRACTICE_6:
+                message = "Find your patient and click him.\nThen click medicine cup in your inventory to give it to the patient.";
                 break;
 
             case TutorialState.STATE_INACTIVE:
@@ -168,13 +274,30 @@ public class Tutorial : MonoBehaviour {
         yield return new WaitForSeconds(6f);
         mCamera.lockCameraToThisTransformForXTime(walkHere.transform, 5f);
         walkHere.SetActive(true);
-        indicator = (GameObject)Instantiate(moveIndicatorPrefab, walkHere.transform.position, new Quaternion(0, 0, 0, 0));
+        var pos = walkHere.transform.position;
+        indicator = (GameObject)Instantiate(moveIndicatorPrefab, pos, new Quaternion(0, 0, 0, 0));
         indicator.transform.localScale = new Vector3(5, 5, 5);
     }
 
     public void ReachedWalkZone()
     {
-        ChangeState(TutorialState.STATE_TARGET_PRACTICE);
+        ChangeState(TutorialState.STATE_TARGET_PRACTICE_1);
     }
 
+    void ShowNPC()
+    {
+        tutorialNPC = GameObject.Find("NPCManager").GetComponent<NPCManagerV2>().spawnTutorialGuy();
+        mCamera.lockCameraToThisTransformForXTime(tutorialNPC.transform, 30f);
+    }
+
+    void ShowMedCab()
+    {
+        medCab = GameObject.FindGameObjectWithTag("MedCabinet");
+        var pos = medCab.transform.position;
+        pos.x -= 35;
+        indicator = (GameObject)Instantiate(moveIndicatorPrefab, pos, new Quaternion(0, 0, 0, 0));
+        indicator.transform.localScale = new Vector3(5, 5, 5);      
+        mCamera.lockCameraToThisTransformForXTime(medCab.transform, 10f);
+        minigame = GameObject.Find("Minigame1").GetComponent<Minigame1>();
+    }
 }
