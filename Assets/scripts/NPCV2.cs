@@ -671,7 +671,6 @@ public class NPCV2 : MonoBehaviour
                         addStateToQueue(2, NPCState.STATE_MOVE_TO_WARD_AREA);
                         diagnosed = true;
                         addNpcToResponsibilities();
-                        npcManager.currentNpcsInWard++;
                         timer = 0;
                         taskCompleted = true;
                         dest = Vector3.zero;

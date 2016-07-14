@@ -44,6 +44,8 @@ public class ClockTime : MonoBehaviour {
     bool eveningcheck = false;
     bool nightcheck = false;
 
+    Tutorial tutorial;
+
     /*
      * Working shift:
      * 0 = Morning: 06:00 - 15:00
@@ -74,6 +76,7 @@ public class ClockTime : MonoBehaviour {
         GameObject NPCManagerObj = GameObject.Find("NPCManager");
         NPCManager = NPCManagerObj.GetComponent<NPCManagerV2>();
         shift = 0;
+        tutorial = GameObject.Find("Tutorial").GetComponent<Tutorial>();
     }
 	
 	// Update is called once per frame
@@ -81,58 +84,65 @@ public class ClockTime : MonoBehaviour {
         
         if(!paused)
         {
-            currentTime += Time.deltaTime;
-            if (currentTime >= dayLength - startHourInSeconds)
+            if(tutorial.tutorialOn && currentHours == 13 )
             {
-                currentTime = 0;
-                currentHours = 0;
-                startHourInSeconds = 0;
-                startHour = 0;
+
             }
-            string timeString = getTimeString();
-            currentText = timeString; // + " Day " + day + "\n" + currentDayTime.ToString();
-                                      // Medicine checks four times a day
-            if (timeString == MORNING_CHECK && !morningcheck)
-                doMorningCheck();
-            else if (timeString == AFTERNOON_CHECK && !afternooncheck)
-                doAfternoonCheck();
-            else if (timeString == EVENING_CHECK && !eveningcheck)
-                doEveningCheck();
-            else if (timeString == NIGHT_CHECK && !nightcheck)
-                doNightCheck();
-
-            // When daytime changes, reset all NPCs meds
-            if (timeString == MORNING_CHANGE)
-                resetMeds();
-            else if (timeString == AFTERNOON_CHANGE)
-                resetMeds();
-            else if (timeString == EVENING_CHANGE)
-                resetMeds();
-            else if (timeString == NIGHT_CHANGE)
-                resetMeds();
-
-            textref.text = currentText;
-
-            /* Change daytime */
-            /*******************
-                07:00 - 12:59 aamu 
-                13:00 - 14:59 päivä
-                15:00 - 19:59 ilta
-                20:00 - 06:59 yö
-             *******************/
-            if (currentHours > 6 && currentHours < 13)
-                currentDayTime = DayTime.MORNING;
-            else if (currentHours > 12 && currentHours < 15)
-                currentDayTime = DayTime.AFTERNOON;
-            else if (currentHours > 14 && currentHours < 20)
-                currentDayTime = DayTime.EVENING;
             else
-                currentDayTime = DayTime.NIGHT;
-
-            if(someoneislosinghp)
             {
-                timer += Time.deltaTime;
-                isStillLosingHP();
+                currentTime += Time.deltaTime;
+                if (currentTime >= dayLength - startHourInSeconds)
+                {
+                    currentTime = 0;
+                    currentHours = 0;
+                    startHourInSeconds = 0;
+                    startHour = 0;
+                }
+                string timeString = getTimeString();
+                currentText = timeString; // + " Day " + day + "\n" + currentDayTime.ToString();
+                                          // Medicine checks four times a day
+                if (timeString == MORNING_CHECK && !morningcheck)
+                    doMorningCheck();
+                else if (timeString == AFTERNOON_CHECK && !afternooncheck)
+                    doAfternoonCheck();
+                else if (timeString == EVENING_CHECK && !eveningcheck)
+                    doEveningCheck();
+                else if (timeString == NIGHT_CHECK && !nightcheck)
+                    doNightCheck();
+
+                // When daytime changes, reset all NPCs meds
+                if (timeString == MORNING_CHANGE)
+                    resetMeds();
+                else if (timeString == AFTERNOON_CHANGE)
+                    resetMeds();
+                else if (timeString == EVENING_CHANGE)
+                    resetMeds();
+                else if (timeString == NIGHT_CHANGE)
+                    resetMeds();
+
+                textref.text = currentText;
+
+                /* Change daytime */
+                /*******************
+                    07:00 - 12:59 aamu 
+                    13:00 - 14:59 päivä
+                    15:00 - 19:59 ilta
+                    20:00 - 06:59 yö
+                 *******************/
+                if (currentHours > 6 && currentHours < 13)
+                    currentDayTime = DayTime.MORNING;
+                else if (currentHours > 12 && currentHours < 15)
+                    currentDayTime = DayTime.AFTERNOON;
+                else if (currentHours > 14 && currentHours < 20)
+                    currentDayTime = DayTime.EVENING;
+                else
+                    currentDayTime = DayTime.NIGHT;
+
+                if (someoneislosinghp)
+                {
+                    timer += Time.deltaTime;
+                    isStillLosingHP();
+                }
             }
         }
     }
