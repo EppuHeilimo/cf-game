@@ -7,11 +7,13 @@ public class Tutorial : MonoBehaviour {
     public enum TutorialState
     {
         STATE_START = 0,
-        STATE_WALK_PRACTICE_FIRST,
-        STATE_WALK_PRACTICE_SECOND,
-        STATE_TARGET_PRACTICE_FIRST,
-        STATE_TARGET_PRACTICE_SECOND,
-        STATE_TARGET_PRACTICE_THIRD,
+        STATE_WALK_PRACTICE_1,
+        STATE_WALK_PRACTICE_2,
+        STATE_TARGET_PRACTICE_1,
+        STATE_TARGET_PRACTICE_2,
+        STATE_TARGET_PRACTICE_3,
+        STATE_TARGET_PRACTICE_4,
+        STATE_TARGET_PRACTICE_5,
         STATE_INACTIVE
     }
     bool stateChanged;
@@ -24,7 +26,7 @@ public class Tutorial : MonoBehaviour {
 
     GameObject mascot;
     public Text text;
-    public float letterPause = 0.1f;
+    public float letterPause = 0.05f;
     string message = "";
 
     GameObject indicator;
@@ -51,20 +53,12 @@ public class Tutorial : MonoBehaviour {
 
             switch (currentState)
             {
-                case TutorialState.STATE_START:
-                    // do nothing...
-                    break;
-
-                case TutorialState.STATE_WALK_PRACTICE_FIRST:
-                    // check if player has walked to the destination...
-                    break;
-
-                case TutorialState.STATE_WALK_PRACTICE_SECOND:
-                    // check if player has walked to the destination...
-                    break;
-
-                case TutorialState.STATE_TARGET_PRACTICE_FIRST:
-                    // check if player has targeted correct npc...
+                case TutorialState.STATE_TARGET_PRACTICE_4:
+                    GameObject tp = GameObject.FindGameObjectWithTag("TargetPanel");
+                    if (tp != null)
+                    {
+                        ChangeState(TutorialState.STATE_TARGET_PRACTICE_5);
+                    }
                     break;
 
                 case TutorialState.STATE_INACTIVE:
@@ -81,35 +75,44 @@ public class Tutorial : MonoBehaviour {
         {
             case TutorialState.STATE_START:
                 message = "Sup!\nWelcome to the tutorial!";
-                StartCoroutine(ChangeState(TutorialState.STATE_WALK_PRACTICE_FIRST, 6f));
+                StartCoroutine(ChangeState(TutorialState.STATE_WALK_PRACTICE_1, 5f));
                 break;
 
-            case TutorialState.STATE_WALK_PRACTICE_FIRST:
+            case TutorialState.STATE_WALK_PRACTICE_1:
                 message = "Let's start by walking to the reception.";
                 StartCoroutine(ShowPath());
-                StartCoroutine(ChangeState(TutorialState.STATE_WALK_PRACTICE_SECOND, 12f));
+                StartCoroutine(ChangeState(TutorialState.STATE_WALK_PRACTICE_2, 12f));
                 break;
 
-            case TutorialState.STATE_WALK_PRACTICE_SECOND:
+            case TutorialState.STATE_WALK_PRACTICE_2:
                 message = "Just click on the ground to move and follow the red path.";
                 break;
 
-            case TutorialState.STATE_TARGET_PRACTICE_FIRST:
+            case TutorialState.STATE_TARGET_PRACTICE_1:
                 if (indicator != null)
                     Destroy(indicator);
                 walkHere.SetActive(false);
                 message = "Great job!";
-                StartCoroutine(ChangeState(TutorialState.STATE_TARGET_PRACTICE_SECOND, 3f));
+                StartCoroutine(ChangeState(TutorialState.STATE_TARGET_PRACTICE_2, 3f));
                 break;
 
-            case TutorialState.STATE_TARGET_PRACTICE_SECOND:
+            case TutorialState.STATE_TARGET_PRACTICE_2:
                 message = "Here comes a patient!\nPatients go first to the doctor's office to get diagnosed.";
                 ShowNPC();
-                StartCoroutine(ChangeState(TutorialState.STATE_TARGET_PRACTICE_THIRD, 12f));
+                StartCoroutine(ChangeState(TutorialState.STATE_TARGET_PRACTICE_3, 16f));
                 break;
 
-            case TutorialState.STATE_TARGET_PRACTICE_THIRD:
-                message = "The patient has been diagnosed with fever.\nPatients with red cross above their head are your responsibility.";
+            case TutorialState.STATE_TARGET_PRACTICE_3:
+                message = "The patient has been diagnosed now.\nPatients with red cross above their head are your responsibility.";
+                StartCoroutine(ChangeState(TutorialState.STATE_TARGET_PRACTICE_4, 16f));
+                break;
+
+            case TutorialState.STATE_TARGET_PRACTICE_4:
+                message = "Walk to the patient and click him to see his information.";
+                break;
+
+            case TutorialState.STATE_TARGET_PRACTICE_5:
+                message = "Good job!\nYou can see on the patient's medicine card that he needs some Ibuprofen.";
                 break;
 
             case TutorialState.STATE_INACTIVE:
@@ -188,13 +191,13 @@ public class Tutorial : MonoBehaviour {
 
     public void ReachedWalkZone()
     {
-        ChangeState(TutorialState.STATE_TARGET_PRACTICE_FIRST);
+        ChangeState(TutorialState.STATE_TARGET_PRACTICE_1);
     }
 
     void ShowNPC()
     {
-        tutorialNPC = GameObject.FindGameObjectWithTag("NPC");
-        mCamera.lockCameraToThisTransformForXTime(tutorialNPC.transform, 20f);
+        tutorialNPC = GameObject.Find("NPCManager").GetComponent<NPCManagerV2>().spawnTutorialGuy();
+        mCamera.lockCameraToThisTransformForXTime(tutorialNPC.transform, 30f);
     }
 
 }
