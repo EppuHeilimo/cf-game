@@ -14,6 +14,8 @@ public class PlayerControl : MonoBehaviour {
     NavMeshPath dest;
     Vector3 defaultPosition;
 
+    MouseOverIgnore mouseOverIgnore;
+
     bool sitting = false;
     bool sleeping = false;
     bool followNpc = false;
@@ -29,6 +31,7 @@ public class PlayerControl : MonoBehaviour {
         agent = GetComponent<NavMeshAgent>();
         tooltip = GameObject.Find("Inventory").GetComponent<Tooltip>();
         defaultPosition = transform.position;
+        mouseOverIgnore = GameObject.Find("Tutorial").transform.FindChild("Canvas").FindChild("Mascot").GetComponent<MouseOverIgnore>();
     }
 	
 	// Update is called once per frame
@@ -472,6 +475,8 @@ public class PlayerControl : MonoBehaviour {
         {
             return false;
         }
+        if (mouseOverIgnore.ignore)
+            return false;
         return true;
     }
 
