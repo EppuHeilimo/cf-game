@@ -9,7 +9,9 @@ public class Tutorial : MonoBehaviour {
         STATE_START = 0,
         STATE_WALK_PRACTICE_FIRST,
         STATE_WALK_PRACTICE_SECOND,
-        STATE_TARGET_PRACTICE,
+        STATE_TARGET_PRACTICE_FIRST,
+        STATE_TARGET_PRACTICE_SECOND,
+        STATE_TARGET_PRACTICE_THIRD,
         STATE_INACTIVE
     }
     bool stateChanged;
@@ -28,6 +30,7 @@ public class Tutorial : MonoBehaviour {
     GameObject indicator;
     public GameObject moveIndicatorPrefab;
     public GameObject walkHere;
+    GameObject tutorialNPC;
 
     // Use this for initialization
     void Start () {     
@@ -60,7 +63,7 @@ public class Tutorial : MonoBehaviour {
                     // check if player has walked to the destination...
                     break;
 
-                case TutorialState.STATE_TARGET_PRACTICE:
+                case TutorialState.STATE_TARGET_PRACTICE_FIRST:
                     // check if player has targeted correct npc...
                     break;
 
@@ -77,12 +80,12 @@ public class Tutorial : MonoBehaviour {
         switch (currentState)
         {
             case TutorialState.STATE_START:
-                message = "Sup dude!\nLet's begin the tutorial...";
+                message = "Sup!\nWelcome to the tutorial!";
                 StartCoroutine(ChangeState(TutorialState.STATE_WALK_PRACTICE_FIRST, 6f));
                 break;
 
             case TutorialState.STATE_WALK_PRACTICE_FIRST:
-                message = "Let's start by walking to the reception to meet your patients!";
+                message = "Let's start by walking to the reception.";
                 StartCoroutine(ShowPath());
                 StartCoroutine(ChangeState(TutorialState.STATE_WALK_PRACTICE_SECOND, 12f));
                 break;
@@ -91,11 +94,22 @@ public class Tutorial : MonoBehaviour {
                 message = "Just click on the ground to move and follow the red path.";
                 break;
 
-            case TutorialState.STATE_TARGET_PRACTICE:
+            case TutorialState.STATE_TARGET_PRACTICE_FIRST:
                 if (indicator != null)
                     Destroy(indicator);
                 walkHere.SetActive(false);
-                message = "Great job!\nNow let's do some target practice.";
+                message = "Great job!";
+                StartCoroutine(ChangeState(TutorialState.STATE_TARGET_PRACTICE_SECOND, 3f));
+                break;
+
+            case TutorialState.STATE_TARGET_PRACTICE_SECOND:
+                message = "Here comes a patient!\nPatients go first to the doctor's office to get diagnosed.";
+                ShowNPC();
+                StartCoroutine(ChangeState(TutorialState.STATE_TARGET_PRACTICE_THIRD, 12f));
+                break;
+
+            case TutorialState.STATE_TARGET_PRACTICE_THIRD:
+                message = "The patient has been diagnosed with fever.\nPatients with red cross above their head are your responsibility.";
                 break;
 
             case TutorialState.STATE_INACTIVE:
@@ -174,7 +188,13 @@ public class Tutorial : MonoBehaviour {
 
     public void ReachedWalkZone()
     {
-        ChangeState(TutorialState.STATE_TARGET_PRACTICE);
+        ChangeState(TutorialState.STATE_TARGET_PRACTICE_FIRST);
+    }
+
+    void ShowNPC()
+    {
+        tutorialNPC = GameObject.FindGameObjectWithTag("NPC");
+        mCamera.lockCameraToThisTransformForXTime(tutorialNPC.transform, 20f);
     }
 
 }
