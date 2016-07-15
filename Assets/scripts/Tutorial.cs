@@ -157,13 +157,13 @@ public class Tutorial : MonoBehaviour {
         {
             case TutorialState.STATE_START:
                 message = "Sup!\nWelcome to the tutorial!";
-                StartCoroutine(ChangeState(TutorialState.STATE_WALK_PRACTICE_1, 5f));
+                StartCoroutine(ChangeState(TutorialState.STATE_WALK_PRACTICE_1, 2f));
                 break;
 
             case TutorialState.STATE_WALK_PRACTICE_1:
                 message = "Lets start by walking to the reception.";
                 StartCoroutine(ShowPath());
-                StartCoroutine(ChangeState(TutorialState.STATE_WALK_PRACTICE_2, 12f));
+                StartCoroutine(ChangeState(TutorialState.STATE_WALK_PRACTICE_2, 6f));
                 break;
 
             case TutorialState.STATE_WALK_PRACTICE_2:
@@ -175,18 +175,18 @@ public class Tutorial : MonoBehaviour {
                     Destroy(indicator);
                 walkHere.SetActive(false);
                 message = "Great job!";
-                StartCoroutine(ChangeState(TutorialState.STATE_TARGET_PRACTICE_2, 3f));
+                StartCoroutine(ChangeState(TutorialState.STATE_TARGET_PRACTICE_2, 1f));
                 break;
 
             case TutorialState.STATE_TARGET_PRACTICE_2:
                 message = "Here comes a patient!\nPatients go first to the doctor's office to get diagnosed.";
                 ShowNPC();
-                StartCoroutine(ChangeState(TutorialState.STATE_TARGET_PRACTICE_3, 16f));
+                StartCoroutine(ChangeState(TutorialState.STATE_TARGET_PRACTICE_3, 14f));
                 break;
 
             case TutorialState.STATE_TARGET_PRACTICE_3:
-                message = "The patient has been diagnosed now.\nPatients with red cross above their head are your responsibility.";
-                StartCoroutine(ChangeState(TutorialState.STATE_TARGET_PRACTICE_4, 16f));
+                message = "Patients with red cross above their head are your responsibility.";
+                StartCoroutine(ChangeState(TutorialState.STATE_TARGET_PRACTICE_4, 6f));
                 break;
 
             case TutorialState.STATE_TARGET_PRACTICE_4:
@@ -195,12 +195,12 @@ public class Tutorial : MonoBehaviour {
 
             case TutorialState.STATE_TARGET_PRACTICE_5:
                 message = "Good job!\n";
-                StartCoroutine(ChangeState(TutorialState.STATE_MINIGAME_PRACTICE_1, 3f));
+                StartCoroutine(ChangeState(TutorialState.STATE_MINIGAME_PRACTICE_1, 1f));
                 break;
 
             case TutorialState.STATE_MINIGAME_PRACTICE_1:
                 message = "You can see on the patients medicine card that he needs Ibuprofen.\nLets go get some!";
-                StartCoroutine(ChangeState(TutorialState.STATE_MINIGAME_PRACTICE_2, 16f));
+                StartCoroutine(ChangeState(TutorialState.STATE_MINIGAME_PRACTICE_2, 6f));
                 break;
 
             case TutorialState.STATE_MINIGAME_PRACTICE_2:
@@ -233,12 +233,12 @@ public class Tutorial : MonoBehaviour {
 
             case TutorialState.STATE_ENDING_GOOD_1:
                 message = "Great job!\nThis is the basic idea of the game, give correct medicine at correct times to your patients.";
-                StartCoroutine(ChangeState(TutorialState.STATE_ENDING_GOOD_2, 16f));
+                StartCoroutine(ChangeState(TutorialState.STATE_ENDING_GOOD_2, 6f));
                 break;
 
             case TutorialState.STATE_ENDING_GOOD_2:
                 message = "Good luck on your first day in the hospital, bye for now!";
-                Invoke("QuitTutorial", 8);
+                Invoke("QuitTutorial", 6);
                 break;
 
             case TutorialState.STATE_ENDING_BAD_1:
@@ -247,7 +247,7 @@ public class Tutorial : MonoBehaviour {
 
             case TutorialState.STATE_ENDING_BAD_2:
                 message = "You killed the patient.\nYou did that on purpose, didn't you? Are you satisfied now?!";
-                Invoke("QuitTutorial", 14);
+                Invoke("QuitTutorial", 12);
                 break;
 
             case TutorialState.STATE_INACTIVE:
@@ -318,8 +318,8 @@ public class Tutorial : MonoBehaviour {
 
     IEnumerator ShowPath()
     {
-        yield return new WaitForSeconds(6f);
-        mCamera.lockCameraToThisTransformForXTime(walkHere.transform, 5f);
+        yield return new WaitForSeconds(2f);
+        mCamera.lockCameraToThisTransformForXTime(walkHere.transform, 3f);
         walkHere.SetActive(true);
         var pos = walkHere.transform.position;
         indicator = (GameObject)Instantiate(moveIndicatorPrefab, pos, new Quaternion(0, 0, 0, 0));
@@ -334,7 +334,7 @@ public class Tutorial : MonoBehaviour {
     void ShowNPC()
     {
         tutorialNPC = GameObject.Find("NPCManager").GetComponent<NPCManagerV2>().spawnTutorialGuy();
-        mCamera.lockCameraToThisTransformForXTime(tutorialNPC.transform, 30f);
+        mCamera.lockCameraToThisTransformForXTime(tutorialNPC.transform, 13f);
     }
 
     void ShowMedCab()
@@ -344,7 +344,7 @@ public class Tutorial : MonoBehaviour {
         pos.x -= 35;
         indicator = (GameObject)Instantiate(moveIndicatorPrefab, pos, new Quaternion(0, 0, 0, 0));
         indicator.transform.localScale = new Vector3(5, 5, 5);      
-        mCamera.lockCameraToThisTransformForXTime(medCab.transform, 10f);
+        mCamera.lockCameraToThisTransformForXTime(medCab.transform, 3f);
         minigame = GameObject.Find("Minigame1").GetComponent<Minigame1>();
     }
 }
