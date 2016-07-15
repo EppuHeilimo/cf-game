@@ -40,7 +40,7 @@ public class ScoringSystem : MonoBehaviour {
             if (score > 100)
                 score = 100;
         }
-        positivebar.GetComponent<RectTransform>().sizeDelta = new Vector2(score * 2, 25.0f);
+        positivebar.GetComponent<RectTransform>().sizeDelta = new Vector2(score * 4, 50.0f);
         percentage.text = score + "%";
     }
 
