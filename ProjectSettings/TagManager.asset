@@ -53,6 +53,7 @@ TagManager:
   - ScoreBar
   - MenuPanel
   - ScoreTxt
+  - TrashCan
   layers:
   - Default
   - TransparentFX

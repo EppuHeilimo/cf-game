@@ -9,8 +9,8 @@ PlayerSettings:
   targetDevice: 2
   useOnDemandResources: 0
   accelerometerFrequency: 60
-  companyName: Iotitude Game
-  productName: Turbo Nurse
+  companyName: Jamk
+  productName: Scarabaeus
   defaultCursor: {fileID: 0}
   cursorHotspot: {x: 0, y: 0}
   m_ShowUnitySplashScreen: 1
@@ -175,7 +175,7 @@ PlayerSettings:
   - m_BuildTarget: 
     m_Icons:
     - serializedVersion: 2
-      m_Icon: {fileID: 2800000, guid: 9c281cb0b73b21f4abee38c22856692c, type: 3}
+      m_Icon: {fileID: 2800000, guid: c09cf03449fcb4e4b96f14682e3dd442, type: 3}
       m_Width: 128
       m_Height: 128
   m_BuildTargetBatching:
