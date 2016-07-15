@@ -247,7 +247,31 @@ public class ClockTime : MonoBehaviour {
         paused = true;
     }
 
+     public void startDayOneAfterTutorial()
+    {
+        GameObject player = GameObject.FindGameObjectWithTag("Player");
+        player.GetComponent<PlayerControl>().resetPlayerPosition();
+        player.GetComponent<PlayerControl>().enabled = false;
+        GameObject.FindGameObjectWithTag("NPCManager").GetComponent<NPCManagerV2>().dayOneAfterTutorial();
+        currentTime = 0;
+        currentHours = 0;
+        startHourInSeconds = 0;
+        startHour = 6;
 
+        morningcheck = false;
+        afternooncheck = false;
+        eveningcheck = false;
+        nightcheck = false;
+        paused = true;
+    }
+
+    public void resumeAfterTutorial()
+    {
+        GameObject.FindGameObjectWithTag("NPCManager").GetComponent<NPCManagerV2>().resumeAfterTutorial();
+        paused = false;
+        day++;
+        resetMeds();
+    }
 
     public void resumeAfterDayChange()
     {

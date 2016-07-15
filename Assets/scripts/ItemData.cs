@@ -85,6 +85,12 @@ public class ItemData : MonoBehaviour,/* IBeginDragHandler,  IDragHandler, IEndD
                                 tooltip.Deactivate();
                                 break;
                             }
+                            else if(uiManager.trashItem())
+                            {
+                                inv.RemoveItem(item.ID);
+                                tooltip.Deactivate();
+                                break;
+                            }
                         }
                     }
                 }
@@ -105,6 +111,11 @@ public class ItemData : MonoBehaviour,/* IBeginDragHandler,  IDragHandler, IEndD
                 }
                 // remove medicine from inventory if giving it succeeds
                 if (uiManager.giveMed(titles, dosages))
+                {
+                    inv.RemoveItem(item.ID);
+                    tooltip.Deactivate();
+                }
+                else if (uiManager.trashItem())
                 {
                     inv.RemoveItem(item.ID);
                     tooltip.Deactivate();

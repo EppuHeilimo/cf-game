@@ -52,7 +52,7 @@ public class GameController : MonoBehaviour {
                 else
                 {
                     changingday = false;
-                    clock.changeDay();
+                    clock.startDayOneAfterTutorial();
                     waitperiod = true;
                 }
             }
@@ -132,7 +132,7 @@ public class GameController : MonoBehaviour {
     {
         
         GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerControl>().enabled = true;
-        clock.resumeAfterDayChange();
+        clock.resumeAfterTutorial();
         GameObject.FindGameObjectWithTag("ScoringSystem").GetComponent<ScoringSystem>().reset();
         tutorial.QuitTutorial();
     }

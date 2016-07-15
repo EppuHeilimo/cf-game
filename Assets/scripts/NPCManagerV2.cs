@@ -243,55 +243,70 @@ public class NPCManagerV2 : MonoBehaviour
         return true;
     }
 
-    public void nextDay()
+    public void dayOneAfterTutorial()
     {
-        if(tutorial.tutorialOn)
+
+        GameObject[] npcs = npcList.ToArray();
+        for (int i = 0; i < npcs.Length; i++)
         {
-            GameObject[] npcs = npcList.ToArray();
-            for (int i = 0; i < npcs.Length; i++)
+            if (npcs[i].GetComponent<NPCV2>().playersResponsibility)
             {
-                if(npcs[i].GetComponent<NPCV2>().playersResponsibility)
-                {
-                    removeNpcFromPlayersResponsibilities(npcs[i]);
-                }
-                if(npcs[i].GetComponent<NPCV2>().myBed != null)
-                    GameObject.FindGameObjectWithTag("ObjectManager").GetComponent<ObjectManager>().unbookObject(npcList[i].GetComponent<NPCV2>().myBed);
-                if (npcs[i].GetComponent<NPCV2>().getTarget() != null)
-                    GameObject.FindGameObjectWithTag("ObjectManager").GetComponent<ObjectManager>().unbookObject(npcList[i].GetComponent<NPCV2>().getTarget());
-                
-                npcList.Remove(npcs[i]);
-                Destroy(npcs[i]);
+                removeNpcFromPlayersResponsibilities(npcs[i]);
+            }
+            if (npcs[i].GetComponent<NPCV2>().myBed != null)
+                GameObject.FindGameObjectWithTag("ObjectManager").GetComponent<ObjectManager>().unbookObject(npcList[i].GetComponent<NPCV2>().myBed);
+            if (npcs[i].GetComponent<NPCV2>().getTarget() != null)
+                GameObject.FindGameObjectWithTag("ObjectManager").GetComponent<ObjectManager>().unbookObject(npcList[i].GetComponent<NPCV2>().getTarget());
+
+            npcList.Remove(npcs[i]);
+            Destroy(npcs[i]);
+        }
+
+        if (nurses.Count > 0)
+        {
+            for (int i = 0; i < nurses.Count; i++)
+            {
+                Destroy(nurses[i].Key);
+                Destroy(nurses[i].Value);
+                nurses.RemoveAt(i);
             }
         }
-        else
+        if (respNpcsWhoLeftOrDied.Count > 0)
         {
-            GameObject[] npcs = npcList.ToArray();
-            for (int i = 0; i < npcs.Length; i++)
+            respNpcsWhoLeftOrDied.Clear();
+        }
+        paused = true;
+    }
+
+    public void nextDay()
+    {
+        GameObject[] npcs = npcList.ToArray();
+        for (int i = 0; i < npcs.Length; i++)
+        {
+            NPCV2 npc = npcs[i].GetComponent<NPCV2>();
+            if (!npc.diagnosed || npc.myState == NPCV2.NPCState.STATE_DEAD || npc.myState == NPCV2.NPCState.STATE_LEAVE_HOSPITAL)
             {
-                NPCV2 npc = npcs[i].GetComponent<NPCV2>();
-                if (!npc.diagnosed || npc.myState == NPCV2.NPCState.STATE_DEAD || npc.myState == NPCV2.NPCState.STATE_LEAVE_HOSPITAL)
+                if (npc.getTarget() != null)
                 {
-                    if (npc.getTarget() != null)
-                    {
-                        GameObject.FindGameObjectWithTag("ObjectManager").GetComponent<ObjectManager>().unbookObject(npc.getTarget());
-                    }
-                    if (npc.myBed != null)
-                    {
-                        GameObject.FindGameObjectWithTag("ObjectManager").GetComponent<ObjectManager>().unbookObject(npc.myBed);
-                    }
-                    if (npc.playersResponsibility)
-                    {
-                        removeNpcFromPlayersResponsibilities(npc.gameObject);
-                    }
-                    deleteNpcFromList(npcs[i]);
-                    Destroy(npcs[i]);
+                    GameObject.FindGameObjectWithTag("ObjectManager").GetComponent<ObjectManager>().unbookObject(npc.getTarget());
                 }
-                else if (npc.diagnosed)
+                if (npc.myBed != null)
                 {
-                    npc.addStateToQueue(3, NPCV2.NPCState.STATE_DAY_CHANGE);
-                    npc.taskCompleted = true;
+                    GameObject.FindGameObjectWithTag("ObjectManager").GetComponent<ObjectManager>().unbookObject(npc.myBed);
                 }
+                if (npc.playersResponsibility)
+                {
+                    removeNpcFromPlayersResponsibilities(npc.gameObject);
+                }
+                deleteNpcFromList(npcs[i]);
+                Destroy(npcs[i]);
             }
+            else if (npc.diagnosed)
+            {
+                npc.addStateToQueue(3, NPCV2.NPCState.STATE_DAY_CHANGE);
+                npc.taskCompleted = true;
+            }
+            
         }
         
         if(nurses.Count > 0)
@@ -310,6 +325,12 @@ public class NPCManagerV2 : MonoBehaviour
         paused = true;
     }
 
+    public void resumeAfterTutorial()
+    {
+        docBusy = false;
+        paused = false;
+    }
+
     public void nextDayResume()
     {
         docBusy = false;
@@ -319,8 +340,8 @@ public class NPCManagerV2 : MonoBehaviour
             NPCV2 npc = npcList[i].GetComponent<NPCV2>();
             npc.stopDayReset();
         }
-        if(!tutorial.tutorialOn)
-            targetResponsibilityLevel++;
+        
+        targetResponsibilityLevel++;
 
         /*
          * fulfill players responsibility level (If not enough npcs in ward, the new ones from QUE will be added)

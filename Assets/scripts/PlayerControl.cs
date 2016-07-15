@@ -20,7 +20,8 @@ public class PlayerControl : MonoBehaviour {
     bool sleeping = false;
     bool followNpc = false;
     bool pickingup = false;
-    bool movingToTarget = false; 
+    bool movingToTarget = false;
+    public bool atTrashCan = true;
 
     // Use this for initialization
     void Start () {
@@ -74,6 +75,10 @@ public class PlayerControl : MonoBehaviour {
                     movingToTarget = false;
                 }
                 else if(target.tag == "Computer")
+                {
+                    movingToTarget = false;
+                }
+                else if(target.tag == "TrashCan")
                 {
                     movingToTarget = false;
                 }
@@ -341,7 +346,7 @@ public class PlayerControl : MonoBehaviour {
                                 moveTo(target.transform.position);
                                 disableMoveIndicator();
                             }
-                            else if (target.tag == "MedCabinet" || target.tag == "Computer")
+                            else if (target.tag == "MedCabinet" || target.tag == "Computer" || target.tag == "TrashCan")
                             {
                                 interaction.setTarget(target);
                                 moveTo(target.transform.position);
