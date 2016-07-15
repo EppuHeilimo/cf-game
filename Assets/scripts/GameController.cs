@@ -4,8 +4,7 @@ using System.Collections;
 public class GameController : MonoBehaviour {
 
     public GameObject daychangeCanvasPrefab;
-    public GameObject tutorialCompletePrefab
-        ;
+    public GameObject tutorialCompletePrefab;
     private GameObject daychangeCanvas; 
     int day = 1;
     ClockTime clock;
@@ -17,7 +16,9 @@ public class GameController : MonoBehaviour {
     bool resuminggame = false;
     bool tutorialCompleted = false;
     bool blendcomplete = false;
+    bool waitperiod = false;
     float timer = 0;
+    Tutorial tutorial;
     // Use this for initialization
     void Start () {
 
@@ -26,15 +27,15 @@ public class GameController : MonoBehaviour {
 #endif
 
         clock = GameObject.FindGameObjectWithTag("Clock").GetComponent<ClockTime>();
-        	
+        tutorial = GameObject.Find("Tutorial").GetComponent<Tutorial>();
 	}
 	
 	// Update is called once per frame
 	void Update () {
         
-	    if((clock.isWorkShiftOver() && !changingday) || (tutorialCompleted && !changingday))
+        if(tutorialCompleted)
         {
-            if(tutorialCompleted)
+            if(tutorialCompleted && !changingday && !waitperiod && !resuminggame)
             {
                 GameObject.FindGameObjectWithTag("TextBoxManager").GetComponent<TextBoxManager>().DisableTextBox();
                 daychangeCanvas = Instantiate(tutorialCompletePrefab);
@@ -42,7 +43,48 @@ public class GameController : MonoBehaviour {
                 daychangecanvasgroup.alpha = 0;
                 changingday = true;
             }
-            else
+            if(changingday)
+            {
+                if (daychangecanvasgroup.alpha < 1.0f)
+                {
+                    daychangecanvasgroup.alpha += Time.deltaTime * blendspeed;
+                }
+                else
+                {
+                    changingday = false;
+                    clock.changeDay();
+                    waitperiod = true;
+                }
+            }
+
+            if(waitperiod)
+            {
+                timer += Time.deltaTime;
+                if(timer > 3.0f)
+                {
+                    resuminggame = true;
+                    waitperiod = false;
+                    startDayOneAfterTutorial();
+                }
+            }
+
+            if (resuminggame)
+            {
+                if (daychangecanvasgroup.alpha > 0.1f)
+                {
+                    daychangecanvasgroup.alpha -= Time.deltaTime * blendspeed;
+                }
+                else
+                {
+                    Destroy(daychangeCanvas);
+                    resuminggame = false;
+                    tutorialCompleted = false;
+                }
+            }
+        }
+        else if(!tutorial.tutorialOn)
+        {
+            if ((clock.isWorkShiftOver() && !changingday && !resuminggame))
             {
                 GameObject.FindGameObjectWithTag("TextBoxManager").GetComponent<TextBoxManager>().DisableTextBox();
                 GameObject.FindGameObjectWithTag("ScoringSystem").GetComponent<ScoringSystem>().endDay();
@@ -52,38 +94,7 @@ public class GameController : MonoBehaviour {
                 changingday = true;
             }
 
-        }
-
-        if(changingday)
-        {
-            if(tutorialCompleted)
-            {
-                if(!blendcomplete)
-                {
-                    if (daychangecanvasgroup.alpha < 1.0f)
-                    {
-                        daychangecanvasgroup.alpha += Time.deltaTime * blendspeed;
-                    }
-                    else
-                    {
-                        changingday = false;
-                        clock.changeDay();
-                        blendcomplete = true;
-                    }
-                }
-                else
-                {
-                    timer += Time.deltaTime;
-                    if(timer > 3.0f)
-                    {
-                        timer = 0;
-                        blendcomplete = false;
-                        startDayOneAfterTutorial();
-                    }
-                }
-
-            }
-            else
+            if (changingday)
             {
                 if (daychangecanvasgroup.alpha < 1.0f)
                 {
@@ -96,25 +107,20 @@ public class GameController : MonoBehaviour {
                 }
             }
 
-
+            if (resuminggame)
+            {
+                if (daychangecanvasgroup.alpha > 0.1f)
+                {
+                    daychangecanvasgroup.alpha -= Time.deltaTime * blendspeed;
+                }
+                else
+                {
+                    Destroy(daychangeCanvas);
+                    resuminggame = false;
+                }
+            }
         }
-        if(resuminggame)
-        {
-            if(tutorialCompleted)
-            {
-                tutorialCompleted = false;
-            }
-
-            if (daychangecanvasgroup.alpha > 0.1f)
-            {
-                daychangecanvasgroup.alpha -= Time.deltaTime * blendspeed;
-            }
-            else
-            {
-                Destroy(daychangeCanvas);
-                resuminggame = false;
-            }
-        }         
+	    
 	}
 
     public void endTutorial()
@@ -124,10 +130,11 @@ public class GameController : MonoBehaviour {
 
     public void startDayOneAfterTutorial()
     {
+        
         GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerControl>().enabled = true;
         clock.resumeAfterDayChange();
-        resuminggame = true;
-        GameObject.Find("Tutorial").GetComponent<Tutorial>().tutorialOn = false;
+        GameObject.FindGameObjectWithTag("ScoringSystem").GetComponent<ScoringSystem>().reset();
+        tutorial.QuitTutorial();
     }
 
     public void continueToNextDay()
