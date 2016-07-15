@@ -44,6 +44,16 @@ public class ScoringSystem : MonoBehaviour {
         percentage.text = score + "%";
     }
 
+    public void reset()
+    {
+        score = 50;
+        oldtotalscore = 0;
+        totalscore = 0;
+        gameover = false;
+        positivebar.GetComponent<RectTransform>().sizeDelta = new Vector2(score * 4, 50.0f);
+        percentage.text = score + "%";
+    }
+
     public void medInactive()
     {
         addToScore(medinactivepunishment);
