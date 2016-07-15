@@ -263,7 +263,7 @@ public class Tutorial : MonoBehaviour {
         foreach (char letter in message.ToCharArray())
         {
             text.text += letter;
-            yield return new WaitForSeconds(letterPause);
+            yield return new WaitForSeconds(Time.deltaTime * letterPause);
         }
     }
 
