@@ -238,6 +238,7 @@ public class Tutorial : MonoBehaviour {
 
             case TutorialState.STATE_ENDING_GOOD_2:
                 message = "Good luck on your first day in the hospital, bye for now!";
+                Invoke("QuitTutorial", 8);
                 break;
 
             case TutorialState.STATE_ENDING_BAD_1:
@@ -246,6 +247,7 @@ public class Tutorial : MonoBehaviour {
 
             case TutorialState.STATE_ENDING_BAD_2:
                 message = "You killed the patient.\nYou did that on purpose, didn't you? Are you satisfied now?!";
+                Invoke("QuitTutorial", 14);
                 break;
 
             case TutorialState.STATE_INACTIVE:
@@ -282,12 +284,13 @@ public class Tutorial : MonoBehaviour {
     }
 
     public void QuitTutorial()
-    {
+    {     
         if (indicator != null)
             Destroy(indicator);
         HideMascot();
         tutorialOn = false;
         currentState = TutorialState.STATE_INACTIVE;
+        GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>().endTutorial();
     }
 
     public void ShowMascot()
