@@ -76,6 +76,8 @@ public class PlayerControl : MonoBehaviour {
                 }
                 else if(target.tag == "Computer")
                 {
+                    target.GetComponent<Computer>().StartComputer();
+                    disableTarget();
                     movingToTarget = false;
                 }
                 else if(target.tag == "TrashCan")
