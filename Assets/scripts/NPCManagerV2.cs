@@ -247,19 +247,20 @@ public class NPCManagerV2 : MonoBehaviour
     {
         if(tutorial.tutorialOn)
         {
-            for(int i = 0; i < npcList.Count; i++)
+            GameObject[] npcs = npcList.ToArray();
+            for (int i = 0; i < npcs.Length; i++)
             {
-                if(npcList[i].GetComponent<NPCV2>().playersResponsibility)
+                if(npcs[i].GetComponent<NPCV2>().playersResponsibility)
                 {
-                    removeNpcFromPlayersResponsibilities(npcList[i]);
+                    removeNpcFromPlayersResponsibilities(npcs[i]);
                 }
-                if(npcList[i].GetComponent<NPCV2>().myBed != null)
+                if(npcs[i].GetComponent<NPCV2>().myBed != null)
                     GameObject.FindGameObjectWithTag("ObjectManager").GetComponent<ObjectManager>().unbookObject(npcList[i].GetComponent<NPCV2>().myBed);
-                if (npcList[i].GetComponent<NPCV2>().getTarget() != null)
+                if (npcs[i].GetComponent<NPCV2>().getTarget() != null)
                     GameObject.FindGameObjectWithTag("ObjectManager").GetComponent<ObjectManager>().unbookObject(npcList[i].GetComponent<NPCV2>().getTarget());
-                Destroy(npcList[i]);
-                npcList.RemoveAt(i);
-                currentNpcsInWard--;
+                
+                npcList.Remove(npcs[i]);
+                Destroy(npcs[i]);
             }
         }
         else

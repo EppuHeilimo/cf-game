@@ -4,7 +4,7 @@ using System.Collections;
 
 public class ClockTime : MonoBehaviour {
     float currentTime = 0.0f;
-    int currentHours;
+    public int currentHours;
     //conversion ratio from real second to game time minute
     //change this to change game time speed
     float secToGameMin = 0.5f;
@@ -141,32 +141,83 @@ public class ClockTime : MonoBehaviour {
                 if (someoneislosinghp)
                 {
                     timer += Time.deltaTime;
-                    isStillLosingHP();
-                }
-            }
-        }
-    }
-
-    public void isStillLosingHP()
-    {
-        bool stilllosinghp = false;
-        foreach(GameObject go in NPCManager.responsibilityNpcs)
-        {
-            NPCV2 npc = go.GetComponent<NPCV2>();
-            if(npc.myState != NPCV2.NPCState.STATE_DEAD || npc.myState != NPCV2.NPCState.STATE_LEAVE_HOSPITAL)
-            {
-                for(int i = 0; i < npc.morningMed.Length; i++)
-                {
-                    if(npc.morningMed[i].title != null)
+                    if(timer > 10.0f)
                     {
-                        if(!npc.morningMed[i].isActive)
+                        someoneislosinghp = isStillLosingHP();
+                        timer = 0;
+                        if (someoneislosinghp)
                         {
-                            stilllosinghp = true;
+                            GameObject.FindGameObjectWithTag("ScoringSystem").GetComponent<ScoringSystem>().addToScore(-1);
                         }
                     }
                 }
             }
         }
+    }
+
+    public bool isStillLosingHP()
+    {
+        foreach(GameObject go in NPCManager.responsibilityNpcs)
+        {
+            NPCV2 npc = go.GetComponent<NPCV2>();
+            if(npc.myState != NPCV2.NPCState.STATE_DEAD || npc.myState != NPCV2.NPCState.STATE_LEAVE_HOSPITAL)
+            {
+                if(currentDayTime == DayTime.MORNING)
+                {
+                    for (int i = 0; i < npc.morningMed.Length; i++)
+                    {
+                        if (npc.morningMed[i].title != null)
+                        {
+                            if (!npc.morningMed[i].isActive)
+                            {
+                                return true;
+                            }
+                        }
+                    }
+                }
+                else if (currentDayTime == DayTime.AFTERNOON)
+                {
+                    for (int i = 0; i < npc.afternoonMed.Length; i++)
+                    {
+                        if (npc.afternoonMed[i].title != null)
+                        {
+                            if (!npc.afternoonMed[i].isActive)
+                            {
+                                return true;
+                            }
+                        }
+                    }
+                }
+                else if (currentDayTime == DayTime.EVENING)
+                {
+                    for (int i = 0; i < npc.eveningMed.Length; i++)
+                    {
+                        if (npc.eveningMed[i].title != null)
+                        {
+                            if (!npc.eveningMed[i].isActive)
+                            {
+                                return true;
+                            }
+                        }
+                    }
+                }
+                else if (currentDayTime == DayTime.NIGHT)
+                {
+                    for (int i = 0; i < npc.nightMed.Length; i++)
+                    {
+                        if (npc.nightMed[i].title != null)
+                        {
+                            if (!npc.nightMed[i].isActive)
+                            {
+                                return true;
+                            }
+                        }
+                    }
+                }
+
+            }
+        }
+        return false;
     }
 
     public bool isWorkShiftOver()
@@ -243,7 +294,6 @@ public class ClockTime : MonoBehaviour {
 
     void doMorningCheck()
     {
-        
         morningcheck = true;
         foreach (GameObject npcObj in NPCManager.npcList)
         {
@@ -252,6 +302,11 @@ public class ClockTime : MonoBehaviour {
                 NPCV2 npc = npcObj.GetComponent<NPCV2>();
                 if(npc.diagnosed)
                 {
+                    if(npc.skipNextMedCheck)
+                    {
+                        npc.skipNextMedCheck = false;
+                        continue;
+                    }
                     for (int i = 0; i < npc.morningMed.Length; i++)
                     {
                         if (npc.morningMed[i].title != null)
@@ -289,6 +344,11 @@ public class ClockTime : MonoBehaviour {
                 NPCV2 npc = npcObj.GetComponent<NPCV2>();
                 if (npc.diagnosed)
                 {
+                    if (npc.skipNextMedCheck)
+                    {
+                        npc.skipNextMedCheck = false;
+                        continue;
+                    }
                     for (int i = 0; i < npc.afternoonMed.Length; i++)
                     {
                         if (npc.afternoonMed[i].title != null)
@@ -326,6 +386,11 @@ public class ClockTime : MonoBehaviour {
                 NPCV2 npc = npcObj.GetComponent<NPCV2>();
                 if (npc.diagnosed)
                 {
+                    if (npc.skipNextMedCheck)
+                    {
+                        npc.skipNextMedCheck = false;
+                        continue;
+                    }
                     for (int i = 0; i < npc.eveningMed.Length; i++)
                     {
                         if (npc.eveningMed[i].title != null)
@@ -343,7 +408,6 @@ public class ClockTime : MonoBehaviour {
                                     npc.isLosingHp = true;
                                     someoneislosinghp = true;
                                     GameObject.FindGameObjectWithTag("ScoringSystem").GetComponent<ScoringSystem>().medInactive();
-                                    print(npc.myName);
                                     break;
                                 }
                             }
@@ -364,6 +428,11 @@ public class ClockTime : MonoBehaviour {
                 NPCV2 npc = npcObj.GetComponent<NPCV2>();
                 if (npc.diagnosed)
                 {
+                    if (npc.skipNextMedCheck)
+                    {
+                        npc.skipNextMedCheck = false;
+                        continue;
+                    }
                     for (int i = 0; i < npc.nightMed.Length; i++)
                     {
                         if (npc.nightMed[i].title != null)

@@ -31,6 +31,7 @@ public class NPCV2 : MonoBehaviour
     /* basic stuff */
     bool nursesDeployedForMe = false;
     bool lockstate = false;
+    public bool skipNextMedCheck = false;
     public bool paused = false;
     ClockTime clock;
     LineRenderer DebugPath;
@@ -701,6 +702,7 @@ public class NPCV2 : MonoBehaviour
                             if (!npcManager.isPlayerResponsibilityLevelFulfilled())
                             {
                                 addNpcToResponsibilities();
+                                SkipMedCheck();
                             }
                             npcManager.currentNpcsInWard++;
                         }
@@ -1403,6 +1405,19 @@ public class NPCV2 : MonoBehaviour
                 break;
         }
         return ret;
+    }
+
+    public void SkipMedCheck()
+    {
+        //if patient arrives just before next medcheck, ignore it
+        if (clock.currentHours == 7 )
+            skipNextMedCheck = true;
+        else if (clock.currentHours == 13)
+            skipNextMedCheck = true;
+        else if (clock.currentHours == 15)
+            skipNextMedCheck = true;
+        else if (clock.currentHours == 20)
+            skipNextMedCheck = true;
     }
 
     // Init 1-4 random problems and their corresponding medicines
