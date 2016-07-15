@@ -40,14 +40,12 @@ public class TextBoxManager : MonoBehaviour {
 
     GameObject targetPanel;
     GameObject healthBar;
-    GameObject happyBar;
     GameObject MyImage;
 
     // Use this for initialization
     void Start()
     {
         healthBar = GameObject.FindGameObjectWithTag("HpBar");
-        happyBar = GameObject.FindGameObjectWithTag("HappyBar");
         targetPanel = GameObject.FindGameObjectWithTag("TargetPanel");
         MyImage = GameObject.FindGameObjectWithTag("MyImage");
         clock = GameObject.FindGameObjectWithTag("Clock").GetComponent<ClockTime>();
@@ -60,10 +58,8 @@ public class TextBoxManager : MonoBehaviour {
         myIdText.text = npc.myId;
         myProblemText.text = "Waiting for diagnosis!";
         SetHealthBar(npc.myHp);
-        SetHappyBar(npc.myHappiness);
         targetPanel.SetActive(true);
         healthBar.SetActive(true);
-        happyBar.SetActive(true);
         MyImage.SetActive(true);
         MyImage.GetComponent<Image>().sprite = npc.myHead2d;
     }
@@ -78,10 +74,8 @@ public class TextBoxManager : MonoBehaviour {
             myProblemText.text += s + "\n";
         }
         SetHealthBar(npc.myHp);
-        SetHappyBar(npc.myHappiness);
         targetPanel.SetActive(true);
         healthBar.SetActive(true);
-        happyBar.SetActive(true);
         medCardPanel.SetActive(true);
         MyImage.SetActive(true);
         MyImage.GetComponent<Image>().sprite = npc.myHead2d;
@@ -451,7 +445,6 @@ public class TextBoxManager : MonoBehaviour {
 
         targetPanel.SetActive(false);
         healthBar.SetActive(false);
-        happyBar.SetActive(false);
         MyImage.SetActive(false);
     }
 
@@ -460,7 +453,6 @@ public class TextBoxManager : MonoBehaviour {
 
         targetPanel.SetActive(false);
         healthBar.SetActive(false);
-        happyBar.SetActive(false);
         myNameText.text = null;
         myIdText.text = null;
         myProblemText.text = null;
@@ -498,12 +490,6 @@ public class TextBoxManager : MonoBehaviour {
     {
         float scaledHp = myHp / 100f;
         healthBar.transform.localScale = new Vector3(Mathf.Clamp(scaledHp, 0f, 1f), healthBar.transform.localScale.y, healthBar.transform.localScale.z);
-    }
-
-    public void SetHappyBar(int myHappiness)
-    {
-        float scaledHappiness = myHappiness / 100f;
-        happyBar.transform.localScale = new Vector3(Mathf.Clamp(scaledHappiness, 0f, 1f), happyBar.transform.localScale.y, happyBar.transform.localScale.z);
     }
 
 }
