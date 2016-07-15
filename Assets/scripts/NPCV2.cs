@@ -40,7 +40,6 @@ public class NPCV2 : MonoBehaviour
     public string myId;
     public int myGender; // 0 = female, 1 = male
     public int myHp = 50;
-    public int myHappiness = 50;
     int currentTaskPriority = 0;
     public Sprite myHead2d;
     int prevTaskPriority = 0;
