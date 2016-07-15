@@ -39,10 +39,12 @@ public class Tutorial : MonoBehaviour {
     public TutorialState currentState;
     public CameraMovement mCamera;
 
-    GameObject mascot;
+    GameObject tutCanvas;
+    Mascot mascot;
     public Text text;
     public float letterPause = 0.05f;
     string message = "";
+    public bool typing;
 
     GameObject indicator;
     public GameObject moveIndicatorPrefab;
@@ -58,9 +60,10 @@ public class Tutorial : MonoBehaviour {
 
     // Use this for initialization
     void Start () {     
-        mascot = transform.GetChild(0).gameObject;
+        tutCanvas = transform.GetChild(0).gameObject;
+        mascot = GameObject.Find("Mascot").GetComponent<Mascot>();
         currentState = TutorialState.STATE_INACTIVE;
-        HideMascot();
+        HidetutCanvas();
         walkHere.SetActive(false);
     }
 	
@@ -72,6 +75,9 @@ public class Tutorial : MonoBehaviour {
             {
                 OnStateChange();
             }
+
+            if (mascot != null)
+                mascot.isTalking = typing;
 
             switch (currentState)
             {
@@ -262,8 +268,10 @@ public class Tutorial : MonoBehaviour {
     {
         foreach (char letter in message.ToCharArray())
         {
+            typing = true;
             text.text += letter;
             yield return new WaitForSeconds(Time.deltaTime * letterPause);
+            typing = false;
         }
     }
 
@@ -272,7 +280,7 @@ public class Tutorial : MonoBehaviour {
         startOptions.StartButtonClicked();
         showPanels.HideTutorialPanel();
         tutorialOn = true;
-        ShowMascot();
+        ShowtutCanvas();
         StartCoroutine(ChangeState(TutorialState.STATE_START, 1f));
     }
 
@@ -287,20 +295,20 @@ public class Tutorial : MonoBehaviour {
     {     
         if (indicator != null)
             Destroy(indicator);
-        HideMascot();
+        HidetutCanvas();
         tutorialOn = false;
         currentState = TutorialState.STATE_INACTIVE;
         GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>().endTutorial();
     }
 
-    public void ShowMascot()
+    public void ShowtutCanvas()
     {
-        mascot.SetActive(true);
+        tutCanvas.SetActive(true);
     }
 
-    public void HideMascot()
+    public void HidetutCanvas()
     {
-        mascot.SetActive(false);
+        tutCanvas.SetActive(false);
     }
 
     IEnumerator ChangeState(TutorialState newState, float delayTime)
