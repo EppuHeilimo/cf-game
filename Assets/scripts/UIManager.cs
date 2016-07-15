@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
+using System;
 
 public class UIManager : MonoBehaviour {
 
@@ -85,5 +86,20 @@ public class UIManager : MonoBehaviour {
         gameOverCanvas.SetActive(true);      
         GameObject.FindGameObjectWithTag("ScoreTxt").GetComponent<Text>().text = "Your score:\n" + score.ToString();
         Time.timeScale = 0;
+    }
+
+    internal bool trashItem()
+    {
+        target = player.GetComponent<PlayerControl>().getTarget();
+        if (target == null)
+            return false;
+        else if (target.tag == "TrashCan")
+        {
+            if(player.GetComponent<PlayerControl>().atTrashCan)
+            {
+                return true;
+            }
+        } 
+        return false;
     }
 }
