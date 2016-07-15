@@ -83,15 +83,19 @@ public class GameController : MonoBehaviour {
                 }
 
             }
-            if (daychangecanvasgroup.alpha < 1.0f)
-            {
-                daychangecanvasgroup.alpha += Time.deltaTime * blendspeed;
-            }
             else
             {
-                changingday = false;
-                clock.changeDay();
+                if (daychangecanvasgroup.alpha < 1.0f)
+                {
+                    daychangecanvasgroup.alpha += Time.deltaTime * blendspeed;
+                }
+                else
+                {
+                    changingday = false;
+                    clock.changeDay();
+                }
             }
+
 
         }
         if(resuminggame)
