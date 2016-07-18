@@ -26,6 +26,9 @@ public class Tutorial : MonoBehaviour {
 
         STATE_ENDING_GOOD_1,
         STATE_ENDING_GOOD_2,
+        STATE_ENDING_GOOD_3,
+        STATE_ENDING_GOOD_4,
+        STATE_ENDING_GOOD_FINAL,
         STATE_ENDING_BAD_1,
         STATE_ENDING_BAD_2,
 
@@ -57,6 +60,7 @@ public class Tutorial : MonoBehaviour {
     MedCup afternoonCup;
     MedCup eveningCup;
     MedCup nightCup;
+    public GameObject scoreBarHighlight;
 
     // Use this for initialization
     void Start () {     
@@ -238,12 +242,29 @@ public class Tutorial : MonoBehaviour {
                 break;
 
             case TutorialState.STATE_ENDING_GOOD_1:
-                message = "Great job!\nThis is the basic idea of the game, give correct medicine at correct times to your patients.";
+                message = "Great job!\nThis is the basic idea of the game, give correct medicine at correct times to your patients.\n";
                 StartCoroutine(ChangeState(TutorialState.STATE_ENDING_GOOD_2, 6f));
                 break;
 
             case TutorialState.STATE_ENDING_GOOD_2:
-                message = "Good luck on your first day in the hospital, bye for now!";
+                scoreBarHighlight.SetActive(true);
+                message = "In the score bar you can see how well you take care of your patients, and if it reaches zero, you will lose.\n";
+                StartCoroutine(ChangeState(TutorialState.STATE_ENDING_GOOD_3, 10f));
+                break;
+
+            case TutorialState.STATE_ENDING_GOOD_3:
+                message = "You will lose score points if you give wrong medicine or wrong dosage.";
+                StartCoroutine(ChangeState(TutorialState.STATE_ENDING_GOOD_4, 6f));
+                break;
+
+            case TutorialState.STATE_ENDING_GOOD_4:
+                scoreBarHighlight.SetActive(false);
+                message = "Each day the number of patients you gotta take care of increases.";
+                StartCoroutine(ChangeState(TutorialState.STATE_ENDING_GOOD_FINAL, 4f));
+                break;
+
+            case TutorialState.STATE_ENDING_GOOD_FINAL:
+                message = "Good luck on your first day in the hospital, bye for now!";           
                 Invoke("QuitTutorial", 6);
                 break;
 
