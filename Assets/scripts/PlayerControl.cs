@@ -14,7 +14,7 @@ public class PlayerControl : MonoBehaviour {
     NavMeshPath dest;
     Vector3 defaultPosition;
 
-    MouseOverIgnore mouseOverIgnore;
+    MouseOverIgnore[] mouseOverIgnoreGos;
 
     bool sitting = false;
     bool sleeping = false;
@@ -32,7 +32,8 @@ public class PlayerControl : MonoBehaviour {
         agent = GetComponent<NavMeshAgent>();
         tooltip = GameObject.Find("Inventory").GetComponent<Tooltip>();
         defaultPosition = transform.position;
-        mouseOverIgnore = GameObject.Find("Tutorial").transform.FindChild("Canvas").FindChild("Mascot").GetComponent<MouseOverIgnore>();
+        mouseOverIgnoreGos = FindObjectsOfType<MouseOverIgnore>();
+
     }
 	
 	// Update is called once per frame
@@ -439,6 +440,13 @@ public class PlayerControl : MonoBehaviour {
         }
     }
 
+    public void setTarget(GameObject go)
+    {
+        disableTarget();
+        target = go;
+        outlineOnlyParent(target.transform, Shader.Find("Outlined/Silhouetted Diffuse"));
+    }
+
     bool walkToTarget()
     {
         if (Vector3.Distance(transform.position, target.transform.position) < 50.0f)
@@ -482,9 +490,15 @@ public class PlayerControl : MonoBehaviour {
         {
             return false;
         }
-        if (mouseOverIgnore.ignore)
-            return false;
-        return true;
+        //if mouse is over UI, test if the UI is set to ignore mouse over
+        bool ret = true;
+        foreach(MouseOverIgnore ign in mouseOverIgnoreGos)
+        {
+            if (ign.ignore)
+                ret = false;
+        }
+
+        return ret;
     }
 
     void disableMoveIndicator()
