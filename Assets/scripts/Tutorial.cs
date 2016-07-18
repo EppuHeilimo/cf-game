@@ -32,6 +32,9 @@ public class Tutorial : MonoBehaviour {
         STATE_ENDING_BAD_1,
         STATE_ENDING_BAD_2,
 
+        STATE_COMPUTER_PRACTICE,
+        STATE_TRASH_PRACTICE,
+
         STATE_INACTIVE
     }
     bool stateChanged;
@@ -61,6 +64,8 @@ public class Tutorial : MonoBehaviour {
     MedCup eveningCup;
     MedCup nightCup;
     public GameObject scoreBarHighlight;
+    GameObject computer;
+    GameObject trashCan;
 
     // Use this for initialization
     void Start () {     
@@ -243,7 +248,19 @@ public class Tutorial : MonoBehaviour {
 
             case TutorialState.STATE_ENDING_GOOD_1:
                 message = "Great job!\nThis is the basic idea of the game, give correct medicine at correct times to your patients.\n";
-                StartCoroutine(ChangeState(TutorialState.STATE_ENDING_GOOD_2, 6f));
+                StartCoroutine(ChangeState(TutorialState.STATE_COMPUTER_PRACTICE, 6f));
+                break;
+
+            case TutorialState.STATE_COMPUTER_PRACTICE:
+                message = "There is a computer in the office. You can see your schedule and patients there.";
+                ShowComputer();
+                StartCoroutine(ChangeState(TutorialState.STATE_TRASH_PRACTICE, 8f));
+                break;
+
+            case TutorialState.STATE_TRASH_PRACTICE:
+                message = "Next to the computer, there is a trash can.\nSelect it and click a medicine cup in your inventory to delete it.";
+                ShowTrashCan();
+                StartCoroutine(ChangeState(TutorialState.STATE_ENDING_GOOD_2, 8f));
                 break;
 
             case TutorialState.STATE_ENDING_GOOD_2:
@@ -260,7 +277,7 @@ public class Tutorial : MonoBehaviour {
             case TutorialState.STATE_ENDING_GOOD_4:
                 scoreBarHighlight.SetActive(false);
                 message = "Each day the number of patients you gotta take care of increases.";
-                StartCoroutine(ChangeState(TutorialState.STATE_ENDING_GOOD_FINAL, 4f));
+                StartCoroutine(ChangeState(TutorialState.STATE_ENDING_GOOD_FINAL, 6f));
                 break;
 
             case TutorialState.STATE_ENDING_GOOD_FINAL:
@@ -269,11 +286,12 @@ public class Tutorial : MonoBehaviour {
                 break;
 
             case TutorialState.STATE_ENDING_BAD_1:
-                message = "That medicine was incorrect or the dosage was wrong.\nTry again, the patient needs 400 mg of Ibuprofen.";
+                message = "That medicine was incorrect or the dosage was wrong. Try again, the patient needs 400 mg of Ibuprofen.";
+                mascot.ChangeState(Mascot.MascotState.STATE_ANGRY);
                 break;
 
             case TutorialState.STATE_ENDING_BAD_2:
-                message = "You killed the patient.\nYou did that on purpose, didn't you? Are you satisfied now?!";
+                message = "You killed the patient. You did that on purpose, didn't you? Are you satisfied now?!";
                 Invoke("QuitTutorial", 12);
                 break;
 
@@ -375,5 +393,18 @@ public class Tutorial : MonoBehaviour {
         indicator.transform.localScale = new Vector3(5, 5, 5);      
         mCamera.lockCameraToThisTransformForXTime(medCab.transform, 3f);
         minigame = GameObject.Find("Minigame1").GetComponent<Minigame1>();
+    }
+
+    void ShowComputer()
+    {
+        computer = GameObject.FindGameObjectWithTag("Computer");        
+        mCamera.lockCameraToThisTransformForXTime(computer.transform, 16f);
+        GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerControl>().setTarget(computer);
+    }
+
+    void ShowTrashCan()
+    {
+        trashCan = GameObject.FindGameObjectWithTag("TrashCan");
+        GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerControl>().setTarget(trashCan);
     }
 }
