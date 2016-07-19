@@ -8,13 +8,46 @@ public class ShowPanels : MonoBehaviour {
 	public GameObject menuPanel;							//Store a reference to the Game Object MenuPanel 
 	public GameObject pausePanel;							//Store a reference to the Game Object PausePanel 
     public GameObject tutorialPromptPanel;
+    public GameObject customizePanel;
+    public CameraMovement mainCamera;
+    public GameObject gameCanvas;
+
+    public GameObject player; 
+
+    void Start()
+    {
+        mainCamera = GameObject.Find("Main Camera").GetComponent<CameraMovement>();
+        gameCanvas = GameObject.Find("Canvas");
+        player = GameObject.FindGameObjectWithTag("Player");
+        customizePanel.SetActive(false);
+    }
 
     //Call this function to activate and display the Options panel during the main menu
     public void ShowOptionsPanel()
 	{
 		optionsPanel.SetActive(true);
 		optionsTint.SetActive(true);
+        
 	}
+
+    public void ShowCustomizePanel()
+    {
+        customizePanel.SetActive(true);
+        menuPanel.SetActive(false);
+        gameCanvas.SetActive(false);
+        player.SetActive(false);
+        mainCamera.SwitchToCustomizeCamera();
+
+    }
+
+    public void HideCustomizePanel()
+    {
+        menuPanel.SetActive(true);
+        customizePanel.SetActive(false);
+        gameCanvas.SetActive(true);
+        player.SetActive(true);
+        mainCamera.SwitchBackFromCustomizeCamera();
+    }
 
 	//Call this function to deactivate and hide the Options panel during the main menu
 	public void HideOptionsPanel()

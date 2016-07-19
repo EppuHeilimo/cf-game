@@ -607,11 +607,17 @@ public class NPCV2 : MonoBehaviour
 
     private void goToWardArea()
     {
+
         if(dest == Vector3.zero)
         {
             int rand = Random.Range(0, deathpoints.Length - 1);
             dest = deathpoints[rand];
             moveTo(dest);
+
+            if (tutorial.tutorialOn)
+            {
+                lockstate = true;
+            }
         }
         if(arrivedToDestination(100.0f))
         {
@@ -1302,25 +1308,35 @@ public class NPCV2 : MonoBehaviour
                         else
                         {
                             //if nothing to do choose randomly from talking with npcs, sitting, idle walking
-                            
-                            if (Random.Range(1, 11) > 7)
+                            if(!diagnosed)
                             {
+                                myState = NPCState.STATE_QUE;
                                 prevState = myState;
-                                myState = NPCState.STATE_TALK_TO_OTHER_NPC;
-                            } 
-                            else if (Random.Range(1, 11) > 7)
-                            {
-                                prevState = myState;
-                                myState = NPCState.STATE_IDLE_SIT;
+                                currentTaskPriority = 2;
                             }
                             else
                             {
-                                prevState = myState;
-                                myState = NPCState.STATE_IDLE;
+                                if (Random.Range(1, 11) > 7)
+                                {
+                                    prevState = myState;
+                                    myState = NPCState.STATE_TALK_TO_OTHER_NPC;
+                                }
+                                else if (Random.Range(1, 11) > 7)
+                                {
+                                    prevState = myState;
+                                    myState = NPCState.STATE_IDLE_SIT;
+                                }
+                                else
+                                {
+                                    prevState = myState;
+                                    myState = NPCState.STATE_IDLE;
+                                }
+ 
+                                currentTaskPriority = 1;
+                                
                             }
                             dest = Vector3.zero;
                             taskCompleted = false;
-                            currentTaskPriority = 1;
                         }
                     }
                 }
@@ -1333,17 +1349,23 @@ public class NPCV2 : MonoBehaviour
             stateQueue.TryGetValue(3, out queue);
             if (currentTaskPriority < 3 && queue.Count > 0)
             {
-                anim.StopAll();
-                //if currenttaskpriority is higher than 1 we will resume the task after new task is complete
-                if (currentTaskPriority > 1)
-                    prevStateUncompleted = true;
-                //save current state info so it can be done after the prioritized task is complete
-                prevState = myState;
-                myState = queue.Dequeue();
-                prevTaskPriority = currentTaskPriority;
-                dest = Vector3.zero;
-                taskCompleted = false;
-                timer = 0;
+                if (myState == queue.Peek())
+                    queue.Dequeue();
+                else
+                {
+                    anim.StopAll();
+                    //if currenttaskpriority is higher than 1 we will resume the task after new task is complete
+                    if (currentTaskPriority > 1)
+                        prevStateUncompleted = true;
+                    //save current state info so it can be done after the prioritized task is complete
+                    prevState = myState;
+                    myState = queue.Dequeue();
+                    prevTaskPriority = currentTaskPriority;
+                    dest = Vector3.zero;
+                    taskCompleted = false;
+                    timer = 0;
+                }
+
             }
             else 
             {
@@ -1351,14 +1373,19 @@ public class NPCV2 : MonoBehaviour
                 stateQueue.TryGetValue(2, out queue);
                 if (currentTaskPriority < 2 && queue.Count > 0)
                 {
-                    anim.StopAll();
-                    //save current state info so it can be done after the prioritized task is complete
-                    prevState = myState;
-                    myState = queue.Dequeue();
-                    dest = Vector3.zero;
-                    prevTaskPriority = currentTaskPriority;
-                    taskCompleted = false;
-                    timer = 0;
+                    if (myState == queue.Peek())
+                        queue.Dequeue();
+                    else
+                    {
+                        anim.StopAll();
+                        //save current state info so it can be done after the prioritized task is complete
+                        prevState = myState;
+                        myState = queue.Dequeue();
+                        dest = Vector3.zero;
+                        prevTaskPriority = currentTaskPriority;
+                        taskCompleted = false;
+                        timer = 0;
+                    }
                 }
             }
         }  

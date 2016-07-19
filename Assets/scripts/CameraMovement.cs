@@ -5,6 +5,7 @@ public class CameraMovement : MonoBehaviour {
 
     Vector3 defaultPosition;
     GameObject minigameCamera;
+    GameObject customizeCamera;
     GameObject canvas;
     GameObject minigame1Canvas;
     GameObject player;
@@ -24,7 +25,9 @@ public class CameraMovement : MonoBehaviour {
         defaultPosition = transform.position;
         gameObject.SetActive(true);
         minigameCamera = GameObject.Find("Minigame Camera");
+        customizeCamera = GameObject.Find("Customize Camera");
         minigameCamera.SetActive(false);
+        customizeCamera.SetActive(false);
 	}
 	
 	// Update is called once per frame
@@ -84,6 +87,18 @@ public class CameraMovement : MonoBehaviour {
 
     }
 
+    public void SwitchToCustomizeCamera()
+    {
+        gameObject.SetActive(false);
+        customizeCamera.SetActive(true);
+
+    }
+
+    public void SwitchBackFromCustomizeCamera()
+    {
+        gameObject.SetActive(true);
+        customizeCamera.SetActive(false);
+    }
 
     public void SwitchToMinigame1Camera()
     {
