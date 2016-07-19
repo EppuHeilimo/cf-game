@@ -54,6 +54,8 @@ TagManager:
   - MenuPanel
   - ScoreTxt
   - TrashCan
+  - StartTutYes
+  - StartTutNo
   layers:
   - Default
   - TransparentFX
