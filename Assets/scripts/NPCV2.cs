@@ -637,7 +637,8 @@ public class NPCV2 : MonoBehaviour
     {
         if(dest == Vector3.zero)
         {
-            npcManager.respNpcsWhoLeftOrDied.Add(new NPCINFO(myName, myHead2d, false));
+            if(playersResponsibility)
+                npcManager.respNpcsWhoLeftOrDied.Add(new NPCINFO(myName, myHead2d, false));
             dest = new Vector3(-620, transform.position.y, 0);
             moveTo(dest); 
         }
@@ -664,7 +665,7 @@ public class NPCV2 : MonoBehaviour
                 timer = 0;
                 doctimer = 0;
             }
-            if (arrivedToDestination(35.0f))
+            if (arrivedToDestination(50.0f))
             {
                 doctimer = 0;
                 timer += Time.deltaTime;
