@@ -70,6 +70,9 @@ public class Tutorial : MonoBehaviour {
     float timeSpentInThisState;
     const float GO_TO_SLEEP_TIME = 20f;
 
+    public Slider musicOptionsSlider;
+    public Slider musicPauseSlider;
+
     // Use this for initialization
     void Start () {     
         tutCanvas = transform.GetChild(0).gameObject;
@@ -96,6 +99,12 @@ public class Tutorial : MonoBehaviour {
 
             if (mascot != null)
                 mascot.isTalking = typing;
+
+            if (tutorialNPC != null)
+            { 
+                if (tutorialNPC.GetComponent<NPCV2>().myHp <= 0)
+                    ChangeState(TutorialState.STATE_ENDING_BAD_2);
+            }
 
             switch (currentState)
             {
@@ -339,6 +348,7 @@ public class Tutorial : MonoBehaviour {
         ShowtutCanvas();
         StartCoroutine(ChangeState(TutorialState.STATE_START, 1f));
         GameObject.Find("Player").GetComponent<PlayerControl>().loadProfile();
+        musicPauseSlider.value = musicOptionsSlider.value;
     }
 
     public void TutorialNoClicked()
@@ -347,6 +357,7 @@ public class Tutorial : MonoBehaviour {
         showPanels.HideTutorialPanel();
         tutorialOn = false;
         GameObject.Find("Player").GetComponent<PlayerControl>().loadProfile();
+        musicPauseSlider.value = musicOptionsSlider.value;
     }
 
     public void QuitTutorial()
@@ -356,6 +367,12 @@ public class Tutorial : MonoBehaviour {
         HidetutCanvas();
         tutorialOn = false;
         currentState = TutorialState.STATE_INACTIVE;
+        GameObject.Find("Inventory").GetComponent<Inventory>().ResetInventory();
+        if (minigame.active)
+        {
+            minigame.quitDosingGame();
+            minigame.quitMinigame();
+        }
         GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>().endTutorial();
     }
 

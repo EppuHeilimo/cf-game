@@ -101,4 +101,16 @@ public class Inventory : MonoBehaviour {
             }       
         }
     }
+
+    public void ResetInventory()
+    {
+        for (int i = 0; i < items.Count; i++)
+        {
+            items[i] = new ItemContainer();
+            foreach (Transform child in slots[i].transform)
+            {
+                Destroy(child.gameObject);
+            }
+        }
+    }
 }

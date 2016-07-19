@@ -151,9 +151,11 @@ public class Minigame1 : MonoBehaviour {
         {
             currNpc++;
             npcObj = npcList[currNpc];
-        }            
+        }
+             
         NPCV2 npc = npcObj.GetComponent<NPCV2>();
-        showMedCard(npc);
+        if (npc != null)
+            showMedCard(npc);
     }
 
     public void prevNPC()
