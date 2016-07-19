@@ -23,11 +23,18 @@ public class Tutorial : MonoBehaviour {
         STATE_MINIGAME_PRACTICE_4,
         STATE_MINIGAME_PRACTICE_5,
         STATE_MINIGAME_PRACTICE_6,
+        STATE_MINIGAME_PRACTICE_SPLITTING,
 
         STATE_ENDING_GOOD_1,
         STATE_ENDING_GOOD_2,
+        STATE_ENDING_GOOD_3,
+        STATE_ENDING_GOOD_4,
+        STATE_ENDING_GOOD_FINAL,
         STATE_ENDING_BAD_1,
         STATE_ENDING_BAD_2,
+
+        STATE_COMPUTER_PRACTICE,
+        STATE_TRASH_PRACTICE,
 
         STATE_INACTIVE
     }
@@ -57,6 +64,11 @@ public class Tutorial : MonoBehaviour {
     MedCup afternoonCup;
     MedCup eveningCup;
     MedCup nightCup;
+    public GameObject scoreBarHighlight;
+    GameObject computer;
+    GameObject trashCan;
+    float timeSpentInThisState;
+    const float GO_TO_SLEEP_TIME = 20f;
 
     // Use this for initialization
     void Start () {     
@@ -71,6 +83,12 @@ public class Tutorial : MonoBehaviour {
 	void Update () {
         if (tutorialOn)
         {
+            timeSpentInThisState += Time.deltaTime;
+            if (timeSpentInThisState >= GO_TO_SLEEP_TIME)
+            {
+                mascot.ChangeState(Mascot.MascotState.STATE_SLEEP);
+            }
+
             if (stateChanged)
             {
                 OnStateChange();
@@ -110,7 +128,7 @@ public class Tutorial : MonoBehaviour {
                     // check if pill inside any med cup
                     if (morningCup.medsInThisCup.Count > 0 || afternoonCup.medsInThisCup.Count > 0 || eveningCup.medsInThisCup.Count > 0 || nightCup.medsInThisCup.Count > 0)
                     {
-                        ChangeState(TutorialState.STATE_MINIGAME_PRACTICE_5);
+                        ChangeState(TutorialState.STATE_MINIGAME_PRACTICE_SPLITTING);
                     }
                     break;
 
@@ -157,6 +175,7 @@ public class Tutorial : MonoBehaviour {
 
     void OnStateChange()
     {
+        timeSpentInThisState = 0f;
         StopAllCoroutines();
         text.text = "";
         switch (currentState)
@@ -218,7 +237,7 @@ public class Tutorial : MonoBehaviour {
                 if (indicator != null)
                     Destroy(indicator);
                 medCont = GameObject.FindGameObjectWithTag("BigMedCont").GetComponent<BigMedCont>();
-                message = "This is the administration minigame.\nFirst, use hand disinfectant, then click Ibuprofen.";
+                message = "This is the administration minigame. Use hand disinfectant first and then click Ibuprofen.";
                 break;
 
             case TutorialState.STATE_MINIGAME_PRACTICE_4:
@@ -226,11 +245,16 @@ public class Tutorial : MonoBehaviour {
                 afternoonCup = GameObject.FindGameObjectWithTag("afternoonCup").GetComponent<MedCup>();
                 eveningCup = GameObject.FindGameObjectWithTag("eveningCup").GetComponent<MedCup>();
                 nightCup = GameObject.FindGameObjectWithTag("nightCup").GetComponent<MedCup>();
-                message = "Do you know Angry Birds? This works just like that, but you gotta shoot pills to medicine cups.\nFire away!";
+                message = "Here you gotta shoot pills to medicine cups with slingshot like in Angry Birds. Fire away!";
+                break;
+
+            case TutorialState.STATE_MINIGAME_PRACTICE_SPLITTING:
+                message = "Nice shot! Some pills are splittable, and if you click them in the air during slow motion, the dosage will be cut in half.";
+                StartCoroutine(ChangeState(TutorialState.STATE_MINIGAME_PRACTICE_5, 10f));
                 break;
 
             case TutorialState.STATE_MINIGAME_PRACTICE_5:
-                message = "Nice shot!\nLets go give your patient his medicine. Click the back-button in the top left corner twice.";
+                message = "Lets go give your patient his medicine now. Click the back-button in the top left corner twice.";
                 break;
 
             case TutorialState.STATE_MINIGAME_PRACTICE_6:
@@ -238,21 +262,53 @@ public class Tutorial : MonoBehaviour {
                 break;
 
             case TutorialState.STATE_ENDING_GOOD_1:
-                message = "Great job!\nThis is the basic idea of the game, give correct medicine at correct times to your patients.";
-                StartCoroutine(ChangeState(TutorialState.STATE_ENDING_GOOD_2, 6f));
+                if (mascot.currentState != Mascot.MascotState.STATE_NORMAL)
+                    mascot.ChangeState(Mascot.MascotState.STATE_NORMAL);
+                message = "Great job!\nThis is the basic idea of the game, give correct medicine at correct times to your patients.\n";
+                StartCoroutine(ChangeState(TutorialState.STATE_COMPUTER_PRACTICE, 7f));
+                break;
+
+            case TutorialState.STATE_COMPUTER_PRACTICE:
+                message = "There is a computer in the office. You can see your schedule and patients there.";
+                ShowComputer();
+                StartCoroutine(ChangeState(TutorialState.STATE_TRASH_PRACTICE, 8f));
+                break;
+
+            case TutorialState.STATE_TRASH_PRACTICE:
+                message = "Next to the computer, there is a trash can.\nSelect it and click a medicine cup in your inventory to delete it.";
+                ShowTrashCan();
+                StartCoroutine(ChangeState(TutorialState.STATE_ENDING_GOOD_2, 8f));
                 break;
 
             case TutorialState.STATE_ENDING_GOOD_2:
-                message = "Good luck on your first day in the hospital, bye for now!";
+                scoreBarHighlight.SetActive(true);
+                message = "In the score bar you can see how well you take care of your patients, and if it reaches zero, you will lose.\n";
+                StartCoroutine(ChangeState(TutorialState.STATE_ENDING_GOOD_3, 10f));
+                break;
+
+            case TutorialState.STATE_ENDING_GOOD_3:
+                message = "You will lose score points if you give wrong medicine or wrong dosage.";
+                StartCoroutine(ChangeState(TutorialState.STATE_ENDING_GOOD_4, 7f));
+                break;
+
+            case TutorialState.STATE_ENDING_GOOD_4:
+                scoreBarHighlight.SetActive(false);
+                message = "Each day the number of patients you gotta take care of increases.";
+                StartCoroutine(ChangeState(TutorialState.STATE_ENDING_GOOD_FINAL, 6f));
+                break;
+
+            case TutorialState.STATE_ENDING_GOOD_FINAL:
+                message = "Good luck on your first day in the hospital, bye for now!";           
                 Invoke("QuitTutorial", 6);
                 break;
 
             case TutorialState.STATE_ENDING_BAD_1:
-                message = "That medicine was incorrect or the dosage was wrong.\nTry again, the patient needs 400 mg of Ibuprofen.";
+                message = "That medicine was incorrect or the dosage was wrong. Try again, the patient needs 400 mg of Ibuprofen.";
+                mascot.ChangeState(Mascot.MascotState.STATE_ANGRY);
                 break;
 
             case TutorialState.STATE_ENDING_BAD_2:
-                message = "You killed the patient.\nYou did that on purpose, didn't you? Are you satisfied now?!";
+                message = "You killed the patient. You did that on purpose, didn't you? Are you satisfied now?!";
                 Invoke("QuitTutorial", 12);
                 break;
 
@@ -356,5 +412,18 @@ public class Tutorial : MonoBehaviour {
         indicator.transform.localScale = new Vector3(5, 5, 5);      
         mCamera.lockCameraToThisTransformForXTime(medCab.transform, 3f);
         minigame = GameObject.Find("Minigame1").GetComponent<Minigame1>();
+    }
+
+    void ShowComputer()
+    {
+        computer = GameObject.FindGameObjectWithTag("Computer");        
+        mCamera.lockCameraToThisTransformForXTime(computer.transform, 16f);
+        GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerControl>().setTarget(computer);
+    }
+
+    void ShowTrashCan()
+    {
+        trashCan = GameObject.FindGameObjectWithTag("TrashCan");
+        GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerControl>().setTarget(trashCan);
     }
 }
