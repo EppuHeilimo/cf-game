@@ -14,6 +14,8 @@ public class PlayerControl : MonoBehaviour {
     NavMeshPath dest;
     Vector3 defaultPosition;
 
+    Profile profile;
+
     MouseOverIgnore[] mouseOverIgnoreGos;
 
     bool sitting = false;
@@ -34,6 +36,30 @@ public class PlayerControl : MonoBehaviour {
         defaultPosition = transform.position;
         mouseOverIgnoreGos = FindObjectsOfType<MouseOverIgnore>();
 
+
+
+    }
+
+    public void loadProfile()
+    {
+        profile = GameObject.Find("SavedData").GetComponent<SavedData>().getProfile();
+        if(profile == null)
+        {
+            print("Null profile");
+        }
+
+        //change player's head
+        Transform iiro = transform.Find("Iiro");
+        Transform root = iiro.Find("Root");
+        Transform torso = root.Find("Torso");
+        Transform chest = torso.Find("Chest");
+        Transform Head = chest.Find("Head");
+        Transform head = Head.Find("iiro_head");
+        MeshFilter mesh = head.GetComponent<MeshFilter>();
+        MeshRenderer material = head.GetComponent<MeshRenderer>();
+
+        mesh.sharedMesh = GameObject.Find("Heads").GetComponent<Heads>().getPlayersHead().GetComponent<MeshFilter>().sharedMesh;
+        material.sharedMaterial = GameObject.Find("Heads").GetComponent<Heads>().getPlayersHead().GetComponent<MeshRenderer>().sharedMaterial;
     }
 	
 	// Update is called once per frame

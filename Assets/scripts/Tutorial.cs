@@ -282,6 +282,7 @@ public class Tutorial : MonoBehaviour {
         tutorialOn = true;
         ShowtutCanvas();
         StartCoroutine(ChangeState(TutorialState.STATE_START, 1f));
+        GameObject.Find("Player").GetComponent<PlayerControl>().loadProfile();
     }
 
     public void TutorialNoClicked()
@@ -289,6 +290,7 @@ public class Tutorial : MonoBehaviour {
         startOptions.StartButtonClicked();
         showPanels.HideTutorialPanel();
         tutorialOn = false;
+        GameObject.Find("Player").GetComponent<PlayerControl>().loadProfile();
     }
 
     public void QuitTutorial()
