@@ -182,6 +182,7 @@ public class Minigame1 : MonoBehaviour {
         kasDesObj.GetComponent<KasiDesi>().SetDefaultColor();
         kasiDesi = true;
         EnableDropsAnim(true);
+        kasDesObj.GetComponent<AudioSource>().Play();
         kasDesAnim.Play();
         spawnDrops = true;    
     }

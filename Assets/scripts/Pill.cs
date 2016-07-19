@@ -32,6 +32,8 @@ public class Pill : MonoBehaviour
     public bool doNotDestroy;
 
     Sprite pillSpriteHalf;
+    public AudioSource splitSound;
+    public AudioSource throwSound;
 
     public void Init(string medName, int dosage, Sprite pillSprite, int canSplit, Vector3 pos)
     {
@@ -92,7 +94,7 @@ public class Pill : MonoBehaviour
     public void OnThrow()
     {
         //play the sound
-        GetComponent<AudioSource>().Play();
+        throwSound.Play();
         //show the trail renderer
         GetComponent<TrailRenderer>().enabled = true;
         //allow for gravity forces
@@ -109,6 +111,7 @@ public class Pill : MonoBehaviour
         {
             if (!splitted)
             {
+                splitSound.Play();
                 this.dosage = this.dosage / 2;
                 splitted = true;
                 gameObject.GetComponent<SpriteRenderer>().sprite = pillSpriteHalf;
