@@ -24,6 +24,6 @@ public class PointerAnimation2D : MonoBehaviour
         x += Time.deltaTime * animSpeed;
         ypos = Mathf.Abs(Mathf.Sin(x)) * maxpos;
         transform.position = new Vector3(defPos.x, ypos + 50, defPos.z);
-        gameObject.GetComponent<Image>().color = new Color(255, 255, 255, (Mathf.Sin(Time.time * 2.0f) + 1.0f) / 2.0f);
+        gameObject.GetComponent<Image>().color = new Color(255, 255, 255, Mathf.Abs((Mathf.Sin(Time.time * 2.0f) + 1.0f) / 2.0f));
     }
 }

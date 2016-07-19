@@ -232,15 +232,20 @@ public class CustomizeCharacter : MonoBehaviour {
                 ray = Camera.main.ScreenPointToRay(Input.GetTouch(0).position);
                 if (Physics.Raycast(ray, 500.0f, layerMask))
                 {
+                    isRotating = true;
                     touchReference = touch.position;
                 }
             }
-            else if (touch.phase == TouchPhase.Moved)
+            else if (isRotating && touch.phase == TouchPhase.Moved)
             {
                 mouseOffset = (touch.position - touchReference);
                 rotation.z = mouseOffset.x * sensitivity;
                 modeltransform.Rotate(rotation);
                 touchReference = touch.position;
+            }
+            else if(isRotating && touch.phase == TouchPhase.Ended)
+            {
+                isRotating = false;
             }
         }
 #endif
