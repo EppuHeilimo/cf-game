@@ -637,6 +637,7 @@ public class NPCV2 : MonoBehaviour
     {
         if(dest == Vector3.zero)
         {
+            npcManager.respNpcsWhoLeftOrDied.Add(new NPCINFO(myName, myHead2d, false));
             dest = new Vector3(-620, transform.position.y, 0);
             moveTo(dest); 
         }
@@ -645,7 +646,7 @@ public class NPCV2 : MonoBehaviour
             npcManager.deleteNpcFromList(gameObject);
             if(playersResponsibility)
             {
-                npcManager.responsibilityNpcs.Remove(gameObject);
+                npcManager.removeNpcFromPlayersResponsibilities(gameObject);
             }
             Destroy(gameObject);
         }

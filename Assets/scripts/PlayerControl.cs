@@ -34,7 +34,7 @@ public class PlayerControl : MonoBehaviour {
         agent = GetComponent<NavMeshAgent>();
         tooltip = GameObject.Find("Inventory").GetComponent<Tooltip>();
         defaultPosition = transform.position;
-        mouseOverIgnoreGos = FindObjectsOfType<MouseOverIgnore>();
+        
 
 
 
@@ -47,6 +47,8 @@ public class PlayerControl : MonoBehaviour {
         {
             print("Null profile");
         }
+
+        mouseOverIgnoreGos = FindObjectsOfType<MouseOverIgnore>();
 
         //change player's head
         Transform iiro = transform.Find("Iiro");
@@ -518,12 +520,14 @@ public class PlayerControl : MonoBehaviour {
         }
         //if mouse is over UI, test if the UI is set to ignore mouse over
         bool ret = true;
-        foreach(MouseOverIgnore ign in mouseOverIgnoreGos)
+        if(mouseOverIgnoreGos != null)
         {
-            if (ign.ignore)
-                ret = false;
+            foreach (MouseOverIgnore ign in mouseOverIgnoreGos)
+            {
+                if (ign.ignore)
+                    ret = false;
+            }
         }
-
         return ret;
     }
 

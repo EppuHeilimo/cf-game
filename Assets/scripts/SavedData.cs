@@ -29,39 +29,25 @@ public class SavedData : MonoBehaviour {
     
 	// Use this for initialization
 	void Start () {
-
         string path = "";
         if (Application.platform == RuntimePlatform.Android)
         {
-            // Android
-            string oriPath = System.IO.Path.Combine(Application.streamingAssetsPath, "Player.json");
-
-            // Android only use WWW to read file
-            WWW reader = new WWW(oriPath);
-            while (!reader.isDone) { }
-
-            string realPath = Application.persistentDataPath + "/db";
-            System.IO.File.WriteAllBytes(realPath, reader.bytes);
-
-            path = realPath;
+            path = Application.persistentDataPath + "/Player.json";
         }
         else
         {
-            path = Application.dataPath + "/StreamingAssets/Player.json";
+            path = Application.persistentDataPath + "/Player.json";
         }
 
-        if(!File.Exists(path))
+        if (!File.Exists(path))
         {
-            fixFile(path);
+            File.WriteAllText(path, "");
+            profiles.Add(new Profile("Default", "head_f_1", 0, 0));
+            saveProfile();
         }
 
         profilesData = JsonMapper.ToObject(File.ReadAllText(path));
 
-
-        if (profilesData.Count == 0)
-        {
-            fixFile(path);
-        }
 
         for (int i = 0; i < profilesData.Count; i++)
         {
@@ -69,16 +55,9 @@ public class SavedData : MonoBehaviour {
         }
         selectedProfile = profiles[0];
 
+
     }
 
-    void fixFile(string path)
-    {
-        Profile temp = new Profile("Default", "head_f_1", 0, 0);
-        profiles.Add(temp);
-        FileStream s = File.Create(path);
-        s.Close();
-        saveProfile();
-    }
 
     public Profile getProfile()
     {
@@ -87,37 +66,28 @@ public class SavedData : MonoBehaviour {
 
     public void saveProfile()
     {
+        
         string jsontext = "[";
         for (int i = 0; i < profiles.Count; i++)
         {
-            if (i != profiles.Count - 1)
-            {
+            if (i != 0)
                 jsontext += ",";
-            }
             jsontext += JsonMapper.ToJson(profiles[i]);
         }
         jsontext += "]";
 
         string path = "";
+        
         if (Application.platform == RuntimePlatform.Android)
         {
-            // Android
-            string oriPath = System.IO.Path.Combine(Application.streamingAssetsPath, "Player.json");
-
-            // Android only use WWW to read file
-            WWW reader = new WWW(oriPath);
-            while (!reader.isDone) { }
-
-            string realPath = Application.persistentDataPath + "/db";
-            System.IO.File.WriteAllBytes(realPath, reader.bytes);
-
-            path = oriPath;//realPath;
+            string realPath = Application.persistentDataPath + "/Player.json";
+            path = realPath;
         }
         else
         {
-            path = Application.dataPath + "/StreamingAssets/Player.json";
+            path = Application.persistentDataPath + "/Player.json";
         }
-
+        File.WriteAllText(path, "");
         File.WriteAllText(path, jsontext);
     }
 
