@@ -7,19 +7,22 @@ public class Mascot : MonoBehaviour {
     public enum MascotState
     {
         STATE_NORMAL = 0,
-        STATE_ANGRY
+        STATE_ANGRY,
+        STATE_SLEEP
     }
 
-    public Sprite[] sprites = new Sprite[2];
+    public Sprite[] sprites = new Sprite[3];
     public MascotState currentState;
     public bool isTalking;
     public Animator anim;
     float delay = 3f;
+    Tutorial tutorial;
 
     void Start()
     {
         currentState = MascotState.STATE_NORMAL;
         gameObject.GetComponent<Image>().sprite = sprites[0];
+        tutorial = GameObject.Find("Tutorial").GetComponent<Tutorial>();
     }
 
     void Update()
@@ -46,13 +49,29 @@ public class Mascot : MonoBehaviour {
                     anim.Play("MascotTalkAngry");
                 else
                 {
-                    delay -= Time.deltaTime;
+                    delay -= Time.deltaTime * 2;
                     if (delay <= 0)
                     {
                         anim.Play("MascotPulseAngry");
                         delay = 3f;
                         anim.Play("MascotPulseAngry", -1, 0f);
                     }
+                }
+                break;
+
+            case MascotState.STATE_SLEEP:
+                if (isTalking)
+                { 
+                    if (tutorial.currentState == Tutorial.TutorialState.STATE_ENDING_BAD_1 || tutorial.currentState == Tutorial.TutorialState.STATE_ENDING_BAD_2)
+                        ChangeState(MascotState.STATE_ANGRY);
+                    else
+                        ChangeState(MascotState.STATE_NORMAL);
+                }
+                else
+                {
+
+                        anim.Play("MascotSleep");
+
                 }
                 break;
         }     
@@ -69,6 +88,10 @@ public class Mascot : MonoBehaviour {
 
             case MascotState.STATE_ANGRY:
                 gameObject.GetComponent<Image>().sprite = sprites[1];
+                break;
+
+            case MascotState.STATE_SLEEP:
+                gameObject.GetComponent<Image>().sprite = sprites[2];
                 break;
         }
     }

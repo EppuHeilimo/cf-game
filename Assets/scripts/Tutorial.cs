@@ -23,6 +23,7 @@ public class Tutorial : MonoBehaviour {
         STATE_MINIGAME_PRACTICE_4,
         STATE_MINIGAME_PRACTICE_5,
         STATE_MINIGAME_PRACTICE_6,
+        STATE_MINIGAME_PRACTICE_SPLITTING,
 
         STATE_ENDING_GOOD_1,
         STATE_ENDING_GOOD_2,
@@ -66,6 +67,8 @@ public class Tutorial : MonoBehaviour {
     public GameObject scoreBarHighlight;
     GameObject computer;
     GameObject trashCan;
+    float timeSpentInThisState;
+    const float GO_TO_SLEEP_TIME = 20f;
 
     // Use this for initialization
     void Start () {     
@@ -80,6 +83,12 @@ public class Tutorial : MonoBehaviour {
 	void Update () {
         if (tutorialOn)
         {
+            timeSpentInThisState += Time.deltaTime;
+            if (timeSpentInThisState >= GO_TO_SLEEP_TIME)
+            {
+                mascot.ChangeState(Mascot.MascotState.STATE_SLEEP);
+            }
+
             if (stateChanged)
             {
                 OnStateChange();
@@ -119,7 +128,7 @@ public class Tutorial : MonoBehaviour {
                     // check if pill inside any med cup
                     if (morningCup.medsInThisCup.Count > 0 || afternoonCup.medsInThisCup.Count > 0 || eveningCup.medsInThisCup.Count > 0 || nightCup.medsInThisCup.Count > 0)
                     {
-                        ChangeState(TutorialState.STATE_MINIGAME_PRACTICE_5);
+                        ChangeState(TutorialState.STATE_MINIGAME_PRACTICE_SPLITTING);
                     }
                     break;
 
@@ -166,6 +175,7 @@ public class Tutorial : MonoBehaviour {
 
     void OnStateChange()
     {
+        timeSpentInThisState = 0f;
         StopAllCoroutines();
         text.text = "";
         switch (currentState)
@@ -227,7 +237,7 @@ public class Tutorial : MonoBehaviour {
                 if (indicator != null)
                     Destroy(indicator);
                 medCont = GameObject.FindGameObjectWithTag("BigMedCont").GetComponent<BigMedCont>();
-                message = "This is the administration minigame.\nFirst, use hand disinfectant, then click Ibuprofen.";
+                message = "This is the administration minigame. Use hand disinfectant first and then click Ibuprofen.";
                 break;
 
             case TutorialState.STATE_MINIGAME_PRACTICE_4:
@@ -235,11 +245,16 @@ public class Tutorial : MonoBehaviour {
                 afternoonCup = GameObject.FindGameObjectWithTag("afternoonCup").GetComponent<MedCup>();
                 eveningCup = GameObject.FindGameObjectWithTag("eveningCup").GetComponent<MedCup>();
                 nightCup = GameObject.FindGameObjectWithTag("nightCup").GetComponent<MedCup>();
-                message = "Do you know Angry Birds? This works just like that, but you gotta shoot pills to medicine cups.\nFire away!";
+                message = "Here you gotta shoot pills to medicine cups with slingshot like in Angry Birds. Fire away!";
+                break;
+
+            case TutorialState.STATE_MINIGAME_PRACTICE_SPLITTING:
+                message = "Nice shot! Some pills are splittable, and if you click them in the air during slow motion, the dosage will be cut in half.";
+                StartCoroutine(ChangeState(TutorialState.STATE_MINIGAME_PRACTICE_5, 10f));
                 break;
 
             case TutorialState.STATE_MINIGAME_PRACTICE_5:
-                message = "Nice shot!\nLets go give your patient his medicine. Click the back-button in the top left corner twice.";
+                message = "Lets go give your patient his medicine now. Click the back-button in the top left corner twice.";
                 break;
 
             case TutorialState.STATE_MINIGAME_PRACTICE_6:
@@ -247,8 +262,10 @@ public class Tutorial : MonoBehaviour {
                 break;
 
             case TutorialState.STATE_ENDING_GOOD_1:
+                if (mascot.currentState != Mascot.MascotState.STATE_NORMAL)
+                    mascot.ChangeState(Mascot.MascotState.STATE_NORMAL);
                 message = "Great job!\nThis is the basic idea of the game, give correct medicine at correct times to your patients.\n";
-                StartCoroutine(ChangeState(TutorialState.STATE_COMPUTER_PRACTICE, 6f));
+                StartCoroutine(ChangeState(TutorialState.STATE_COMPUTER_PRACTICE, 7f));
                 break;
 
             case TutorialState.STATE_COMPUTER_PRACTICE:
@@ -271,7 +288,7 @@ public class Tutorial : MonoBehaviour {
 
             case TutorialState.STATE_ENDING_GOOD_3:
                 message = "You will lose score points if you give wrong medicine or wrong dosage.";
-                StartCoroutine(ChangeState(TutorialState.STATE_ENDING_GOOD_4, 6f));
+                StartCoroutine(ChangeState(TutorialState.STATE_ENDING_GOOD_4, 7f));
                 break;
 
             case TutorialState.STATE_ENDING_GOOD_4:
