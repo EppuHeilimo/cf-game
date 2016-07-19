@@ -41,6 +41,7 @@ public class MedCup : MonoBehaviour {
             pills.Add(other.gameObject);
             lastPill = pills.Count - 1;
             other.gameObject.tag = "disabledPill";
+            GetComponent<AudioSource>().Play();
             UpdateText();
         }
     }
