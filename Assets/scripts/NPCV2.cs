@@ -232,7 +232,7 @@ public class NPCV2 : MonoBehaviour
                 responsibilityIndicatorclone.transform.rotation = transform.rotation;
             }
             //check if there are some natural needs, or unstucking needs
-            if(myState != NPCState.STATE_DAY_CHANGE && myState != NPCState.STATE_DEAD)
+            if(myState != NPCState.STATE_DAY_CHANGE && myState != NPCState.STATE_DEAD && myState != NPCState.STATE_LEAVE_HOSPITAL)
                 checkNeeds();
             //Set current state to highest priority currently queued
             //if higher priority job compared to current state is found, current state will be paused
@@ -636,14 +636,7 @@ public class NPCV2 : MonoBehaviour
     private void leaveHospital()
     {
         if(dest == Vector3.zero)
-        {
-            if(playersResponsibility)
-            {
-                GetComponent<FloatTextNPC>().addFloatText("Health excellent! Leaving Hospital!", true);
-                scoreSystem.addToScore(5);
-                npcManager.respNpcsWhoLeftOrDied.Add(new NPCINFO(myName, myHead2d, false));
-            }
-                
+        {             
             dest = new Vector3(-501, 0, 951);
             moveTo(dest); 
         }
@@ -1068,8 +1061,6 @@ public class NPCV2 : MonoBehaviour
                 //if this npc was players responsibility, remove from responsibilities
                 if(playersResponsibility)
                 {
-                    npcManager.respNpcsWhoLeftOrDied.Add(new NPCINFO(myName, myHead2d, true));
-                    GameObject.FindGameObjectWithTag("ScoringSystem").GetComponent<ScoringSystem>().responsibilityNPCDied();
                     playersResponsibility = false;
                     npcManager.removeNpcFromPlayersResponsibilities(gameObject);
                     Destroy(responsibilityIndicatorclone);
@@ -1795,11 +1786,23 @@ public class NPCV2 : MonoBehaviour
             }
             if (myHp <= 0)
             {
+                GetComponent<FloatTextNPC>().addFloatText("Health critical! Passing out!", false);
+                if (playersResponsibility)
+                {
+                    GameObject.FindGameObjectWithTag("ScoringSystem").GetComponent<ScoringSystem>().responsibilityNPCDied();
+                    npcManager.respNpcsWhoLeftOrDied.Add(new NPCINFO(myName, myHead2d, true));
+                }
                 addStateToQueue(3, NPCState.STATE_DEAD);
                 taskCompleted = true;
             }
             if(myHp >= 100)
             {
+                GetComponent<FloatTextNPC>().addFloatText("Health excellent! Leaving Hospital!", true);
+                if(playersResponsibility)
+                {
+                    GameObject.FindGameObjectWithTag("ScoringSystem").GetComponent<ScoringSystem>().responsibilityNPCLeftHospital();
+                    npcManager.respNpcsWhoLeftOrDied.Add(new NPCINFO(myName, myHead2d, false));
+                }
                 addStateToQueue(3, NPCState.STATE_LEAVE_HOSPITAL);
                 objectManager.unbookObject(myBed);
                 taskCompleted = true;
