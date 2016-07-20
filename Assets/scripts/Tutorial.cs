@@ -302,7 +302,7 @@ public class Tutorial : MonoBehaviour {
 
             case TutorialState.STATE_ENDING_GOOD_4:
                 scoreBarHighlight.SetActive(false);
-                message = "Each day the number of patients you gotta take care of increases.";
+                message = "Each day the number of patients you gotta take care of increases. The patients will start to arrive at 7 am.";
                 StartCoroutine(ChangeState(TutorialState.STATE_ENDING_GOOD_FINAL, 6f));
                 break;
 
