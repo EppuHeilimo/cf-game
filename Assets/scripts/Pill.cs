@@ -117,6 +117,8 @@ public class Pill : MonoBehaviour
                 gameObject.GetComponent<SpriteRenderer>().sprite = pillSpriteHalf;
                 Time.timeScale = 1.0f;
                 Time.fixedDeltaTime = 0.02F * Time.timeScale;
+                if (GameObject.Find("Tutorial").GetComponent<Tutorial>().tutorialOn)
+                    GameObject.Find("Tutorial").GetComponent<Tutorial>().PillSplitted();
             }
         }
     }

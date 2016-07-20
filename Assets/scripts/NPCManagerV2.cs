@@ -124,7 +124,8 @@ public class NPCManagerV2 : MonoBehaviour
 
     public GameObject spawnTutorialGuy()
     {
-        return spawnNPC();
+        Vector3 pos = new Vector3(-242.9f, 0, -3f);
+        return spawnNPC(pos);
     }
 
     // Update is called once per frame
@@ -206,6 +207,33 @@ public class NPCManagerV2 : MonoBehaviour
 
         //set the file name of the 2d sprite of the head
         newNpc.GetComponent<NPCV2>().myHead2d = Resources.Load<Sprite>("Sprites/heads/" + headname + ".2d");  
+        npcList.Add(newNpc);
+        return newNpc;
+    }
+
+    public GameObject spawnNPC(Vector3 pos)
+    {
+        int nameIndex = Random.Range(0, NAMEPOOL_LENGTH);
+        string myId = CreateID();
+        int myGender = Random.Range(0, 2);
+        string myName = "";
+        if (myGender == 0)
+            myName = namePoolFemale[nameIndex];
+        else
+            myName = namePoolMale[nameIndex];
+
+        GameObject newNpc = Instantiate(npcPrefab, pos, Quaternion.identity) as GameObject; // the method that copies the prefab object
+        newNpc.GetComponent<NPCV2>().Init(myName, myId, myGender); // initialize the npc
+
+        //change head according to gender
+        string headname = "";
+        if (myGender == 0)
+            headname = newNpc.GetComponent<HeadChange>().ChangeHead(heads.headsFemale);
+        else
+            headname = newNpc.GetComponent<HeadChange>().ChangeHead(heads.headsMale);
+
+        //set the file name of the 2d sprite of the head
+        newNpc.GetComponent<NPCV2>().myHead2d = Resources.Load<Sprite>("Sprites/heads/" + headname + ".2d");
         npcList.Add(newNpc);
         return newNpc;
     }
