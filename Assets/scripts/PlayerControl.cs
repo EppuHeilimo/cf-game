@@ -455,17 +455,6 @@ public class PlayerControl : MonoBehaviour {
             //check if the ray hits targetableobjects collider
             
         }
-
-        /* Scrollwheel zooming */
-        var d = Input.GetAxis("Mouse ScrollWheel");
-        if (d > 0f)
-        {
-            GameObject.Find("Main Camera").GetComponent<Camera>().orthographicSize++;
-        }
-        else if (d < 0f)
-        {
-            GameObject.Find("Main Camera").GetComponent<Camera>().orthographicSize--;
-        }
     }
 
     public void setTarget(GameObject go)

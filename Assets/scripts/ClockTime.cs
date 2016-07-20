@@ -84,7 +84,7 @@ public class ClockTime : MonoBehaviour {
         
         if(!paused)
         {
-            if(tutorial.tutorialOn && currentHours == 13 )
+            if(tutorial.tutorialOn && currentHours == 12 )
             {
 
             }

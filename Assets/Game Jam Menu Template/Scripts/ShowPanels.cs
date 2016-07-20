@@ -85,6 +85,7 @@ public class ShowPanels : MonoBehaviour {
 
     public void ShowTutorialPanel()
     {
+        GameObject.FindGameObjectWithTag("MenuButtons").SetActive(false);
         tutorialPromptPanel.SetActive(true);
         optionsTint.SetActive(true);
     }
