@@ -88,8 +88,8 @@ public class NPCManagerV2 : MonoBehaviour
     {
         npcList = new List<GameObject>();
         responsibilityNpcs = new List<GameObject>();
-        spawnPoint = new Vector3(-331, 0, -5);
-        spawnTime = 3; //Random.Range(5, 20); // spawn new NPC somewhere between 5 and 20 seconds
+        spawnPoint = new Vector3(-501, 0, 951);
+        spawnTime = 5; 
         usedIds = new List<string>();
         invObj = GameObject.Find("Inventory");
         database = invObj.GetComponent<ItemDatabase>();
@@ -142,14 +142,27 @@ public class NPCManagerV2 : MonoBehaviour
                 timeSinceLastSpawn += Time.deltaTime;
                 npcCount = npcList.Count;
 
-                if (npcCount < MAX_NPCS && (clock.currentDayTime == ClockTime.DayTime.MORNING || clock.currentDayTime == ClockTime.DayTime.AFTERNOON))
+                if (npcCount < MAX_NPCS && clock.npcspawnrate != 0)
                 {
-                    if (timeSinceLastSpawn > spawnTime)
+                    if(clock.npcspawnrate == 1)
                     {
-                        timeSinceLastSpawn = 0;
-                        spawnTime = 3;
-                        spawnNPC();
+                        if (timeSinceLastSpawn > spawnTime)
+                        {
+                            timeSinceLastSpawn = 0;
+                            spawnTime = 5;
+                            spawnNPC();
+                        }
                     }
+                    else if (clock.npcspawnrate == 2)
+                    {
+                        if (timeSinceLastSpawn > spawnTime)
+                        {
+                            timeSinceLastSpawn = 0;
+                            spawnTime = 10;
+                            spawnNPC();
+                        }
+                    }
+
                 }
             }
             if (nurses.Count > 0)

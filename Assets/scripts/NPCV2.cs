@@ -644,7 +644,7 @@ public class NPCV2 : MonoBehaviour
                 npcManager.respNpcsWhoLeftOrDied.Add(new NPCINFO(myName, myHead2d, false));
             }
                 
-            dest = new Vector3(-620, transform.position.y, 0);
+            dest = new Vector3(-501, 0, 951);
             moveTo(dest); 
         }
         if(arrivedToDestination(100.0f))

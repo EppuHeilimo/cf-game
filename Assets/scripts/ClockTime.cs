@@ -5,16 +5,18 @@ using System.Collections;
 public class ClockTime : MonoBehaviour {
     float currentTime = 0.0f;
     public int currentHours;
+    public int minutesfloored;
     //conversion ratio from real second to game time minute
     //change this to change game time speed
     float secToGameMin = 0.5f;
+
+    //0 - no spawn, 1 - normal rate, 2, slow rate
+    public int npcspawnrate = 0;
 
     //start day
     public int day = 1;
     public bool paused = false;
 
-
-    
     float dayLengthInRealHours = 24;
 
     float dayLength;
@@ -38,6 +40,9 @@ public class ClockTime : MonoBehaviour {
     const string AFTERNOON_CHANGE = "13:00";
     const string EVENING_CHANGE = "15:00";
     const string NIGHT_CHANGE = "20:00";
+    const string NPC_SPAWN_START = "06:30";
+    const string NPC_SPAWN_SLOW = "15:00";
+    const string NPC_SPAWN_END = "20:00";
 
     bool morningcheck = false;
     bool afternooncheck = false;
@@ -119,6 +124,19 @@ public class ClockTime : MonoBehaviour {
                     resetMeds();
                 else if (timeString == NIGHT_CHANGE)
                     resetMeds();
+
+                if(timeString == NPC_SPAWN_START)
+                {
+                    npcspawnrate = 1;
+                }
+                if(timeString == NPC_SPAWN_SLOW)
+                {
+                    npcspawnrate = 2;
+                }
+                if(timeString == NPC_SPAWN_END)
+                {
+                    npcspawnrate = 0;
+                }
 
                 textref.text = currentText;
 
@@ -239,7 +257,7 @@ public class ClockTime : MonoBehaviour {
         currentHours = 0;
         startHourInSeconds = 0;
         startHour = 6;
-
+        npcspawnrate = 0;
         morningcheck = false;
         afternooncheck = false;
         eveningcheck = false;
@@ -257,7 +275,7 @@ public class ClockTime : MonoBehaviour {
         currentHours = 0;
         startHourInSeconds = 0;
         startHour = 6;
-
+        npcspawnrate = 0;
         morningcheck = false;
         afternooncheck = false;
         eveningcheck = false;
@@ -284,7 +302,7 @@ public class ClockTime : MonoBehaviour {
     string getTimeString()
     {
         float minutesfloat = currentTime / secToGameMin;
-        int minutesfloored = Mathf.FloorToInt(minutesfloat);
+        minutesfloored = Mathf.FloorToInt(minutesfloat);
         string ret;
 
         int hours = 0;
