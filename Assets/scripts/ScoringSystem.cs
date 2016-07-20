@@ -9,7 +9,7 @@ public class ScoringSystem : MonoBehaviour {
     public int oldtotalscore = 0;
     int medinactivepunishment = -2;
     int respnpcleavinghospital = 10;
-    int respnpcdeathpunishment = -10;
+    int respnpcdeathpunishment = -25;
     public bool gameover = false;
 
 

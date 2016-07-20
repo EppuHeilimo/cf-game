@@ -23,7 +23,8 @@ public class NPCV2 : MonoBehaviour
         STATE_GO_WC,
         STATE_IDLE_SIT,
         STATE_DAY_CHANGE,
-        STATE_DEFAULT //Do nothing
+        STATE_DEFAULT, //Do nothing
+        STATE_RANDOM_SLEEP
         
 
     }
@@ -33,6 +34,7 @@ public class NPCV2 : MonoBehaviour
     bool lockstate = false;
     public bool skipNextMedCheck = false;
     public bool paused = false;
+    public int activityRate = 0;
     ClockTime clock;
     LineRenderer DebugPath;
     IiroAnimBehavior anim;
@@ -122,7 +124,7 @@ public class NPCV2 : MonoBehaviour
     const int WALK_RADIUS = 500;
     const float SLEEP_TIME = 10f;
     const float AT_DOC = 5f;
-    const float IN_WC = 10f;
+    const float IN_WC = 5f;
     const float STAY_ON_FLOOR_ON_FALL = 10.0f;
 
     //stuck testing
@@ -321,6 +323,9 @@ public class NPCV2 : MonoBehaviour
                 break;
             case NPCState.STATE_DEFAULT:
                 break;
+            case NPCState.STATE_RANDOM_SLEEP:
+                randomSleep();
+                break;
         }
     }
 
@@ -427,7 +432,7 @@ public class NPCV2 : MonoBehaviour
                         callofnature += 1;
                         callofnaturetimer = 0;
                     }
-                    if (callofnature > 10.0f)
+                    if (callofnature > 30.0f)
                     {
                         addStateToQueue(2, NPCState.STATE_GO_WC);
                         wcqueued = true;
@@ -533,13 +538,13 @@ public class NPCV2 : MonoBehaviour
                 moveTo(dest);
             }
          }
-        else if (arrivedToDestination(10.0f) && !sitting)
+        if (arrivedToDestination(10.0f) && !sitting)
         {
             agent.Stop();
             sitting = true;
         }
 
-        else if (sitting)
+        if (sitting)
         {
             if (arrivedToDestination(20.0f))
             {
@@ -548,7 +553,8 @@ public class NPCV2 : MonoBehaviour
                     //rotate to look away from the bed so animation will move the player on the bed
                     if (interactionComponent.RotateAwayFrom(interactionComponent.getTarget().transform))
                     {
-                        agent.GetComponent<IiroAnimBehavior>().sit();
+                        if(!anim.sitting)
+                            agent.GetComponent<IiroAnimBehavior>().sit();
                         timer += Time.deltaTime;
                         if (timer > IN_WC)
                         {
@@ -834,13 +840,14 @@ public class NPCV2 : MonoBehaviour
             if (!GetComponent<IiroAnimBehavior>().sleeping)
                 GetComponent<IiroAnimBehavior>().sleep();
             timer += Time.deltaTime;
+
             if (timer > SLEEP_TIME)
             {
                 if(clock.currentDayTime == ClockTime.DayTime.NIGHT)
                 {
                     timer = 0;
                     //randomly wake some people up
-                    if(Random.Range(0, 100) > 90)
+                    if(activityRate == 3 && Random.Range(0, 100) > 90)
                     {
                         //stop animation
                         GetComponent<IiroAnimBehavior>().stopSleep();
@@ -868,6 +875,74 @@ public class NPCV2 : MonoBehaviour
                         agent.enabled = true;
                     agent.Resume();
                     sleepingqueued = false;
+                }
+            }
+        }
+    }
+
+    private void randomSleep()
+    {
+        if (myBed == null)
+        {
+            //check if bed is available
+            myBed = objectManager.bookBed(gameObject);
+            //if still null, bed not found
+            if (myBed == null)
+            {
+                print("Null bed");
+            }
+        }
+        //if already was sleeping, skip
+        if(prevState != NPCState.STATE_RANDOM_SLEEP)
+        {
+            if (dest == Vector3.zero && myBed != null)
+            {
+                interactionComponent.setTarget(myBed);
+                dest = interactionComponent.getDestToTargetObjectSide(1, 25.0f);
+                moveTo(dest);
+            }
+            //if at the bed and not sleeping yet, stop navmeshagent and start animation
+            if (myBed != null && arrivedToDestination(10.0f) && !sleeping)
+            {
+                agent.Stop();
+                //rotate until looking away from mybed
+                if (interactionComponent.RotateAwayFrom(myBed.transform))
+                {
+                    sleeping = true;
+                }
+            }
+
+            if (sleeping)
+            {
+                if (!GetComponent<IiroAnimBehavior>().sleeping)
+                    GetComponent<IiroAnimBehavior>().sleep();
+                timer += Time.deltaTime;
+                if (timer > SLEEP_TIME * 2)
+                {
+                    sleeping = false;
+                    taskCompleted = true;
+                    timer = 0;
+                    fatique = 0;
+                }
+            }
+        }
+        else
+        {
+            if(!sleeping)
+            {
+                sleeping = true;
+            }
+            if (sleeping)
+            {
+                if (!GetComponent<IiroAnimBehavior>().sleeping)
+                    GetComponent<IiroAnimBehavior>().sleep();
+                timer += Time.deltaTime;
+                if (timer > SLEEP_TIME * 2)
+                {
+                    sleeping = false;
+                    taskCompleted = true;
+                    timer = 0;
+                    fatique = 0;
                 }
             }
         }
@@ -1246,7 +1321,6 @@ public class NPCV2 : MonoBehaviour
     {
         if(taskCompleted)
         {
-            anim.StopAll();
             sleeping = false;
             sitting = false;
             talking = false;
@@ -1259,8 +1333,10 @@ public class NPCV2 : MonoBehaviour
             }
             if (prevStateUncompleted)
             {
+                anim.StopAll();
                 prevStateUncompleted = false;
                 addStateToQueue(3, prevState);
+                prevState = myState;
                 myState = NPCState.STATE_DEFAULT;
                 currentTaskPriority = 0;
                 dest = Vector3.zero;
@@ -1273,6 +1349,7 @@ public class NPCV2 : MonoBehaviour
                 stateQueue.TryGetValue(3, out queue);
                 if (queue.Count > 0)
                 {
+                    anim.StopAll();
                     prevState = myState;
                     myState = queue.Dequeue();
                     dest = Vector3.zero;
@@ -1285,6 +1362,7 @@ public class NPCV2 : MonoBehaviour
                     stateQueue.TryGetValue(2, out queue);
                     if (queue.Count > 0)
                     {
+                        anim.StopAll();
                         prevState = myState;
                         myState = queue.Dequeue();
                         dest = Vector3.zero;
@@ -1297,6 +1375,7 @@ public class NPCV2 : MonoBehaviour
                         stateQueue.TryGetValue(1, out queue);
                         if (queue.Count > 0)
                         {
+                            anim.StopAll();
                             prevState = myState;
                             myState = queue.Dequeue();
                             dest = Vector3.zero;
@@ -1306,35 +1385,7 @@ public class NPCV2 : MonoBehaviour
                         else
                         {
                             //if nothing to do choose randomly from talking with npcs, sitting, idle walking
-                            if(!diagnosed)
-                            {
-                                myState = NPCState.STATE_QUE;
-                                prevState = myState;
-                                currentTaskPriority = 2;
-                            }
-                            else
-                            {
-                                if (Random.Range(1, 11) > 7)
-                                {
-                                    prevState = myState;
-                                    myState = NPCState.STATE_TALK_TO_OTHER_NPC;
-                                }
-                                else if (Random.Range(1, 11) > 7)
-                                {
-                                    prevState = myState;
-                                    myState = NPCState.STATE_IDLE_SIT;
-                                }
-                                else
-                                {
-                                    prevState = myState;
-                                    myState = NPCState.STATE_IDLE;
-                                }
- 
-                                currentTaskPriority = 1;
-                                
-                            }
-                            dest = Vector3.zero;
-                            taskCompleted = false;
+                            pickRandomActivity();
                         }
                     }
                 }
@@ -1387,6 +1438,86 @@ public class NPCV2 : MonoBehaviour
                 }
             }
         }  
+    }
+
+    public void pickRandomActivity()
+    {
+        //Fail proofing
+        if (!diagnosed)
+        {
+            myState = NPCState.STATE_QUE;
+            prevState = myState;
+            currentTaskPriority = 2;
+            dest = Vector3.zero;
+        }
+        else
+        {
+            
+            if (activityRate == 1)
+            {
+                prevState = myState;
+                myState = NPCState.STATE_RANDOM_SLEEP;
+                dest = Vector3.zero;
+            }
+            if (activityRate == 2)
+            {
+                if (Random.Range(0, 2) > 0)
+                {
+                    prevState = myState;
+                    myState = NPCState.STATE_RANDOM_SLEEP;
+                    dest = Vector3.zero;
+                }
+                else
+                {
+                    if (Random.Range(1, 11) > 4)
+                    {
+                        anim.StopAll();
+                        prevState = myState;
+                        myState = NPCState.STATE_TALK_TO_OTHER_NPC;
+                        dest = Vector3.zero;
+                    }
+                    else if (Random.Range(1, 11) > 4)
+                    {
+                        anim.StopAll();
+                        prevState = myState;
+                        myState = NPCState.STATE_IDLE_SIT;
+                        dest = Vector3.zero;
+                    }
+                    else
+                    {
+                        prevState = myState;
+                        myState = NPCState.STATE_RANDOM_SLEEP;
+                        dest = Vector3.zero;
+                    }
+                }
+            }
+            if (activityRate == 3)
+            {
+                if (Random.Range(1, 11) > 7)
+                {
+                    anim.StopAll();
+                    prevState = myState;
+                    myState = NPCState.STATE_TALK_TO_OTHER_NPC;
+                    dest = Vector3.zero;
+                }
+                else if (Random.Range(1, 11) > 7)
+                {
+                    anim.StopAll();
+                    prevState = myState;
+                    myState = NPCState.STATE_IDLE_SIT;
+                    dest = Vector3.zero;
+                }
+                else
+                {
+                    anim.StopAll();
+                    prevState = myState;
+                    myState = NPCState.STATE_IDLE;
+                    dest = Vector3.zero;
+                }
+            }
+            currentTaskPriority = 1;
+        }
+        taskCompleted = false;
     }
 
     public void Init(string myName, string myId, int myGender)
@@ -1459,6 +1590,20 @@ public class NPCV2 : MonoBehaviour
         }
         myMedication = new Item[drugscount];
         myProblems = new string[drugscount];
+
+        if(drugscount == 4)
+        {
+            activityRate = 1;
+        }
+        else if(drugscount == 3)
+        {
+            activityRate = 2;
+        }
+        else if (drugscount == 2)
+        {
+            activityRate = 3;
+        }
+
         //move drugs to locals
         for (int i = 0; i < drugscount; i++)
         {
@@ -1853,7 +1998,7 @@ public class NPCV2 : MonoBehaviour
                         //if the med was already given, giving more means overdose
                         if(meds[j].isActive)
                         {
-                            incorrect++;
+                            incorrect += 2;
                             //GetComponent<FloatTextNPC>().addFloatText(FloatText.IncorrectMedicine);
                             GetComponent<FloatTextNPC>().addFloatText("Overdose of " + med[i] + "!", false);
                         }
@@ -1869,11 +2014,11 @@ public class NPCV2 : MonoBehaviour
                             if(dosage[i] > meds[j].dosage)
                             {
                                 GetComponent<FloatTextNPC>().addFloatText("Overdose of " + med[i] + "!", false);
+                                incorrect += 2;
                             }
                             else if (dosage[i] < meds[j].dosage)
                             {
                                 GetComponent<FloatTextNPC>().addFloatText("dosage of " + med[i] + " was too small!", false);
-
                             }
                         }
                     }
@@ -1891,7 +2036,7 @@ public class NPCV2 : MonoBehaviour
             }
             for (int i = 0; i < wrongmeds.Count; i++)
             {
-                incorrect++;
+                incorrect += 2;
             }
 
             int medcount = correct + incorrect;
@@ -1919,14 +2064,14 @@ public class NPCV2 : MonoBehaviour
                 {
                     GetComponent<FloatTextNPC>().addFloatText("+ 15", true);
                     if (playersResponsibility)
-                        scoreSystem.addToScore(7);
+                        scoreSystem.addToScore(6);
                     myHp += 15;
                 }
                 else if (correctratio > 0.75f && correctratio <= 1f)
                 {
                     GetComponent<FloatTextNPC>().addFloatText("+ 20", true);
                     if (playersResponsibility)
-                        scoreSystem.addToScore(10);
+                        scoreSystem.addToScore(8);
                     myHp += 20;
                 }
             }

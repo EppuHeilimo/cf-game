@@ -161,7 +161,7 @@ public class ClockTime : MonoBehaviour {
                 if (someoneislosinghp)
                 {
                     timer += Time.deltaTime;
-                    if(timer > 10.0f)
+                    if(timer > 5.0f)
                     {
                         someoneislosinghp = isStillLosingHP();
                         timer = 0;
