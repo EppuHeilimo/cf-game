@@ -56,6 +56,7 @@ TagManager:
   - TrashCan
   - StartTutYes
   - StartTutNo
+  - MenuButtons
   layers:
   - Default
   - TransparentFX
