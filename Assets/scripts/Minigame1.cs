@@ -107,6 +107,7 @@ public class Minigame1 : MonoBehaviour {
         spawnDrops = true;
         active = true;
 
+        npcList.Clear();
         foreach (GameObject n in npcManager.responsibilityNpcs)
         {
             if (n != null)
@@ -136,6 +137,44 @@ public class Minigame1 : MonoBehaviour {
         EnableDropsAnim(true);
     }
 
+
+    public void nextNPC()
+    {
+        int next = currNpc + 1;
+        if (next > npcList.Count - 1)
+        {
+            currNpc = 0;
+        }
+        else
+            currNpc = next;
+
+        NPCV2 npc = npcList[currNpc].GetComponent<NPCV2>();
+        if(npc != null)
+        {
+            print("Null npc in minigame nextnpc");
+            showMedCard(npc);
+        }
+    }
+
+    public void prevNPC()
+    {
+        int prev = currNpc - 1;
+        if (prev < 0)
+        {
+            currNpc = npcList.Count - 1;
+        }
+        else
+            currNpc = prev;
+
+        NPCV2 npc = npcList[currNpc].GetComponent<NPCV2>();
+        if (npc != null)
+        {
+            print("Null npc in minigame nextnpc");
+            showMedCard(npc);
+        }
+    }
+
+    /*
     public void nextNPC()
     {
         if (npcList.Count == 0)
@@ -177,6 +216,7 @@ public class Minigame1 : MonoBehaviour {
         NPCV2 npc = npcObj.GetComponent<NPCV2>();
         showMedCard(npc);
     }
+    */
 
     public void kasiVitunDesi()
     {
