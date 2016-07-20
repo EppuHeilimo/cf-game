@@ -8,7 +8,8 @@ public class ScoringSystem : MonoBehaviour {
     public int totalscore = 0;
     public int oldtotalscore = 0;
     int medinactivepunishment = -2;
-    int respnpcdeathpunishment = -5;
+    int respnpcleavinghospital = 10;
+    int respnpcdeathpunishment = -10;
     public bool gameover = false;
 
 
@@ -62,6 +63,11 @@ public class ScoringSystem : MonoBehaviour {
     public void responsibilityNPCDied()
     {
         addToScore(respnpcdeathpunishment);
+    }
+
+    public void responsibilityNPCLeftHospital()
+    {
+        addToScore(respnpcleavinghospital);
     }
 
     public void endDay()

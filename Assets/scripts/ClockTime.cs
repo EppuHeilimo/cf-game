@@ -40,6 +40,8 @@ public class ClockTime : MonoBehaviour {
     const string AFTERNOON_CHANGE = "13:00";
     const string EVENING_CHANGE = "15:00";
     const string NIGHT_CHANGE = "20:00";
+
+
     const string NPC_SPAWN_START = "06:30";
     const string NPC_SPAWN_SLOW = "15:00";
     const string NPC_SPAWN_END = "20:00";
@@ -89,7 +91,7 @@ public class ClockTime : MonoBehaviour {
         
         if(!paused)
         {
-            if(tutorial.tutorialOn && currentHours == 12 )
+            if(tutorial.tutorialOn && currentHours == 13 )
             {
 
             }
@@ -117,13 +119,13 @@ public class ClockTime : MonoBehaviour {
 
                 // When daytime changes, reset all NPCs meds
                 if (timeString == MORNING_CHANGE)
-                    resetMeds();
+                    resetLosingHP();
                 else if (timeString == AFTERNOON_CHANGE)
-                    resetMeds();
+                    resetLosingHP();
                 else if (timeString == EVENING_CHANGE)
-                    resetMeds();
+                    resetLosingHP();
                 else if (timeString == NIGHT_CHANGE)
-                    resetMeds();
+                    resetLosingHP();
 
                 if(timeString == NPC_SPAWN_START)
                 {
@@ -498,6 +500,18 @@ public class ClockTime : MonoBehaviour {
                         }
                     }
                 }
+            }
+        }
+    }
+
+    public void resetLosingHP()
+    {
+        someoneislosinghp = false;
+        foreach (GameObject npcObj in NPCManager.npcList)
+        {
+            if (npcObj != null)
+            {
+                npcObj.GetComponent<NPCV2>().isLosingHp = false;
             }
         }
     }

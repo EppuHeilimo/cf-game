@@ -174,49 +174,6 @@ public class Minigame1 : MonoBehaviour {
         }
     }
 
-    /*
-    public void nextNPC()
-    {
-        if (npcList.Count == 0)
-            return;
-        GameObject npcObj;
-        // if reached end of npc list, go to beginning
-        if (currNpc == npcList.Count - 1)
-        {
-            currNpc = 0;
-            npcObj = npcList[currNpc];
-        }           
-        else
-        {
-            currNpc++;
-            npcObj = npcList[currNpc];
-        }
-             
-        NPCV2 npc = npcObj.GetComponent<NPCV2>();
-        if (npc != null)
-            showMedCard(npc);
-    }
-
-    public void prevNPC()
-    {
-        if (npcList.Count == 0)
-            return;
-        GameObject npcObj;
-        // if reached beginning of npc list, go to end
-        if (currNpc == 0)
-        {
-            currNpc = npcList.Count - 1;
-            npcObj = npcList[currNpc];
-        }     
-        else
-        {
-            currNpc--;
-            npcObj = npcList[currNpc];
-        }           
-        NPCV2 npc = npcObj.GetComponent<NPCV2>();
-        showMedCard(npc);
-    }
-    */
 
     public void kasiVitunDesi()
     {
@@ -280,7 +237,6 @@ public class Minigame1 : MonoBehaviour {
                 switch (i)
                 {
                     case 0:
-
                         morning1.text = npc.morningMed[i].dosage.ToString();
                         if (time == ClockTime.DayTime.MORNING)
                         {
