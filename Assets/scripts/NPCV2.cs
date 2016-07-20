@@ -638,7 +638,12 @@ public class NPCV2 : MonoBehaviour
         if(dest == Vector3.zero)
         {
             if(playersResponsibility)
+            {
+                GetComponent<FloatTextNPC>().addFloatText("Health excellent! Leaving Hospital!", true);
+                scoreSystem.addToScore(5);
                 npcManager.respNpcsWhoLeftOrDied.Add(new NPCINFO(myName, myHead2d, false));
+            }
+                
             dest = new Vector3(-620, transform.position.y, 0);
             moveTo(dest); 
         }
@@ -1798,8 +1803,7 @@ public class NPCV2 : MonoBehaviour
                 addStateToQueue(3, NPCState.STATE_LEAVE_HOSPITAL);
                 objectManager.unbookObject(myBed);
                 taskCompleted = true;
-                GetComponent<FloatTextNPC>().addFloatText("Health excellent! Leaving Hospital!", true);
-                scoreSystem.addToScore(5);
+                
             }
         }
         
