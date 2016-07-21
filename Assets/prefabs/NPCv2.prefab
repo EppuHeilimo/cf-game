@@ -1947,6 +1947,7 @@ MonoBehaviour:
   skipNextMedCheck: 0
   paused: 0
   activityRate: 0
+  anim: {fileID: 0}
   myName: 
   myId: 
   myGender: 0
@@ -2045,7 +2046,7 @@ NavMeshAgent:
   m_Acceleration: 100
   avoidancePriority: 50
   m_AngularSpeed: 450
-  m_StoppingDistance: 0
+  m_StoppingDistance: 10
   m_AutoTraverseOffMeshLink: 1
   m_AutoBraking: 1
   m_AutoRepath: 1

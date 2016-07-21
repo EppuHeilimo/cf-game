@@ -242,12 +242,8 @@ public class NPCV2 : MonoBehaviour
             if (!lockstate)
                 setMyStateFromQueue();
             //Act according to the myState (Current state)
-            actAccordingToState();
-            if(anim.waitforanim)
-            {
-                agent.Stop();
-                agent.enabled = false;
-            }
+            if(!anim.waitforanim)
+                actAccordingToState();
         }
     }
 
@@ -271,7 +267,7 @@ public class NPCV2 : MonoBehaviour
             agent.velocity = lastAgentVelocity;
             if(lastAgentPath == null)
             {
-                moveTo(dest);
+                
             }
             else
             {
@@ -1775,7 +1771,6 @@ public class NPCV2 : MonoBehaviour
                     daytimes[n] = value;
                 }
                 int[] rnddaytimes = new int[rnd];
-                int sub = daytimes.Count - rnd;
                 for(int r = 0; r < rnd; r++)
                 {
                     rnddaytimes[r] = daytimes[r];

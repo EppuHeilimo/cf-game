@@ -82,8 +82,13 @@ public class IiroAnimBehavior : MonoBehaviour {
         animator.SetBool("pickup", false);   
         falling = false;
         pickingup = false;
-        agent.enabled = true;
-        agent.Resume();
+
+        if(!waitforanim)
+        {
+            agent.enabled = true;
+            agent.Resume();
+        }
+
 
             
 

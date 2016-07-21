@@ -57,13 +57,6 @@ public class CustomizeCharacter : MonoBehaviour {
         if(!string.IsNullOrEmpty(transform.FindChild("NameInputField").FindChild("Text").GetComponent<Text>().text))
         {
             GameObject.Find("Menu").GetComponent<ShowPanels>().HideCustomizePanel();
-            Transform player = GameObject.FindGameObjectWithTag("Player").transform;
-            Transform iiro = player.Find("Iiro");
-            Transform root = iiro.Find("Root");
-            Transform torso = root.Find("Torso");
-            Transform chest = torso.Find("Chest");
-            Transform Head = chest.Find("Head");
-            Transform playerhead = Head.Find("iiro_head");
 
             currentProfile.name = transform.FindChild("NameInputField").FindChild("Text").GetComponent<Text>().text;
             currentProfile.gender = gender;
