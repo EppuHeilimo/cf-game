@@ -31,7 +31,7 @@ public class NPCManagerV2 : MonoBehaviour
     Vector3 nurseSpawn = new Vector3(733, 0, -832);
     List<KeyValuePair<GameObject, GameObject>> nurses = new List<KeyValuePair<GameObject, GameObject>>();
     List<KeyValuePair<GameObject, GameObject>> doomednurses = new List<KeyValuePair<GameObject, GameObject>>();
-
+    bool responsibilityFulfilled = false;
     public List<NPCINFO> respNpcsWhoLeftOrDied = new List<NPCINFO>();
 
     public bool paused = false;
@@ -255,16 +255,23 @@ public class NPCManagerV2 : MonoBehaviour
 
     public bool isPlayerResponsibilityLevelFulfilled()
     {
-        if (responsibilityNpcs.Count < targetResponsibilityLevel)
+        if(!responsibilityFulfilled)
         {
-            return false;
+            if (responsibilityNpcs.Count < targetResponsibilityLevel)
+            {
+                return false;
+            }
+            else
+            {
+                responsibilityFulfilled = true;
+            }
         }
         return true;
     }
 
     public void dayOneAfterTutorial()
     {
-
+        responsibilityFulfilled = false;
         GameObject[] npcs = npcList.ToArray();
         for (int i = 0; i < npcs.Length; i++)
         {
@@ -299,6 +306,7 @@ public class NPCManagerV2 : MonoBehaviour
 
     public void nextDay()
     {
+        responsibilityFulfilled = false;
         GameObject[] npcs = npcList.ToArray();
         for (int i = 0; i < npcs.Length; i++)
         {

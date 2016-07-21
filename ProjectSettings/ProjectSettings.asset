@@ -47,7 +47,7 @@ PlayerSettings:
   usePlayerLog: 1
   bakeCollisionMeshes: 1
   forceSingleInstance: 0
-  resizableWindow: 1
+  resizableWindow: 0
   useMacAppStoreValidation: 0
   gpuSkinning: 0
   xboxPIXTextureCapture: 0
@@ -88,7 +88,7 @@ PlayerSettings:
     5:4: 0
     16:10: 1
     16:9: 1
-    Others: 1
+    Others: 0
   bundleIdentifier: com.Jamk.Scarabaeus
   bundleVersion: 1.0
   preloadedAssets: []
