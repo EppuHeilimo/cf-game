@@ -330,6 +330,10 @@ public class NPCManagerV2 : MonoBehaviour
             }
             else if (npc.diagnosed)
             {
+                if(npc.anim.waitforanim)
+                {
+                    npc.anim.stopWaitForAnim();
+                }
                 npc.addStateToQueue(3, NPCV2.NPCState.STATE_DAY_CHANGE);
                 npc.taskCompleted = true;
             }

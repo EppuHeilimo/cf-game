@@ -39,12 +39,17 @@ public class IiroAnimBehavior : MonoBehaviour {
             timer += Time.deltaTime;
             if(timer > animWaitTime)
             {
-                waitforanim = false;
-                agent.enabled = true;
-                agent.Resume();
-                timer = 0;
+                stopWaitForAnim();
             }
         }
+    }
+
+    public void stopWaitForAnim()
+    {
+        waitforanim = false;
+        agent.enabled = true;
+        agent.Resume();
+        timer = 0;
     }
 
     public void StopAll()

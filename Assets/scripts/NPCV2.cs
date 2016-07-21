@@ -38,7 +38,7 @@ public class NPCV2 : MonoBehaviour
     public int activityRate = 0;
     ClockTime clock;
     LineRenderer DebugPath;
-    IiroAnimBehavior anim;
+    public IiroAnimBehavior anim;
     public string myName;
     public string myId;
     public int myGender; // 0 = female, 1 = male
