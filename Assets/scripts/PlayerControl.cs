@@ -24,6 +24,11 @@ public class PlayerControl : MonoBehaviour {
     bool pickingup = false;
     bool movingToTarget = false;
     public bool atTrashCan = true;
+    Vector3 nextDestination = Vector3.zero;
+
+    bool agentPaused = false;
+    Vector3 lastAgentVelocity = Vector3.zero;
+    NavMeshPath lastAgentPath;
 
     // Use this for initialization
     void Start () {
@@ -34,10 +39,6 @@ public class PlayerControl : MonoBehaviour {
         agent = GetComponent<NavMeshAgent>();
         tooltip = GameObject.Find("Inventory").GetComponent<Tooltip>();
         defaultPosition = transform.position;
-        
-
-
-
     }
 
     public void loadProfile()
@@ -63,9 +64,50 @@ public class PlayerControl : MonoBehaviour {
         mesh.sharedMesh = GameObject.Find("Heads").GetComponent<Heads>().getPlayersHead().GetComponent<MeshFilter>().sharedMesh;
         material.sharedMaterial = GameObject.Find("Heads").GetComponent<Heads>().getPlayersHead().GetComponent<MeshRenderer>().sharedMaterial;
     }
-	
-	// Update is called once per frame
-	void Update () {
+
+    void pause()
+    {
+        if (agent.enabled)
+        {
+            lastAgentVelocity = agent.velocity;
+            lastAgentPath = agent.path;
+            agent.velocity = Vector3.zero;
+            agent.ResetPath();
+        }
+
+        agentPaused = true;
+    }
+
+    void resume()
+    {
+        if (agent.enabled)
+        {
+            agent.velocity = lastAgentVelocity;
+            if(lastAgentPath == null)
+            {
+                moveTo(nextDestination);
+            }
+            else
+            {
+                agent.SetPath(lastAgentPath);
+            }
+            
+        }
+        agentPaused = false;
+    }
+
+    // Update is called once per frame
+    void Update () {
+
+        if (anim.waitforanim)
+        {
+            if(!agentPaused)
+                pause();
+            return;
+        }
+        if (agentPaused)
+            resume();
+
         if (!agent.pathPending)
         {
             if (agent.enabled && agent.remainingDistance <= agent.stoppingDistance)
@@ -148,17 +190,6 @@ public class PlayerControl : MonoBehaviour {
 
             }
         }
-        else
-        {
-            if (anim.sittingwithrotation)
-            {
-                anim.stopSitwithrotation();
-            }
-            if (anim.sitting)
-            {
-                anim.stopSit();
-            }
-        }
 
         if (sleeping)
         {
@@ -180,13 +211,6 @@ public class PlayerControl : MonoBehaviour {
                     objManager.unbookObject(interaction.getBed());
                 }
 
-            }
-        }
-        else
-        {
-            if (anim.sleeping)
-            {
-                anim.stopSleep();
             }
         }
         if(followNpc)
@@ -255,7 +279,7 @@ public class PlayerControl : MonoBehaviour {
                     tooltip.Deactivate();
                 }
             }
-            anim.stopPickup();
+            
             RaycastHit hit2;
             //Layer mask
             LayerMask layerMask = (1 << 8) | (1 << 11);
@@ -281,6 +305,7 @@ public class PlayerControl : MonoBehaviour {
             {
                 if (!isMouseOverUI())
                 {
+                    anim.StopAll();
                     pickingup = false;
                     foreach (RaycastHit hit in rays)
                     {
@@ -296,7 +321,8 @@ public class PlayerControl : MonoBehaviour {
                             npcwashit = true;
                             if ((target == hit.transform.gameObject) || (temp != null && target == temp))
                             {
-                                moveTo(new Vector3(target.transform.position.x, target.transform.position.y, target.transform.position.z));
+                                nextDestination = new Vector3(target.transform.position.x, target.transform.position.y, target.transform.position.z);
+                                moveTo(nextDestination);
                                 followNpc = true;
                             }
                             else
@@ -349,11 +375,13 @@ public class PlayerControl : MonoBehaviour {
                                     interaction.setCurrentChair(interaction.getTarget());
                                     if (target.tag == "Chair2")
                                     {
-                                       moveTo(interaction.getDestToTargetObjectSide(1, 16.0f));
+                                        nextDestination = interaction.getDestToTargetObjectSide(1, 16.0f);
+                                       moveTo(nextDestination);
                                     }
                                     else
                                     {
-                                        moveTo(interaction.getDestToTargetObjectSide(0, 16.0f));
+                                        nextDestination = interaction.getDestToTargetObjectSide(0, 16.0f);
+                                        moveTo(nextDestination);
                                     }
                                     sitting = true;
                                     disableMoveIndicator();
@@ -365,7 +393,8 @@ public class PlayerControl : MonoBehaviour {
                                 if(objManager.bookTargetObject(target, gameObject))
                                 {
                                     interaction.setBookedBed(interaction.getTarget());
-                                    moveTo(interaction.getDestToTargetObjectSide(1, 16.0f));
+                                    nextDestination = interaction.getDestToTargetObjectSide(1, 16.0f);
+                                    moveTo(nextDestination);
                                     sleeping = true;
                                     disableMoveIndicator();
                                 }
@@ -374,13 +403,15 @@ public class PlayerControl : MonoBehaviour {
                             {
                                 interaction.setTarget(target);
                                 pickingup = true;
-                                moveTo(target.transform.position);
+                                nextDestination = target.transform.position;
+                                moveTo(nextDestination);
                                 disableMoveIndicator();
                             }
                             else if (target.tag == "MedCabinet" || target.tag == "Computer" || target.tag == "TrashCan")
                             {
                                 interaction.setTarget(target);
-                                moveTo(target.transform.position);
+                                nextDestination = target.transform.position;
+                                moveTo(nextDestination);
                                 disableMoveIndicator();
                                 movingToTarget = true;
                             }
@@ -423,6 +454,7 @@ public class PlayerControl : MonoBehaviour {
                 
                 if (!isMouseOverUI())
                 {
+                    anim.StopAll();
                     pickingup = false;
                     if (interaction.getCurrentChair() != null)
                     {
@@ -435,7 +467,8 @@ public class PlayerControl : MonoBehaviour {
                     //get position of hit and move there
                     Vector3 pos = new Vector3(hit2.point.x, 0, hit2.point.z);
                     enableMoveIndicator(pos);
-                    moveTo(pos);
+                    nextDestination = pos;
+                    moveTo(nextDestination);
                     if (sitting == true)
                     {
                         sitting = false;
@@ -472,7 +505,8 @@ public class PlayerControl : MonoBehaviour {
         }
         else
         {
-            moveTo(new Vector3(target.transform.position.x - 20, target.transform.position.y, target.transform.position.z));
+            nextDestination = new Vector3(target.transform.position.x - 20, target.transform.position.y, target.transform.position.z);
+            moveTo(nextDestination);
             return false;
         }
     }

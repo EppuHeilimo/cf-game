@@ -88,7 +88,7 @@ public class NPCManagerV2 : MonoBehaviour
     {
         npcList = new List<GameObject>();
         responsibilityNpcs = new List<GameObject>();
-        spawnPoint = new Vector3(-501, 0, 951);
+        spawnPoint = new Vector3(-790, 0, -22); //(-501, 0, 951);
         spawnTime = 5; 
         usedIds = new List<string>();
         invObj = GameObject.Find("Inventory");

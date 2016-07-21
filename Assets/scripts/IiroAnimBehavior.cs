@@ -8,6 +8,9 @@ public class IiroAnimBehavior : MonoBehaviour {
     Rigidbody rbody;
     Animator animator;
     float walkspeed = 1f;
+    public bool waitforanim = false;
+    float animWaitTime = 0f;
+    public float timer = 0;
     public bool isWalking = false;
     public bool sleeping = false;
     public bool sitting = false;
@@ -31,24 +34,55 @@ public class IiroAnimBehavior : MonoBehaviour {
         {
             walk();
         }
+        if(waitforanim)
+        {
+            timer += Time.deltaTime;
+            if(timer > animWaitTime)
+            {
+                waitforanim = false;
+                agent.enabled = true;
+                agent.Resume();
+                timer = 0;
+            }
+        }
     }
 
     public void StopAll()
     {
-        agent.enabled = true;
-        animator.SetBool("fall", false);
-        animator.SetBool("sleep", false);
-        animator.SetBool("sit", false);
+        
+        if(sleeping)
+        {
+            animator.SetBool("sleep", false);
+            animWaitTime = 1.5f;
+            waitforanim = true;
+            sleeping = false;
+        }
+        if(sitting)
+        {
+            waitforanim = true;
+            animWaitTime = 0.8125f;
+            animator.SetBool("sit", false);
+            sitting = false;
+        }
+        if(sittingwithrotation)
+        {
+            waitforanim = true;
+            animWaitTime = 1.5f;
+            animator.SetBool("sitAndRotate", false);
+            sittingwithrotation = false;
+        }           
+        animator.SetBool("fall", false);        
         animator.SetBool("pickupbothhands", false);
-        animator.SetBool("pickupfloor", false);
-        animator.SetBool("sitAndRotate", false);
-        animator.SetBool("pickup", false);
-        sleeping = false;
-        sitting = false;
-        sittingwithrotation = false;
+        animator.SetBool("pickupfloor", false);       
+        animator.SetBool("pickup", false);   
         falling = false;
         pickingup = false;
-        agent.Resume();
+        if(!waitforanim)
+        {
+            agent.enabled = true;
+            agent.Resume();
+        }
+            
 
     }
 

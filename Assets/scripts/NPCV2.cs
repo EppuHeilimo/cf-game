@@ -30,6 +30,7 @@ public class NPCV2 : MonoBehaviour
     }
 
     /* basic stuff */
+    bool waitforanim = false;
     bool nursesDeployedForMe = false;
     bool lockstate = false;
     public bool skipNextMedCheck = false;
@@ -113,7 +114,7 @@ public class NPCV2 : MonoBehaviour
     public Vector3 dest; // current destination position
     NavMeshAgent agent;
     NPCManagerV2 npcManager;
-    Vector3 receptionPos = new Vector3(49, 0, 124); // position of reception
+    Vector3 receptionPos = new Vector3(47, 4, 125); // position of reception
 
     /* timing stuff */
     float timer; // time NPC has been in the current state
@@ -216,7 +217,7 @@ public class NPCV2 : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(paused)
+        if(paused || anim.waitforanim)
         {
             if(!agentPaused)
                 pause();
@@ -224,26 +225,28 @@ public class NPCV2 : MonoBehaviour
 
         if(!paused)
         {
-            if(agentPaused)
+            if(!anim.waitforanim)
             {
-                resume();
+                if (agentPaused)
+                {
+                    resume();
+                }
+                if (playersResponsibility)
+                {
+                    responsibilityIndicatorclone.transform.position = new Vector3(transform.position.x, transform.position.y + 64, transform.position.z);
+                    responsibilityIndicatorclone.transform.rotation = transform.rotation;
+                }
+                //check if there are some natural needs, or unstucking needs
+                if (myState != NPCState.STATE_DAY_CHANGE && myState != NPCState.STATE_DEAD && myState != NPCState.STATE_LEAVE_HOSPITAL)
+                    checkNeeds();
+                //Set current state to highest priority currently queued
+                //if higher priority job compared to current state is found, current state will be paused
+                if (!lockstate)
+                    setMyStateFromQueue();
+                //Act according to the myState (Current state)
+                actAccordingToState();
             }
-            if (playersResponsibility)
-            {
-                responsibilityIndicatorclone.transform.position = new Vector3(transform.position.x, transform.position.y + 64, transform.position.z);
-                responsibilityIndicatorclone.transform.rotation = transform.rotation;
-            }
-            //check if there are some natural needs, or unstucking needs
-            if(myState != NPCState.STATE_DAY_CHANGE && myState != NPCState.STATE_DEAD && myState != NPCState.STATE_LEAVE_HOSPITAL)
-                checkNeeds();
-            //Set current state to highest priority currently queued
-            //if higher priority job compared to current state is found, current state will be paused
-            if(!lockstate)
-                setMyStateFromQueue();
-            //Act according to the myState (Current state)
-            actAccordingToState();
         }
-
     }
 
     void pause()
@@ -264,7 +267,15 @@ public class NPCV2 : MonoBehaviour
         if(agent.enabled)
         {
             agent.velocity = lastAgentVelocity;
-            agent.SetPath(lastAgentPath);
+            if(lastAgentPath == null)
+            {
+                moveTo(dest);
+            }
+            else
+            {
+                agent.SetPath(lastAgentPath);
+            }
+            
         }
 
         agentPaused = false;
@@ -366,7 +377,7 @@ public class NPCV2 : MonoBehaviour
         }*/
         GameObject targeter;
         targeter = dialogZone.getWhoIsTargetingMe();
-        if (targeter != null && myState != NPCState.STATE_GO_TO_DOC)
+        if (targeter != null && myState != NPCState.STATE_GO_TO_DOC && myState != NPCState.STATE_LEAVE_HOSPITAL)
         {
             
             if(targeter.tag == "Player")
@@ -1127,6 +1138,12 @@ public class NPCV2 : MonoBehaviour
             //When arrived to good position, set npc to dead and rmeove from npclists
             else if (arrivedToDestination(5.0f))
             {
+                GetComponent<FloatTextNPC>().addFloatText("Health critical! Passing out!", false);
+                if (playersResponsibility)
+                {
+                    GameObject.FindGameObjectWithTag("ScoringSystem").GetComponent<ScoringSystem>().responsibilityNPCDied();
+                    npcManager.respNpcsWhoLeftOrDied.Add(new NPCINFO(myName, myHead2d, true));
+                }
                 npcManager.deleteNpcFromList(gameObject);
                 //if this npc is players target, make sure textboxmanager disables UI showing npc status
                 if (GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerControl>().getTarget() == gameObject)
@@ -1827,10 +1844,11 @@ public class NPCV2 : MonoBehaviour
         {
             NavMeshHit hit;
             if (NavMesh.SamplePosition(dest, out hit, 10.0f, agent.areaMask))
-                agent.SetDestination(hit.position);
+                agent.SetDestination(new Vector3(hit.position.x, transform.position.y, hit.position.z));
             else
-                agent.SetDestination(dest);
+                agent.SetDestination(new Vector3(dest.x, transform.position.y, dest.z));
         }
+        this.dest = dest;
             
     }
     void checkMed()
@@ -1931,12 +1949,6 @@ public class NPCV2 : MonoBehaviour
             }
             if (myHp <= 0)
             {
-                GetComponent<FloatTextNPC>().addFloatText("Health critical! Passing out!", false);
-                if (playersResponsibility)
-                {
-                    GameObject.FindGameObjectWithTag("ScoringSystem").GetComponent<ScoringSystem>().responsibilityNPCDied();
-                    npcManager.respNpcsWhoLeftOrDied.Add(new NPCINFO(myName, myHead2d, true));
-                }
                 addStateToQueue(3, NPCState.STATE_DEAD);
                 taskCompleted = true;
             }
@@ -2142,5 +2154,33 @@ public class NPCV2 : MonoBehaviour
         }
         return false;
     }
+
+    void OnDrawGizmosSelected()
+    {
+
+        if (agent == null || agent.path == null)
+            return;
+
+        var line = this.GetComponent<LineRenderer>();
+        if (line == null)
+        {
+            line = this.gameObject.AddComponent<LineRenderer>();
+            line.material = new Material(Shader.Find("Sprites/Default")) { color = Color.yellow };
+            line.SetWidth(0.5f, 0.5f);
+            line.SetColors(Color.black, Color.black);
+        }
+
+        var path = agent.path;
+
+        line.SetVertexCount(path.corners.Length);
+
+        for (int i = 0; i < path.corners.Length; i++)
+        {
+            line.SetPosition(i, path.corners[i]);
+        }
+
+    }
 }
+
+
 
