@@ -18,6 +18,7 @@ public class Tutorial : MonoBehaviour {
 
         STATE_MINIGAME_PRACTICE_1,
         STATE_MINIGAME_PRACTICE_2,
+        STATE_MINIGAME_PRACTICE_2_1,
         STATE_MINIGAME_PRACTICE_3,
         STATE_MINIGAME_PRACTICE_4,
         STATE_MINIGAME_PRACTICE_5,
@@ -34,6 +35,7 @@ public class Tutorial : MonoBehaviour {
         STATE_ENDING_BAD_2,
 
         STATE_COMPUTER_PRACTICE,
+        STATE_COMPUTER_PRACTICE_2,
         STATE_TRASH_PRACTICE,
 
         STATE_INACTIVE
@@ -70,6 +72,7 @@ public class Tutorial : MonoBehaviour {
     float timeSpentInThisState;
     const float GO_TO_SLEEP_TIME = 20f;
     bool nextClicked;
+    GameObject nextBtn;
 
     public Slider musicOptionsSlider;
     public Slider musicPauseSlider;
@@ -77,6 +80,7 @@ public class Tutorial : MonoBehaviour {
     // Use this for initialization
     void Start () {     
         tutCanvas = transform.GetChild(0).gameObject;
+        nextBtn = GameObject.Find("TutorialNextBtn");
         mascot = GameObject.Find("Mascot").GetComponent<Mascot>();
         currentState = TutorialState.STATE_INACTIVE;
         HidetutCanvas();
@@ -145,8 +149,13 @@ public class Tutorial : MonoBehaviour {
                     // check if player has opened the medicine cabinet
                     if (minigame.active)
                     {
-                        ChangeState(TutorialState.STATE_MINIGAME_PRACTICE_3);
+                        ChangeState(TutorialState.STATE_MINIGAME_PRACTICE_2_1);
                     }
+                    break;
+
+                case TutorialState.STATE_MINIGAME_PRACTICE_2_1:
+                    if (nextClicked)
+                        ChangeState(TutorialState.STATE_MINIGAME_PRACTICE_3);
                     break;
 
                 case TutorialState.STATE_MINIGAME_PRACTICE_3:
@@ -204,7 +213,7 @@ public class Tutorial : MonoBehaviour {
                     break;
 
                 case TutorialState.STATE_COMPUTER_PRACTICE:
-                    if (nextClicked)
+                    if (computer.GetComponent<Computer>().computerOn)
                         ChangeState(TutorialState.STATE_TRASH_PRACTICE);
                     break;
 
@@ -247,10 +256,12 @@ public class Tutorial : MonoBehaviour {
         switch (currentState)
         {
             case TutorialState.STATE_START:
-                message = "Sup! Welcome to the tutorial! Click the button to continue.";
+                nextBtn.SetActive(true);
+                message = "Hi, welcome to the tutorial! Click the V-button to continue.";
                 break;
 
             case TutorialState.STATE_WALK_PRACTICE_1:
+                nextBtn.SetActive(false);
                 message = "Lets start by walking to the reception. Just click on the ground to move.";
                 StartCoroutine(ShowPath());
                 break;
@@ -264,6 +275,7 @@ public class Tutorial : MonoBehaviour {
                 break;
 
             case TutorialState.STATE_TARGET_PRACTICE_2:
+                nextBtn.SetActive(true);
                 message = "Here comes a patient! Patients go first to the doctor's office to get diagnosed.";
                 ShowNPC();
                 break;
@@ -273,6 +285,7 @@ public class Tutorial : MonoBehaviour {
                 break;
 
             case TutorialState.STATE_TARGET_PRACTICE_4:
+                nextBtn.SetActive(false);
                 message = "Walk to the patient and click him to see his information.";
                 break;
 
@@ -282,19 +295,27 @@ public class Tutorial : MonoBehaviour {
                 break;
 
             case TutorialState.STATE_MINIGAME_PRACTICE_1:
+                nextBtn.SetActive(true);
                 message = "You can see on the patients medicine card that he needs Ibuprofen. Lets go get some!";
                 break;
 
             case TutorialState.STATE_MINIGAME_PRACTICE_2:
+                nextBtn.SetActive(false);
                 message = "Walk over to the medicine cabinet and click it.";
                 ShowMedCab();
                 break;
 
-            case TutorialState.STATE_MINIGAME_PRACTICE_3:
+            case TutorialState.STATE_MINIGAME_PRACTICE_2_1:
+                nextBtn.SetActive(true);
                 if (indicator != null)
                     Destroy(indicator);
+                message = "This is the administration minigame. You can see all of your patients medicine cards on the left. ";
+                break;
+
+            case TutorialState.STATE_MINIGAME_PRACTICE_3:
+                nextBtn.SetActive(false);
                 medCont = GameObject.FindGameObjectWithTag("BigMedCont").GetComponent<BigMedCont>();
-                message = "This is the administration minigame. Use hand disinfectant first and then choose Ibuprofen.";
+                message = "Your patient needs 400 mg of Ibuprofen. Use hand disinfectant first and then choose Ibuprofen.";
                 break;
 
             case TutorialState.STATE_MINIGAME_PRACTICE_4:
@@ -311,11 +332,11 @@ public class Tutorial : MonoBehaviour {
                 break;
 
             case TutorialState.STATE_MINIGAME_PRACTICE_SPLITTING_2:
-                message = "Some pills are splittable, and if you click them in the air during slow motion, the dosage will be cut in half. Try it out!";
+                message = "You can split some pills in half by clicking them in the air during slow motion. Try it out!";
                 break;
 
             case TutorialState.STATE_MINIGAME_PRACTICE_5:
-                message = "Cool! Lets go give your patient his medicine now. Click the back-button in the top left corner twice.";
+                message = "Cool! Lets go give your patient his medicine. Click back-button in the top left corner twice.";
                 break;
 
             case TutorialState.STATE_MINIGAME_PRACTICE_6:
@@ -325,15 +346,18 @@ public class Tutorial : MonoBehaviour {
             case TutorialState.STATE_ENDING_GOOD_1:
                 if (mascot.currentState != Mascot.MascotState.STATE_NORMAL)
                     mascot.ChangeState(Mascot.MascotState.STATE_NORMAL);
+                nextBtn.SetActive(true);
                 message = "Great job! This is the basic idea of the game, give correct medicine at correct times to your patients.";
                 break;
 
             case TutorialState.STATE_COMPUTER_PRACTICE:
-                message = "There is a computer in the office. You can see your schedule and patients there.";
+                nextBtn.SetActive(false);
+                message = "There is a computer in the office. You can see your schedule and patients there. Go use it!";
                 ShowComputer();
                 break;
 
             case TutorialState.STATE_TRASH_PRACTICE:
+                nextBtn.SetActive(true);
                 message = "Next to the computer, there is a trash can. Select it and click a medicine cup in your inventory to delete it.";
                 ShowTrashCan();
                 break;
