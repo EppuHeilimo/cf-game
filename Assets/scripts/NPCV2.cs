@@ -2058,6 +2058,8 @@ public class NPCV2 : MonoBehaviour
             
             if(correctratio > 0)
             {
+                GetComponent<AudioSource>().Play();
+
                 if (correctratio > 0 && correctratio <= 0.25f)
                 {
                     GetComponent<FloatTextNPC>().addFloatText("+ 5", true);

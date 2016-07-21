@@ -119,7 +119,10 @@ public class ClockTime : MonoBehaviour {
 
                 // When daytime changes, reset all NPCs meds
                 if (timeString == MORNING_CHANGE)
+                {
                     resetLosingHP();
+                    GetComponent<AudioSource>().Play();
+                }
                 else if (timeString == AFTERNOON_CHANGE)
                     resetLosingHP();
                 else if (timeString == EVENING_CHANGE)

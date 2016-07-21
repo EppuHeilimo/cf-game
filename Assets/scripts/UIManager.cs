@@ -97,6 +97,7 @@ public class UIManager : MonoBehaviour {
         {
             if(player.GetComponent<PlayerControl>().atTrashCan)
             {
+                GetComponent<AudioSource>().Play();
                 return true;
             }
         } 

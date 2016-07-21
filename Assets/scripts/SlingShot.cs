@@ -61,6 +61,7 @@ public class SlingShot : MonoBehaviour {
                     //if user has tapped onto the pill
                     if (PillToThrow.GetComponent<CircleCollider2D>() == Physics2D.OverlapPoint(location))
                     {
+                        GetComponent<AudioSource>().Play();
                         slingshotState = SlingshotState.UserPulling;
                     }
                 }
@@ -101,6 +102,7 @@ public class SlingShot : MonoBehaviour {
                 }
                 break;
             case SlingshotState.PillFlying:
+                GetComponent<AudioSource>().Stop();
                 break;
             case SlingshotState.Inactive:
                 break;

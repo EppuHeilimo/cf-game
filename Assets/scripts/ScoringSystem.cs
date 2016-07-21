@@ -34,9 +34,9 @@ public class ScoringSystem : MonoBehaviour {
             if (score <= 0)
             {
                 score = 0;
+                GetComponent<AudioSource>().Play();
                 GameObject.FindGameObjectWithTag("UIManager").GetComponent<UIManager>().gameOver(totalscore);
-            }
-                
+            }         
         }
         else if (add > 0)
         {
