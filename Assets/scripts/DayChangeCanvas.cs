@@ -57,6 +57,8 @@ public class DayChangeCanvas : MonoBehaviour {
                 patient.transform.SetParent(patientspanel);
                 patientpanels.Add(patient);
             }
+            if (score >= 90)
+                GetComponent<AudioSource>().Play();
             performancepanel.FindChild("Positive").GetComponent<RectTransform>().sizeDelta = new Vector2(score * 2, 30);
             performancepanel.FindChild("Percentage").GetComponent<Text>().text = score + "%";
             totalscoretextpanel.GetComponent<Text>().text = oldtotalscore.ToString();

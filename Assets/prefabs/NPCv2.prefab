@@ -79,6 +79,7 @@ GameObject:
   - 120: {fileID: 12050100}
   - 114: {fileID: 11404356}
   - 114: {fileID: 11447438}
+  - 82: {fileID: 8209972}
   m_Layer: 9
   m_Name: NPCv2
   m_TagString: NPC
@@ -1794,6 +1795,80 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 18.828957, y: 56.92077, z: 8.308716}
   m_Center: {x: -0.0947919, y: 27.960562, z: 1.8491211}
+--- !u!82 &8209972
+AudioSource:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 113848}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 8300000, guid: 163afcdd286b8ed43a8f198e006a351f, type: 3}
+  m_PlayOnAwake: 0
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+    - time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 0
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 0
 --- !u!95 &9572412
 Animator:
   serializedVersion: 3
@@ -1911,6 +1986,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 377e517ea6e201e44b43a6606d4acff0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  waitforanim: 0
+  timer: 0
   isWalking: 0
   sleeping: 0
   sitting: 0
