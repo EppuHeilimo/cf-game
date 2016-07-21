@@ -25,6 +25,7 @@ public class Tutorial : MonoBehaviour {
         STATE_MINIGAME_PRACTICE_6,
         STATE_MINIGAME_PRACTICE_SPLITTING_1,
         STATE_MINIGAME_PRACTICE_SPLITTING_2,
+        STATE_MINIGAME_PRACTICE_SPLITTING_3,
 
         STATE_ENDING_GOOD_1,
         STATE_ENDING_GOOD_2,
@@ -174,6 +175,11 @@ public class Tutorial : MonoBehaviour {
                     }
                     break;
 
+                case TutorialState.STATE_MINIGAME_PRACTICE_SPLITTING_3:
+                    if (nextClicked)
+                        ChangeState(TutorialState.STATE_MINIGAME_PRACTICE_5);
+                    break;
+
                 case TutorialState.STATE_MINIGAME_PRACTICE_5:
                     // exited minigame
                     if (!minigame.active)
@@ -214,6 +220,11 @@ public class Tutorial : MonoBehaviour {
 
                 case TutorialState.STATE_COMPUTER_PRACTICE:
                     if (computer.GetComponent<Computer>().computerOn)
+                        ChangeState(TutorialState.STATE_COMPUTER_PRACTICE_2);
+                    break;
+
+                case TutorialState.STATE_COMPUTER_PRACTICE_2:
+                    if (!computer.GetComponent<Computer>().computerOn)
                         ChangeState(TutorialState.STATE_TRASH_PRACTICE);
                     break;
 
@@ -286,7 +297,7 @@ public class Tutorial : MonoBehaviour {
 
             case TutorialState.STATE_TARGET_PRACTICE_4:
                 nextBtn.SetActive(false);
-                message = "Walk to the patient and click him to see his information.";
+                message = "Double-click the patient to walk to him and see his information.";
                 break;
 
             case TutorialState.STATE_TARGET_PRACTICE_5:
@@ -296,12 +307,12 @@ public class Tutorial : MonoBehaviour {
 
             case TutorialState.STATE_MINIGAME_PRACTICE_1:
                 nextBtn.SetActive(true);
-                message = "You can see on the patients medicine card that he needs Ibuprofen. Lets go get some!";
+                message = "You can see on the patient's medicine card that he needs Ibuprofen. Lets go get some!";
                 break;
 
             case TutorialState.STATE_MINIGAME_PRACTICE_2:
                 nextBtn.SetActive(false);
-                message = "Walk over to the medicine cabinet and click it.";
+                message = "Double-click the medicine cabinet to use it.";
                 ShowMedCab();
                 break;
 
@@ -335,12 +346,18 @@ public class Tutorial : MonoBehaviour {
                 message = "You can split some pills in half by clicking them in the air during slow motion. Try it out!";
                 break;
 
+            case TutorialState.STATE_MINIGAME_PRACTICE_SPLITTING_3:
+                nextBtn.SetActive(true);
+                message = "Cool! Clicking the button on medicine cup removes the last pill from the cup. Clicking it twice removes all pills.";
+                break;
+
             case TutorialState.STATE_MINIGAME_PRACTICE_5:
-                message = "Cool! Lets go give your patient his medicine. Click back-button in the top left corner twice.";
+                nextBtn.SetActive(false);
+                message = "Lets go give your patient his medicine. Click the X-button in the top-left corner twice.";
                 break;
 
             case TutorialState.STATE_MINIGAME_PRACTICE_6:
-                message = "Find your patient and click him. Then click medicine cup in your inventory to give it to the patient.";
+                message = "Find your patient and double-click him. Then click medicine cup in your inventory (bottom-right corner) to give it to him.";
                 break;
 
             case TutorialState.STATE_ENDING_GOOD_1:
@@ -356,9 +373,13 @@ public class Tutorial : MonoBehaviour {
                 ShowComputer();
                 break;
 
+            case TutorialState.STATE_COMPUTER_PRACTICE_2:
+                message = "Close the computer by pressing the X-button in the top-left corner.";
+                break;
+
             case TutorialState.STATE_TRASH_PRACTICE:
                 nextBtn.SetActive(true);
-                message = "Next to the computer, there is a trash can. Select it and click a medicine cup in your inventory to delete it.";
+                message = "Next to the computer, there is a trash can. Double-click it and click a medicine cup in your inventory to delete it.";
                 ShowTrashCan();
                 break;
 
@@ -379,6 +400,7 @@ public class Tutorial : MonoBehaviour {
                 break;
 
             case TutorialState.STATE_ENDING_GOOD_FINAL:
+                nextBtn.SetActive(false);
                 message = "Good luck on your first day in the hospital, bye for now!";           
                 Invoke("QuitTutorial", 6);
                 break;
@@ -470,10 +492,10 @@ public class Tutorial : MonoBehaviour {
         currentState = newState;
         stateChanged = true;
     }
-
+        
     IEnumerator ShowPath()
     {
-        yield return new WaitForSeconds(2f);
+        yield return new WaitForSeconds(1f);
         mCamera.lockCameraToThisTransformForXTime(walkHere.transform, 3f);
         walkHere.SetActive(true);
         var pos = walkHere.transform.position;
@@ -510,7 +532,7 @@ public class Tutorial : MonoBehaviour {
         pos.x -= 35;
         indicator = (GameObject)Instantiate(moveIndicatorPrefab, pos, new Quaternion(0, 0, 0, 0));
         indicator.transform.localScale = new Vector3(5, 5, 5);
-        mCamera.lockCameraToThisTransformForXTime(computer.transform, 10f);
+        mCamera.lockCameraToThisTransformForXTime(computer.transform, 5f);
         GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerControl>().setTarget(computer);
     }
 
@@ -523,7 +545,6 @@ public class Tutorial : MonoBehaviour {
         pos.x -= 35;
         indicator = (GameObject)Instantiate(moveIndicatorPrefab, pos, new Quaternion(0, 0, 0, 0));
         indicator.transform.localScale = new Vector3(5, 5, 5);
-        mCamera.lockCameraToThisTransformForXTime(trashCan.transform, 10f);
         GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerControl>().setTarget(trashCan);
     }
 
@@ -535,6 +556,6 @@ public class Tutorial : MonoBehaviour {
     public void PillSplitted()
     {
         if (currentState == TutorialState.STATE_MINIGAME_PRACTICE_SPLITTING_2)
-            ChangeState(TutorialState.STATE_MINIGAME_PRACTICE_5);
+            ChangeState(TutorialState.STATE_MINIGAME_PRACTICE_SPLITTING_3);
     }
 }
