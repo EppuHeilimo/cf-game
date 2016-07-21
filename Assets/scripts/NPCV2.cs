@@ -223,28 +223,30 @@ public class NPCV2 : MonoBehaviour
                 pause();
         }
 
-        if(!paused)
+        if(!paused && !anim.waitforanim)
         {
-            if(!anim.waitforanim)
+            if (agentPaused)
             {
-                if (agentPaused)
-                {
-                    resume();
-                }
-                if (playersResponsibility)
-                {
-                    responsibilityIndicatorclone.transform.position = new Vector3(transform.position.x, transform.position.y + 64, transform.position.z);
-                    responsibilityIndicatorclone.transform.rotation = transform.rotation;
-                }
-                //check if there are some natural needs, or unstucking needs
-                if (myState != NPCState.STATE_DAY_CHANGE && myState != NPCState.STATE_DEAD && myState != NPCState.STATE_LEAVE_HOSPITAL)
-                    checkNeeds();
-                //Set current state to highest priority currently queued
-                //if higher priority job compared to current state is found, current state will be paused
-                if (!lockstate)
-                    setMyStateFromQueue();
-                //Act according to the myState (Current state)
-                actAccordingToState();
+                resume();
+            }
+            if (playersResponsibility)
+            {
+                responsibilityIndicatorclone.transform.position = new Vector3(transform.position.x, transform.position.y + 64, transform.position.z);
+                responsibilityIndicatorclone.transform.rotation = transform.rotation;
+            }
+            //check if there are some natural needs, or unstucking needs
+            if (myState != NPCState.STATE_DAY_CHANGE && myState != NPCState.STATE_DEAD && myState != NPCState.STATE_LEAVE_HOSPITAL)
+                checkNeeds();
+            //Set current state to highest priority currently queued
+            //if higher priority job compared to current state is found, current state will be paused
+            if (!lockstate)
+                setMyStateFromQueue();
+            //Act according to the myState (Current state)
+            actAccordingToState();
+            if(anim.waitforanim)
+            {
+                agent.Stop();
+                agent.enabled = false;
             }
         }
     }
@@ -275,9 +277,7 @@ public class NPCV2 : MonoBehaviour
             {
                 agent.SetPath(lastAgentPath);
             }
-            
         }
-
         agentPaused = false;
     }
 
@@ -2058,8 +2058,6 @@ public class NPCV2 : MonoBehaviour
             
             if(correctratio > 0)
             {
-                GetComponent<AudioSource>().Play();
-
                 if (correctratio > 0 && correctratio <= 0.25f)
                 {
                     GetComponent<FloatTextNPC>().addFloatText("+ 5", true);

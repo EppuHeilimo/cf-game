@@ -152,7 +152,6 @@ public class Minigame1 : MonoBehaviour {
         NPCV2 npc = npcList[currNpc].GetComponent<NPCV2>();
         if(npc != null)
         {
-            print("Null npc in minigame nextnpc");
             showMedCard(npc);
         }
     }
@@ -170,7 +169,6 @@ public class Minigame1 : MonoBehaviour {
         NPCV2 npc = npcList[currNpc].GetComponent<NPCV2>();
         if (npc != null)
         {
-            print("Null npc in minigame nextnpc");
             showMedCard(npc);
         }
     }

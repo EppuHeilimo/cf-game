@@ -29,9 +29,8 @@ public class CombineMeshes : MonoBehaviour
         int i = 0;
         while (i < meshFilters.Length)
         {
-            if (meshFilters[i].sharedMesh != null)
+            if (meshFilters[i].sharedMesh != null )
             {
-                combine[i].mesh = meshFilters[i].sharedMesh;
                 combine[i].mesh = meshFilters[i].sharedMesh;
                 combine[i].transform = meshFilters[i].transform.localToWorldMatrix;
             }
