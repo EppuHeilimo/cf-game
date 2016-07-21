@@ -7,7 +7,8 @@ using Assets.Scripts;
 public class Minigame1 : MonoBehaviour {
 
     ClockTime.DayTime time;
-    public bool active = false;
+    public bool active;
+    public bool dosingActive;
     GameObject invObj;
     Inventory playerInv;
     ItemDatabase database;
@@ -551,6 +552,7 @@ public class Minigame1 : MonoBehaviour {
 
     public void startDosingGame(string medName, int defaultDosage, int canSplit)
     {
+        dosingActive = true;
         mCamera.SwitchToMinigame1Camera();
         gameObject.transform.Find("BigMedCont").GetComponent<BigMedCont>().Init(medName, defaultDosage, canSplit);
         minigameCanvas.SetActive(false);
@@ -566,6 +568,7 @@ public class Minigame1 : MonoBehaviour {
 
     public void quitDosingGame()
     {
+        dosingActive = false;
         gameManager.CurrentMiniGameState = MiniGameState.Inactive;
         gameObject.transform.Find("BigMedCont").GetComponent<BigMedCont>().spawnPills = false;
         GameObject pill = GameObject.FindGameObjectWithTag("Pill");

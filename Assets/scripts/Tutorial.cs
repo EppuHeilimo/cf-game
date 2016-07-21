@@ -78,18 +78,34 @@ public class Tutorial : MonoBehaviour {
     public Slider musicOptionsSlider;
     public Slider musicPauseSlider;
 
+    /* position stuff */
+    GameObject[] tutorialStuff;
+    Vector3[] tutorialStuffOrigPos = new Vector3[3];    
+    enum TutStuffPos
+    {
+        ORIG = 0,
+        MINIGAME,
+        DOSING
+    }
+    TutStuffPos currPos;
+
     // Use this for initialization
     void Start () {     
         tutCanvas = transform.GetChild(0).gameObject;
         nextBtn = GameObject.Find("TutorialNextBtn");
+        tutorialStuff = GameObject.FindGameObjectsWithTag("TutorialStuff");
+        for (int i = 0; i < tutorialStuff.Length; i++)
+            tutorialStuffOrigPos[i] = tutorialStuff[i].GetComponent<RectTransform>().position;
+        currPos = TutStuffPos.ORIG;
         mascot = GameObject.Find("Mascot").GetComponent<Mascot>();
         currentState = TutorialState.STATE_INACTIVE;
         HidetutCanvas();
         walkHere.SetActive(false);
+        minigame = GameObject.Find("Minigame1").GetComponent<Minigame1>();
     }
-	
-	// Update is called once per frame
-	void Update () {
+
+    // Update is called once per frame
+    void Update () {
         if (tutorialOn)
         {
             timeSpentInThisState += Time.deltaTime;
@@ -106,10 +122,30 @@ public class Tutorial : MonoBehaviour {
             if (mascot != null)
                 mascot.isTalking = typing;
 
-            if (tutorialNPC != null)
-            { 
-                if (tutorialNPC.GetComponent<NPCV2>().myHp <= 0)
-                    ChangeState(TutorialState.STATE_ENDING_BAD_2);
+            // move tutorial stuff out of the way in minigame
+            if (minigame.active && minigame.dosingActive)
+            {
+                if (currPos != TutStuffPos.DOSING)
+                {
+                    MoveTutorialStuff(0, Screen.height / 2 - 60f);
+                    currPos = TutStuffPos.DOSING;
+                }               
+            }
+            else if (minigame.active)
+            {
+                if (currPos != TutStuffPos.MINIGAME)
+                {
+                    MoveTutorialStuff(-Screen.width / 2, -50f);
+                    currPos = TutStuffPos.MINIGAME;
+                }
+            }
+            else
+            {
+                if (currPos != TutStuffPos.ORIG)
+                {
+                    MoveTutorialStuff(0, 0);
+                    currPos = TutStuffPos.ORIG;
+                }
             }
 
             switch (currentState)
@@ -320,7 +356,7 @@ public class Tutorial : MonoBehaviour {
                 nextBtn.SetActive(true);
                 if (indicator != null)
                     Destroy(indicator);
-                message = "This is the administration minigame. You can see all of your patients medicine cards on the left. ";
+                message = "This is the administration minigame. You can see all of your patients medicine cards on the left.";
                 break;
 
             case TutorialState.STATE_MINIGAME_PRACTICE_3:
@@ -522,7 +558,6 @@ public class Tutorial : MonoBehaviour {
         indicator = (GameObject)Instantiate(moveIndicatorPrefab, pos, new Quaternion(0, 0, 0, 0));
         indicator.transform.localScale = new Vector3(5, 5, 5);      
         mCamera.lockCameraToThisTransformForXTime(medCab.transform, 3f);
-        minigame = GameObject.Find("Minigame1").GetComponent<Minigame1>();
     }
 
     void ShowComputer()
@@ -557,5 +592,11 @@ public class Tutorial : MonoBehaviour {
     {
         if (currentState == TutorialState.STATE_MINIGAME_PRACTICE_SPLITTING_2)
             ChangeState(TutorialState.STATE_MINIGAME_PRACTICE_SPLITTING_3);
+    }
+
+    void MoveTutorialStuff(float x, float y) // how much to move stuff in x- and y-direction
+    {
+        for (int i = 0; i < tutorialStuff.Length; i++)
+            tutorialStuff[i].GetComponent<RectTransform>().position = new Vector3(tutorialStuffOrigPos[i].x + x, tutorialStuffOrigPos[i].y + y, tutorialStuffOrigPos[i].z);
     }
 }

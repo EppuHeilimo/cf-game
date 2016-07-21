@@ -57,6 +57,7 @@ TagManager:
   - StartTutYes
   - StartTutNo
   - MenuButtons
+  - TutorialStuff
   layers:
   - Default
   - TransparentFX
