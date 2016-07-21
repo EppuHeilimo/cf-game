@@ -18,6 +18,7 @@ public class Computer : MonoBehaviour {
     NPCManagerV2 npcmanager;
     List<NPCV2> npcList = new List<NPCV2>();
     int currentnpc;
+    public bool computerOn;
 
 	// Use this for initialization
 	void Start () {
@@ -31,6 +32,7 @@ public class Computer : MonoBehaviour {
 
     public void StartComputer()
     {
+        computerOn = true;
         GameObject.FindGameObjectWithTag("UIManager").GetComponent<UIManager>().pause(true);
         computerCanvasClone = Instantiate(computerCanvas);
         taskWindow = computerCanvasClone.transform.FindChild("Computer").FindChild("TaskWindow").gameObject;
@@ -141,6 +143,7 @@ public class Computer : MonoBehaviour {
 
     public void ShutdownComputer()
     {
+        computerOn = false;
         GameObject.FindGameObjectWithTag("UIManager").GetComponent<UIManager>().pause(false);
         Destroy(computerCanvasClone);
     }

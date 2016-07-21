@@ -11,7 +11,7 @@ public class ScoringSystem : MonoBehaviour {
     int respnpcleavinghospital = 10;
     int respnpcdeathpunishment = -25;
     public bool gameover = false;
-
+    Tutorial tutorial;
 
     GameObject positivebar;
     Text percentage;
@@ -19,10 +19,14 @@ public class ScoringSystem : MonoBehaviour {
 	void Start () {
         positivebar = GameObject.FindGameObjectWithTag("ScoreBar").transform.FindChild("Positive").gameObject;
         percentage = GameObject.FindGameObjectWithTag("ScoreBar").transform.FindChild("Percentage").GetComponent<Text>();
+        tutorial = GameObject.Find("Tutorial").GetComponent<Tutorial>();
     }
 
     public void addToScore(int add)
     {
+        if (tutorial.tutorialOn)
+            return;
+
         if(add < 0)
         {
             if(score > 0)

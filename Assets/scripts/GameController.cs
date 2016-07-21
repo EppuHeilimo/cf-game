@@ -134,7 +134,6 @@ public class GameController : MonoBehaviour {
         GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerControl>().enabled = true;
         clock.resumeAfterTutorial();
         GameObject.FindGameObjectWithTag("ScoringSystem").GetComponent<ScoringSystem>().reset();
-        tutorial.QuitTutorial();
         GameObject.FindGameObjectWithTag("TextBoxManager").GetComponent<TextBoxManager>().DisableTextBox();
     }
 
