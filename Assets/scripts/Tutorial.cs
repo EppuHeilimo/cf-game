@@ -438,7 +438,7 @@ public class Tutorial : MonoBehaviour {
 
             case TutorialState.STATE_COMPUTER_PRACTICE_1:
                 nextBtn.SetActive(false);
-                message = "Check out your daily schedule by clicking the button.";
+                message = "Check out your daily schedule by clicking the Skeduler-button.";
                 break;
 
             case TutorialState.STATE_COMPUTER_PRACTICE_2:
