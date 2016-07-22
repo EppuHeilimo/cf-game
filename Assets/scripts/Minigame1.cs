@@ -128,6 +128,7 @@ public class Minigame1 : MonoBehaviour {
 
     public void quitMinigame()
     {
+        player.GetComponent<NavMeshAgent>().Warp(GameObject.Find("MinigameWarpSpot").transform.position);
         AddCupsToInv();
         GetComponent<MedCabInventory>().Reset();
         active = false;
