@@ -33,11 +33,12 @@ public class Tutorial : MonoBehaviour {
         STATE_ENDING_GOOD_4,
         STATE_ENDING_GOOD_FINAL,
         STATE_ENDING_BAD_1,
-        STATE_ENDING_BAD_2,
 
         STATE_COMPUTER_PRACTICE,
+        STATE_COMPUTER_PRACTICE_1,
         STATE_COMPUTER_PRACTICE_2,
         STATE_TRASH_PRACTICE,
+        STATE_COFFEE_PRACTICE,
 
         STATE_INACTIVE,
         STATE_SHOW_NOTIFICATION
@@ -71,6 +72,7 @@ public class Tutorial : MonoBehaviour {
     public GameObject scoreBarHighlight;
     GameObject computer;
     GameObject trashCan;
+    GameObject coffee;
     float timeSpentInThisState;
     const float GO_TO_SLEEP_TIME = 20f;
     bool nextClicked;
@@ -78,6 +80,8 @@ public class Tutorial : MonoBehaviour {
 
     public Slider musicOptionsSlider;
     public Slider musicPauseSlider;
+    public Toggle toggle;
+    public Toggle toggleMenu;
 
     /* position stuff */
     GameObject[] tutorialStuff;
@@ -251,15 +255,15 @@ public class Tutorial : MonoBehaviour {
                     {
                         ChangeState(TutorialState.STATE_ENDING_GOOD_1);
                     }
-                    // check if patient dies
-                    else if (tutorialNPC.GetComponent<NPCV2>().myHp <= 0)
-                    {
-                        ChangeState(TutorialState.STATE_ENDING_BAD_2);
-                    }
                     break;
 
                 case TutorialState.STATE_COMPUTER_PRACTICE:
                     if (computer.GetComponent<Computer>().computerOn)
+                        ChangeState(TutorialState.STATE_COMPUTER_PRACTICE_1);
+                    break;
+
+                case TutorialState.STATE_COMPUTER_PRACTICE_1:
+                    if (computer.GetComponent<Computer>().scheduleOn)
                         ChangeState(TutorialState.STATE_COMPUTER_PRACTICE_2);
                     break;
 
@@ -269,6 +273,14 @@ public class Tutorial : MonoBehaviour {
                     break;
 
                 case TutorialState.STATE_TRASH_PRACTICE:
+                    if (nextClicked)
+                    {
+                        mCamera.lockToPlayer();
+                        ChangeState(TutorialState.STATE_COFFEE_PRACTICE);
+                    }
+                    break;
+
+                case TutorialState.STATE_COFFEE_PRACTICE:
                     if (nextClicked)
                     {
                         mCamera.lockToPlayer();
@@ -424,6 +436,11 @@ public class Tutorial : MonoBehaviour {
                 ShowComputer();
                 break;
 
+            case TutorialState.STATE_COMPUTER_PRACTICE_1:
+                nextBtn.SetActive(false);
+                message = "Check out your daily schedule by clicking the Skeduler-button.";
+                break;
+
             case TutorialState.STATE_COMPUTER_PRACTICE_2:
                 message = "Close the computer by pressing the X-button in the top-left corner.";
                 break;
@@ -432,6 +449,12 @@ public class Tutorial : MonoBehaviour {
                 nextBtn.SetActive(true);
                 message = "Next to the computer, there is a trash can. Double-click it and click a medicine cup in your inventory to delete it.";
                 ShowTrashCan();
+                break;
+
+            case TutorialState.STATE_COFFEE_PRACTICE:
+                nextBtn.SetActive(true);
+                message = "There is a coffeemaker in the office too. Use it if you want to skip time.";
+                ShowCoffee();
                 break;
 
             case TutorialState.STATE_ENDING_GOOD_2:
@@ -459,11 +482,6 @@ public class Tutorial : MonoBehaviour {
             case TutorialState.STATE_ENDING_BAD_1:
                 message = "That medicine was incorrect or the dosage was wrong. Try again, the patient needs 400 mg of Ibuprofen.";
                 mascot.ChangeState(Mascot.MascotState.STATE_ANGRY);
-                break;
-
-            case TutorialState.STATE_ENDING_BAD_2:
-                message = "You killed the patient. You did that on purpose, didn't you? Are you satisfied now?!";
-                Invoke("QuitTutorial", 12);
                 break;
 
             case TutorialState.STATE_INACTIVE:
@@ -499,6 +517,7 @@ public class Tutorial : MonoBehaviour {
         StartCoroutine(ChangeState(TutorialState.STATE_START, 1f));
         GameObject.Find("Player").GetComponent<PlayerControl>().loadProfile();
         musicPauseSlider.value = musicOptionsSlider.value;
+        toggle.isOn = toggleMenu.isOn;
     }
 
     public void TutorialNoClicked()
@@ -508,6 +527,7 @@ public class Tutorial : MonoBehaviour {
         tutorialOn = false;
         GameObject.Find("Player").GetComponent<PlayerControl>().loadProfile();
         musicPauseSlider.value = musicOptionsSlider.value;
+        toggle.isOn = toggleMenu.isOn;
     }
 
     public void QuitTutorial()
@@ -601,6 +621,18 @@ public class Tutorial : MonoBehaviour {
         indicator = (GameObject)Instantiate(moveIndicatorPrefab, pos, new Quaternion(0, 0, 0, 0));
         indicator.transform.localScale = new Vector3(5, 5, 5);
         GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerControl>().setTarget(trashCan);
+    }
+
+    void ShowCoffee()
+    {
+        if (indicator != null)
+            Destroy(indicator);
+        coffee = GameObject.FindGameObjectWithTag("CoffeeMachine");
+        var pos = coffee.transform.position;
+        pos.x -= 35;
+        indicator = (GameObject)Instantiate(moveIndicatorPrefab, pos, new Quaternion(0, 0, 0, 0));
+        indicator.transform.localScale = new Vector3(5, 5, 5);
+        GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerControl>().setTarget(coffee);
     }
 
     public void TutorialNextClicked()

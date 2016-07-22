@@ -19,6 +19,7 @@ public class Computer : MonoBehaviour {
     List<NPCV2> npcList = new List<NPCV2>();
     int currentnpc;
     public bool computerOn;
+    public bool scheduleOn;
 
 	// Use this for initialization
 	void Start () {
@@ -33,6 +34,7 @@ public class Computer : MonoBehaviour {
     public void StartComputer()
     {
         computerOn = true;
+        scheduleOn = false;
         GameObject.FindGameObjectWithTag("UIManager").GetComponent<UIManager>().pause(true);
         computerCanvasClone = Instantiate(computerCanvas);
         taskWindow = computerCanvasClone.transform.FindChild("Computer").FindChild("TaskWindow").gameObject;
@@ -107,6 +109,7 @@ public class Computer : MonoBehaviour {
 
     public void openTaskWindow()
     {
+        scheduleOn = true;
         taskWindow.SetActive(true);
         moveWindowToFront(taskWindow.transform);
     }

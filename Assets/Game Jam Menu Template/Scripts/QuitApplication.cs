@@ -1,8 +1,12 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class QuitApplication : MonoBehaviour {
+
+    public Slider slider;
+    public Toggle toggle;
 
 	public void Quit()
 	{
@@ -20,9 +24,11 @@ public class QuitApplication : MonoBehaviour {
     {
         GameObject menu = GameObject.Find("Menu");
         if (menu != null)
-        { 
+        {
+            GameObject.Find("DontDestroy").GetComponent<SavedVariables>().SaveValues(slider.value, toggle.isOn);
             if (menu.GetComponent<Pause>() != null)
                 menu.GetComponent<Pause>().UnPause();
+
             Destroy(menu);
         }
         Scene scene = SceneManager.GetActiveScene();

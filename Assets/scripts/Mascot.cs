@@ -62,7 +62,7 @@ public class Mascot : MonoBehaviour {
             case MascotState.STATE_SLEEP:
                 if (isTalking)
                 { 
-                    if (tutorial.currentState == Tutorial.TutorialState.STATE_ENDING_BAD_1 || tutorial.currentState == Tutorial.TutorialState.STATE_ENDING_BAD_2)
+                    if (tutorial.currentState == Tutorial.TutorialState.STATE_ENDING_BAD_1)
                         ChangeState(MascotState.STATE_ANGRY);
                     else
                         ChangeState(MascotState.STATE_NORMAL);
