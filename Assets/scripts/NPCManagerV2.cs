@@ -49,7 +49,7 @@ public class NPCManagerV2 : MonoBehaviour
     int npcCount;
 
     // spawn point for the NPCs
-    Vector3 spawnPoint;
+    public Vector3 spawnPoint;
 
     // time elapsed since last NPC was spawned
     float timeSinceLastSpawn;

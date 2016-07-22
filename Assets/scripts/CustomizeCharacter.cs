@@ -182,7 +182,7 @@ public class CustomizeCharacter : MonoBehaviour {
         }
 
 
-#if UNITY_EDITOR || UNITY_STANDALONE_WIN
+#if UNITY_EDITOR || UNITY_STANDALONE
         if (Input.GetMouseButtonDown(0))
         {
             LayerMask layerMask = 1 << 15;

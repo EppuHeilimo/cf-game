@@ -295,7 +295,7 @@ public class PlayerControl : MonoBehaviour {
             LayerMask layerMaskNpc = (1 << 9) | (1 << 10);
             Ray ray = new Ray();
             //for unity editor
-#if UNITY_EDITOR || UNITY_STANDALONE_WIN
+#if UNITY_EDITOR || UNITY_STANDALONE
             ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             //for touch device
 #elif (UNITY_ANDROID || UNITY_IPHONE || UNITY_WP8)
@@ -540,7 +540,7 @@ public class PlayerControl : MonoBehaviour {
 
     bool isMouseOverUI()
     {
-        #if UNITY_EDITOR || UNITY_STANDALONE_WIN
+        #if UNITY_EDITOR || UNITY_STANDALONE
         /* Check if click was over UI on PC*/
         if (!UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject())
         #elif (UNITY_ANDROID || UNITY_IPHONE || UNITY_WP8)

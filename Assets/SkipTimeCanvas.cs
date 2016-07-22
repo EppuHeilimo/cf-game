@@ -11,12 +11,14 @@ public class SkipTimeCanvas : MonoBehaviour {
     Image black;
     NPCManagerV2 npcManager;
     bool allMedsGiven = true;
-
+    GameObject morning;
     GameObject afternoon;
     GameObject evening;
     GameObject night;
     GameObject warning;
     ClockTime.DayTime daytime;
+
+    ClockTime clock;
 
 	// Use this for initialization
 	void Start () {
@@ -24,27 +26,42 @@ public class SkipTimeCanvas : MonoBehaviour {
         black = GetComponent<Image>();
         black.color = new Color(0, 0, 0, 0);
         afternoon = transform.FindChild("Background").FindChild("Afternoon").gameObject;
+        morning = transform.FindChild("Background").FindChild("Morning").gameObject;
         evening = transform.FindChild("Background").FindChild("Evening").gameObject;
         night = transform.FindChild("Background").FindChild("Night").gameObject;
         warning = transform.FindChild("Background").FindChild("Warning").gameObject;
+        npcManager = GameObject.FindGameObjectWithTag("NPCManager").GetComponent<NPCManagerV2>();
+        clock = GameObject.FindGameObjectWithTag("Clock").GetComponent<ClockTime>();
+        Init();
+    }
+
+    public void Init()
+    {
         warning.SetActive(false);
         afternoon.SetActive(false);
         evening.SetActive(false);
         night.SetActive(false);
-
-        npcManager = GameObject.FindGameObjectWithTag("NPCManager").GetComponent<NPCManagerV2>();
-
-        daytime = GameObject.FindGameObjectWithTag("Clock").GetComponent<ClockTime>().currentDayTime;
+        morning.SetActive(false);   
+        daytime = clock.currentDayTime;
 
         checkmeds();
 
-        if (!allMedsGiven)
+        if (!allMedsGiven && npcManager.responsibilityNpcs.Count > 0)
         {
             transform.FindChild("Background").FindChild("Text").gameObject.SetActive(false);
             warning.SetActive(true);
+            warning.GetComponent<Text>().text = "You haven't administrated all the medicine yet!";
+        }
+        else if(npcManager.responsibilityNpcs.Count == 0)
+        {
+            transform.FindChild("Background").FindChild("Text").gameObject.SetActive(false);
+            warning.SetActive(true);
+            warning.GetComponent<Text>().text = "You can't skip time right now!";
         }
         else
         {
+            transform.FindChild("Background").FindChild("Text").gameObject.SetActive(true);
+            warning.SetActive(false);
             switch (daytime)
             {
                 case ClockTime.DayTime.MORNING:
@@ -56,10 +73,8 @@ public class SkipTimeCanvas : MonoBehaviour {
                 case ClockTime.DayTime.EVENING:
                     night.SetActive(true);
                     break;
-                default:
-                    transform.FindChild("Background").FindChild("Text").gameObject.SetActive(false);
-                    warning.SetActive(true);
-                    warning.GetComponent<Text>().text = "You can't skip time right now!";
+                case ClockTime.DayTime.NIGHT:
+                    morning.SetActive(true);
                     break;
             }
         }
@@ -128,6 +143,12 @@ public class SkipTimeCanvas : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update () {
+
+        if(daytime != clock.currentDayTime)
+        {
+            Init();
+        }
+
 	    if(blending)
         {
             black.color = new Color(0, 0, 0, black.color.a + Time.deltaTime * speed);

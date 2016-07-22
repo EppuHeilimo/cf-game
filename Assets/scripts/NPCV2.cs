@@ -645,8 +645,8 @@ public class NPCV2 : MonoBehaviour
     private void leaveHospital()
     {
         if(dest == Vector3.zero)
-        {          
-            dest = new Vector3(-501, 0, 951);
+        {
+            dest = npcManager.spawnPoint;
             moveTo(dest); 
         }
         if (player.GetComponent<PlayerControl>().getTarget() == gameObject)
@@ -2049,36 +2049,62 @@ public class NPCV2 : MonoBehaviour
                 incorrect += 2;
             }
 
+
+            //how many meds should the patient be given
+            int medslength = 0;
+
+            foreach(Medicine m in meds)
+            {
+                if(m.title != null)
+                {
+                    medslength++;
+                }
+            }
+
+            float givenratio = 0;
+
+            //don't divide by 0
+            if (medslength > 0)
+            {
+                //ratio of how many correct meds were given out of all daytime meds
+                givenratio = (medslength - correct) / medslength;
+            }
+
             int medcount = correct + incorrect;
 
             float temp = correct / medcount;
             float correctratio = temp - (incorrect / medcount);
             
-            if(correctratio > 0)
+            if (correctratio >= 0)
             {
+                correctratio -= givenratio;
                 correctSound.Play();
-                if (correctratio > 0 && correctratio <= 0.25f)
+                if (correctratio == 0)
+                {
+                    GetComponent<FloatTextNPC>().addFloatText("+ 0", true);
+                }
+                else if (correctratio > 0 && correctratio <= 0.34f)
                 {
                     GetComponent<FloatTextNPC>().addFloatText("+ 5", true);
                     if(playersResponsibility)
                         scoreSystem.addToScore(2);
                     myHp += 5;
                 }
-                else if (correctratio > 0.25f && correctratio <= 0.5f)
+                else if (correctratio > 0.34f && correctratio <= 0.67f )
                 {
                     GetComponent<FloatTextNPC>().addFloatText("+ 10", true);
                     if (playersResponsibility)
                         scoreSystem.addToScore(5);
                     myHp += 10;
                 }
-                else if (correctratio > 0.5f && correctratio <= 0.75f)
+                else if (correctratio > 0.67f && correctratio < 1f )
                 {
                     GetComponent<FloatTextNPC>().addFloatText("+ 15", true);
                     if (playersResponsibility)
                         scoreSystem.addToScore(6);
                     myHp += 15;
                 }
-                else if (correctratio > 0.75f && correctratio <= 1f)
+                else if (correctratio >= 1f)
                 {
                     GetComponent<FloatTextNPC>().addFloatText("+ 20", true);
                     if (playersResponsibility)
@@ -2107,13 +2133,14 @@ public class NPCV2 : MonoBehaviour
                     scoreSystem.addToScore(-7);
                     myHp -= 15;
                 }
-                else if (correctratio < -0.75f && correctratio >= -1f)
+                else if (correctratio < -0.75f)
                 {
                     GetComponent<FloatTextNPC>().addFloatText("- 20", false);
                     scoreSystem.addToScore(-10);
                     myHp -= 20;
                 }
             }
+
             return true;
         }
         else return false;
