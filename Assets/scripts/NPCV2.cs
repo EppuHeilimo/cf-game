@@ -2068,7 +2068,7 @@ public class NPCV2 : MonoBehaviour
             if (medslength > 0)
             {
                 //ratio of how many correct meds were given out of all daytime meds
-                givenratio = (medslength - correct) / medslength;
+                givenratio = (float)(medslength - correct) / medslength;
             }
 
             int medcount = correct + incorrect;
