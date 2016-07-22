@@ -721,6 +721,7 @@ public class NPCV2 : MonoBehaviour
                             {
                                 addNpcToResponsibilities();
                                 SkipMedCheck();
+                                tutorial.ShowNotification("You have a new patient: " + myName + "!", 5f, false);
                             }
                             npcManager.currentNpcsInWard++;
                         }
@@ -1135,6 +1136,7 @@ public class NPCV2 : MonoBehaviour
             else if (arrivedToDestination(5.0f))
             {
                 GetComponent<FloatTextNPC>().addFloatText("Health critical! Passing out!", false);
+                tutorial.ShowNotification("Your patient " + myName + " has passed out!", 5f, true);
                 if (playersResponsibility)
                 {
                     GameObject.FindGameObjectWithTag("ScoringSystem").GetComponent<ScoringSystem>().responsibilityNPCDied();
@@ -2053,6 +2055,7 @@ public class NPCV2 : MonoBehaviour
             
             if(correctratio > 0)
             {
+                GetComponent<AudioSource>().Play();
                 if (correctratio > 0 && correctratio <= 0.25f)
                 {
                     GetComponent<FloatTextNPC>().addFloatText("+ 5", true);
