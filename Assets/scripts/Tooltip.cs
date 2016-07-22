@@ -35,6 +35,7 @@ public class Tooltip : MonoBehaviour {
 
     public void Activate(ItemContainer item)
     {
+        GameObject.Find("Canvas").GetComponent<Canvas>().sortingOrder = 2000;
         this.item = item;
         ConstructDataString();
         tooltip.SetActive(true);
@@ -42,6 +43,7 @@ public class Tooltip : MonoBehaviour {
 
     public void Deactivate()
     {
+        GameObject.Find("Canvas").GetComponent<Canvas>().sortingOrder = 0;
         tooltip.SetActive(false);
     }
 

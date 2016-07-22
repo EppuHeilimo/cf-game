@@ -403,53 +403,48 @@ public class NPCV2 : MonoBehaviour
         }
 
         //check status only if has visited the doctor
-        if (diagnosed)
+        if (diagnosed && !tutorial.tutorialOn)
         {
             //check medication every update if player is diagnosed
             checkMed();
             //sleep at night
-            if(!tutorial.tutorialOn)
+            if (!sleepingqueued && clock.currentDayTime == ClockTime.DayTime.NIGHT)
             {
-                if (!sleepingqueued && clock.currentDayTime == ClockTime.DayTime.NIGHT)
+                addStateToQueue(2, NPCState.STATE_SLEEP);
+                sleepingqueued = true;
+            }
+            //Increase fatigue every x seconds if state is not sleep
+            //if sleeping already queued, just skip
+            if (!sleepingqueued && !sleeping)
+            {
+                fatiquetimer += Time.deltaTime;
+                if (fatiquetimer > 5.0f)
+                {
+                    fatique += 1f;
+                    fatiquetimer = 0;
+                }
+                //if has bed and fatique over x, queue sleep task
+                if (fatique > 10.0f)
                 {
                     addStateToQueue(2, NPCState.STATE_SLEEP);
                     sleepingqueued = true;
                 }
-                //Increase fatigue every x seconds if state is not sleep
-                //if sleeping already queued, just skip
-                if (!sleepingqueued && !sleeping)
+            }
+            //Don't test need to go to wc if already queued
+            if (!wcqueued)
+            {
+                callofnaturetimer += Time.deltaTime;
+                if (callofnaturetimer > 5.0f)
                 {
-                    fatiquetimer += Time.deltaTime;
-                    if (fatiquetimer > 5.0f)
-                    {
-                        fatique += 1f;
-                        fatiquetimer = 0;
-                    }
-                    //if has bed and fatique over x, queue sleep task
-                    if (fatique > 10.0f)
-                    {
-                        addStateToQueue(2, NPCState.STATE_SLEEP);
-                        sleepingqueued = true;
-                    }
+                    callofnature += 1;
+                    callofnaturetimer = 0;
                 }
-                //Don't test need to go to wc if already queued
-                if (!wcqueued)
+                if (callofnature > 30.0f)
                 {
-                    callofnaturetimer += Time.deltaTime;
-                    if (callofnaturetimer > 5.0f)
-                    {
-                        callofnature += 1;
-                        callofnaturetimer = 0;
-                    }
-                    if (callofnature > 30.0f)
-                    {
-                        addStateToQueue(2, NPCState.STATE_GO_WC);
-                        wcqueued = true;
-                    }
+                    addStateToQueue(2, NPCState.STATE_GO_WC);
+                    wcqueued = true;
                 }
             }
-
-
         }
     }
 
@@ -628,17 +623,16 @@ public class NPCV2 : MonoBehaviour
             int rand = Random.Range(0, deathpoints.Length - 1);
             dest = deathpoints[rand];
             moveTo(dest);
-
-            if (tutorial.tutorialOn)
-            {
-                lockstate = true;
-            }
         }
         if(arrivedToDestination(100.0f))
         {
             if(tutorial.tutorialOn)
             {
                 agent.Stop();
+                if (tutorial.tutorialOn)
+                {
+                    lockstate = true;
+                }
             }
             else
             {
@@ -651,11 +645,15 @@ public class NPCV2 : MonoBehaviour
     private void leaveHospital()
     {
         if(dest == Vector3.zero)
-        {             
+        {          
             dest = new Vector3(-501, 0, 951);
             moveTo(dest); 
         }
-        if(arrivedToDestination(100.0f))
+        if (player.GetComponent<PlayerControl>().getTarget() == gameObject)
+        {
+            GameObject.FindGameObjectWithTag("TextBoxManager").GetComponent<TextBoxManager>().DisableTextBox();
+        }
+        if (arrivedToDestination(100.0f))
         {
             npcManager.deleteNpcFromList(gameObject);
             if(playersResponsibility)
@@ -1855,7 +1853,7 @@ public class NPCV2 : MonoBehaviour
     {
         if(!paused)
         {
-            if (isLosingHp && !tutorial.tutorialOn)
+            if (isLosingHp)
             {
                 // lose hp if no medicine is active, if hp reaches zero -> die
                 deathTimer += Time.deltaTime;
