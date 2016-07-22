@@ -17,6 +17,9 @@ public class DayChangeCanvas : MonoBehaviour {
     Transform performancepanel;
     Transform totalscoretextpanel;
     List<GameObject> patientpanels = new List<GameObject>();
+    public AudioSource clapSound;
+    public AudioSource booSound;
+
     // Use this for initialization
     void Start () {
         day = GameObject.FindGameObjectWithTag("Clock").GetComponent<ClockTime>().day;
@@ -58,7 +61,14 @@ public class DayChangeCanvas : MonoBehaviour {
                 patientpanels.Add(patient);
             }
             if (score >= 80)
-                GetComponent<AudioSource>().Play();
+            {
+                clapSound.Play();
+            }
+            else if (score <= 30)
+            {
+                booSound.Play();
+            }
+
             performancepanel.FindChild("Positive").GetComponent<RectTransform>().sizeDelta = new Vector2(score * 2, 30);
             performancepanel.FindChild("Percentage").GetComponent<Text>().text = score + "%";
             totalscoretextpanel.GetComponent<Text>().text = oldtotalscore.ToString();
