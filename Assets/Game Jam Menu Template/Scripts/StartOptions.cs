@@ -2,7 +2,7 @@
 using System.Collections;
 using UnityEngine.Audio;
 using UnityEngine.SceneManagement;
-
+using UnityEngine.UI;
 
 public class StartOptions : MonoBehaviour {
 
@@ -35,6 +35,21 @@ public class StartOptions : MonoBehaviour {
 		playMusic = GetComponent<PlayMusic> ();
 
         uiManager.pause(true);
+
+        //Load saved music options if they are set
+        SavedVariables savedVariables = GameObject.Find("DontDestroy").GetComponent<SavedVariables>();
+        if (savedVariables.set)
+        {
+            showPanels.ShowOptionsPanel();
+            GameObject.FindGameObjectWithTag("Slider").GetComponent<Slider>().value = savedVariables.sliderValue;
+            GameObject.FindGameObjectWithTag("Toggle").GetComponent<Toggle>().isOn = savedVariables.toggleValue;
+            showPanels.HideOptionsPanel();
+        }      
+    }
+
+    void Start()
+    {
+
     }
 
     public void StartButtonClicked()

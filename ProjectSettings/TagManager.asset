@@ -59,6 +59,8 @@ TagManager:
   - MenuButtons
   - TutorialStuff
   - CoffeeMachine
+  - Slider
+  - Toggle
   layers:
   - Default
   - TransparentFX

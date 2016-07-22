@@ -2,6 +2,7 @@
 using System.Collections;
 using UnityEngine.Audio;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class PlayMusic : MonoBehaviour {
 
@@ -14,6 +15,9 @@ public class PlayMusic : MonoBehaviour {
 
 	private AudioSource musicSource;				//Reference to the AudioSource which plays music
 	private float resetTime = .01f;					//Very short time used to fade in near instantly without a click
+
+    public Toggle toggle;
+    public Toggle toggleMenu;
 
 
 	void Awake () 
@@ -77,4 +81,20 @@ public class PlayMusic : MonoBehaviour {
 		//call the TransitionTo function of the audioMixerSnapshot volumeDown;
 		volumeDown.TransitionTo (fadeTime);
 	}
+
+    public void ToggleMusic()
+    {
+        if (toggle.isOn)
+            musicSource.Play();
+        else
+            musicSource.Stop();
+    }
+
+    public void ToggleMusicMenu()
+    {
+        if (toggleMenu.isOn)
+            musicSource.Play();
+        else
+            musicSource.Stop();
+    }
 }

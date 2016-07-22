@@ -1955,7 +1955,8 @@ public class NPCV2 : MonoBehaviour
             if(myHp >= 100)
             {
                 GetComponent<FloatTextNPC>().addFloatText("Health excellent! Leaving Hospital!", true);
-                if(playersResponsibility)
+                tutorial.ShowNotification("Your patient " + myName + " is healthy and has left the hospital!", 5f, false);
+                if (playersResponsibility)
                 {
                     GameObject.FindGameObjectWithTag("ScoringSystem").GetComponent<ScoringSystem>().responsibilityNPCLeftHospital();
                     npcManager.respNpcsWhoLeftOrDied.Add(new NPCINFO(myName, myHead2d, false));
