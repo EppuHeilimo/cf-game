@@ -3,6 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class PlayerControl : MonoBehaviour {
+
+    public GameObject TimeSkipPrefab;
+
     NavMeshAgent agent;
     GameObject target;
     public GameObject moveindicator;
@@ -154,6 +157,12 @@ public class PlayerControl : MonoBehaviour {
                 else if(target.tag == "TrashCan")
                 {
                     movingToTarget = false;
+                }
+                else if (target.tag == "CoffeeMachine")
+                {
+                    Instantiate(TimeSkipPrefab);
+                    movingToTarget = false;
+                    disableTarget();
                 }
             }
         }
@@ -407,7 +416,7 @@ public class PlayerControl : MonoBehaviour {
                                 moveTo(nextDestination);
                                 disableMoveIndicator();
                             }
-                            else if (target.tag == "MedCabinet" || target.tag == "Computer" || target.tag == "TrashCan")
+                            else if (target.tag == "MedCabinet" || target.tag == "Computer" || target.tag == "TrashCan" || target.tag == "CoffeeMachine")
                             {
                                 interaction.setTarget(target);
                                 nextDestination = target.transform.position;

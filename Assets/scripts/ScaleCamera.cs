@@ -24,7 +24,6 @@ public class ScaleCamera : MonoBehaviour {
         if (scaleheight < 1.0f)
         {
             Rect rect = camera.rect;
-
             rect.width = 1.0f;
             rect.height = scaleheight;
             rect.x = 0;

@@ -304,6 +304,13 @@ public class ClockTime : MonoBehaviour {
         resetMeds();
     }
 
+    public void setTime(int hour, int min)
+    {
+        hour -= startHour;
+        min += hour * 60; 
+        currentTime = min * secToGameMin;
+    }
+
     string getTimeString()
     {
         float minutesfloat = currentTime / secToGameMin;

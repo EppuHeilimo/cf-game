@@ -25,8 +25,6 @@ public class NPCV2 : MonoBehaviour
         STATE_DAY_CHANGE,
         STATE_DEFAULT, //Do nothing
         STATE_RANDOM_SLEEP
-        
-
     }
 
     /* basic stuff */

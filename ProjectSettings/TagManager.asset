@@ -58,6 +58,7 @@ TagManager:
   - StartTutNo
   - MenuButtons
   - TutorialStuff
+  - CoffeeMachine
   layers:
   - Default
   - TransparentFX
