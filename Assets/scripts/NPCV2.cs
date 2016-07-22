@@ -143,6 +143,10 @@ public class NPCV2 : MonoBehaviour
 
     Tutorial tutorial;
 
+    public AudioSource correctSound;
+    public AudioSource wrongSound;
+    public AudioSource dieSound;
+
     Vector3[] deathpoints = {
         new Vector3(722, 0, -526),
         new Vector3(722, 0, -254),
@@ -719,6 +723,7 @@ public class NPCV2 : MonoBehaviour
                             {
                                 addNpcToResponsibilities();
                                 SkipMedCheck();
+                                tutorial.ShowNotification("You have a new patient: " + myName + "!", 5f, false);
                             }
                             npcManager.currentNpcsInWard++;
                         }
@@ -1132,9 +1137,11 @@ public class NPCV2 : MonoBehaviour
             //When arrived to good position, set npc to dead and rmeove from npclists
             else if (arrivedToDestination(5.0f))
             {
-                GetComponent<FloatTextNPC>().addFloatText("Health critical! Passing out!", false);
+                dieSound.Play();
                 if (playersResponsibility)
-                {
+                { 
+                    GetComponent<FloatTextNPC>().addFloatText("Health critical! Passing out!", false);
+                    tutorial.ShowNotification("Your patient " + myName + " has passed out!", 5f, true);
                     GameObject.FindGameObjectWithTag("ScoringSystem").GetComponent<ScoringSystem>().responsibilityNPCDied();
                     npcManager.respNpcsWhoLeftOrDied.Add(new NPCINFO(myName, myHead2d, true));
                 }
@@ -2051,6 +2058,7 @@ public class NPCV2 : MonoBehaviour
             
             if(correctratio > 0)
             {
+                correctSound.Play();
                 if (correctratio > 0 && correctratio <= 0.25f)
                 {
                     GetComponent<FloatTextNPC>().addFloatText("+ 5", true);
@@ -2082,6 +2090,7 @@ public class NPCV2 : MonoBehaviour
             }
             else if(correctratio < 0)
             {
+                wrongSound.Play();
                 if (correctratio < 0 && correctratio >= -0.25f)
                 {
                     GetComponent<FloatTextNPC>().addFloatText("- 5", false);

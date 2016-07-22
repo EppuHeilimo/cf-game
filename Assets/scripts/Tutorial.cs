@@ -39,7 +39,8 @@ public class Tutorial : MonoBehaviour {
         STATE_COMPUTER_PRACTICE_2,
         STATE_TRASH_PRACTICE,
 
-        STATE_INACTIVE
+        STATE_INACTIVE,
+        STATE_SHOW_NOTIFICATION
     }
     bool stateChanged;
 
@@ -88,6 +89,9 @@ public class Tutorial : MonoBehaviour {
         DOSING
     }
     TutStuffPos currPos;
+
+    string notificationMsg;
+    float notificationTime;
 
     // Use this for initialization
     void Start () {     
@@ -292,6 +296,17 @@ public class Tutorial : MonoBehaviour {
                     break;
             }
         }
+        // tutorial not on, show notifications
+        else
+        {
+            if (stateChanged)
+            {
+                OnStateChange();
+            }
+
+            if (mascot != null)
+                mascot.isTalking = typing;
+        }
 	}
 
     void OnStateChange()
@@ -454,6 +469,11 @@ public class Tutorial : MonoBehaviour {
             case TutorialState.STATE_INACTIVE:
                 message = "";
                 break;
+
+            case TutorialState.STATE_SHOW_NOTIFICATION:
+                message = notificationMsg;
+                Invoke("HideNotification", notificationTime);
+                break;
         }
         StartCoroutine(TypeText());
         stateChanged = false;
@@ -598,5 +618,34 @@ public class Tutorial : MonoBehaviour {
     {
         for (int i = 0; i < tutorialStuff.Length; i++)
             tutorialStuff[i].GetComponent<RectTransform>().position = new Vector3(tutorialStuffOrigPos[i].x + x, tutorialStuffOrigPos[i].y + y, tutorialStuffOrigPos[i].z);
+    }
+
+    public void ShowNotification(string msg, float time, bool angry)
+    {
+        if (currentState != TutorialState.STATE_SHOW_NOTIFICATION)
+        { 
+            ShowtutCanvas();
+            nextBtn.SetActive(false);
+            notificationMsg = msg;
+            notificationTime = time;
+            if (angry)
+            { 
+                mascot.ChangeState(Mascot.MascotState.STATE_ANGRY);
+            }
+            else
+            {
+                if (mascot.currentState != Mascot.MascotState.STATE_NORMAL)
+                    mascot.ChangeState(Mascot.MascotState.STATE_NORMAL);
+            }
+            ChangeState(TutorialState.STATE_SHOW_NOTIFICATION);
+        }
+    }
+
+    public void HideNotification()
+    {
+        HidetutCanvas();
+        notificationMsg = "";
+        notificationTime = 0f;
+        ChangeState(TutorialState.STATE_INACTIVE);
     }
 }
