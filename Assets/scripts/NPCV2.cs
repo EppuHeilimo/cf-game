@@ -651,11 +651,15 @@ public class NPCV2 : MonoBehaviour
     private void leaveHospital()
     {
         if(dest == Vector3.zero)
-        {             
+        {          
             dest = new Vector3(-501, 0, 951);
             moveTo(dest); 
         }
-        if(arrivedToDestination(100.0f))
+        if (player.GetComponent<PlayerControl>().getTarget() == gameObject)
+        {
+            GameObject.FindGameObjectWithTag("TextBoxManager").GetComponent<TextBoxManager>().DisableTextBox();
+        }
+        if (arrivedToDestination(100.0f))
         {
             npcManager.deleteNpcFromList(gameObject);
             if(playersResponsibility)
