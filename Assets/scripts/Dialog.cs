@@ -2,9 +2,12 @@
 using System.Collections;
 using System.Collections.Generic;
 
+/* Component used by patients.
+ * Handles recognizing close objects
+ */
+
 public class Dialog : MonoBehaviour
 {
-
     TextBoxManager textBoxManager;
     NPC parent;
     public bool playerInZone = false;
@@ -12,17 +15,11 @@ public class Dialog : MonoBehaviour
     Dictionary<GameObject, float> timers = new Dictionary<GameObject, float>();
     GameObject WhoIsTargetingMe;
 
-
     void Start()
     {
         textBoxManager = FindObjectOfType<TextBoxManager>();
         parent = transform.parent.GetComponent<NPC>();
         parent.initChild();
-    }
-
-    void Update()
-    {
-
     }
 
     public GameObject getWhoIsTargetingMe()

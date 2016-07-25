@@ -2,6 +2,10 @@
 using System.Collections;
 using System.Collections.Generic;
 
+
+/*
+ * Handles booking for objects. This way 2 npc's wont use the same object at the same time
+ */
 public class ObjectManager : MonoBehaviour {
 
     Dictionary<GameObject, GameObject> bookableObjects = new Dictionary<GameObject, GameObject>();
@@ -17,11 +21,7 @@ public class ObjectManager : MonoBehaviour {
 
     }
 
-	// Update is called once per frame
-	void Update () {
-	
-	}
-
+    /*Books next available bed for the targetee*/
     public GameObject bookBed(GameObject targetee)
     {
         foreach (KeyValuePair<GameObject, GameObject> obj in bookableObjects)
@@ -35,18 +35,7 @@ public class ObjectManager : MonoBehaviour {
         return null;
     }
     
-    public GameObject bookObject(GameObject targetee)
-    {
-        foreach (KeyValuePair<GameObject, GameObject> obj in bookableObjects)
-        {
-            if (obj.Value == null)
-            {
-                bookableObjects[obj.Key] = targetee;
-                return obj.Key;
-            }
-        }
-        return null;
-    }
+
     /* Reserves random chair for the "Reserver", so others wont use the same object at the same time */
     public GameObject bookRandomChair(GameObject reserver)
     {

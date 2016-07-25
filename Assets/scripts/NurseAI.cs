@@ -1,10 +1,14 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+/* Fetching nurses are working in pairs to fetch passed out npc's */
+
 public class NurseAI : MonoBehaviour {
-
-
+    /* NPC who needs to be fetched to ER */
     GameObject targetNPC;
+    /* Indicates if nurse is with trolley or the one who picks the patient up
+     * 0 - trolley, 1 - picker 
+    */
     int id;
     NavMeshAgent agent;
     ObjectInteraction interaction;
@@ -14,8 +18,11 @@ public class NurseAI : MonoBehaviour {
     bool initialized = false;
     Transform trolley;
     bool readyToLeave = false;
+    /*Has the nurse done everything*/
     public bool allDone = false;
+    /*This nurse is ready to lift*/
     bool readyForLift = false;
+    /*Nurse's partner reference*/
     public NurseAI partner;
     float timer = 0;
     NPCManager npcManager;
@@ -33,6 +40,7 @@ public class NurseAI : MonoBehaviour {
         agent.SetDestination(dest);
     }
 
+    /* Debug draw line for agent path in unity editor if gizmos are selected*/
     void OnDrawGizmosSelected()
     {
 
@@ -64,6 +72,7 @@ public class NurseAI : MonoBehaviour {
 
         if (initialized && !allDone)
         {
+            /* Behavior for trolley nurse */
             if (id == 0)
             {
                 if(dest == Vector3.zero)
@@ -112,6 +121,8 @@ public class NurseAI : MonoBehaviour {
                     }
                 }
             }
+
+            /* Behavior for picker nurse */
             else if(id == 1)
             {
                 if (dest == Vector3.zero)
@@ -139,21 +150,23 @@ public class NurseAI : MonoBehaviour {
                     {
                         readyToLeave = true;
                         timer = 0;
-                        anim.stoppickfromfloor();
+                        anim.StopAll();
                         dest = startPos;
                         moveToDest();
                     } 
                 }
             }
+            /* if npc is picked up and arrived to ER */
             if(readyToLeave && arrivedToDestination(200.0f))
             {
+                /* Lower the stoppingDistance to make nurse with trolley more accurate with stopping */
                 agent.stoppingDistance = 50.0f;
                 if (readyToLeave && arrivedToDestination(100.0f))
                 {
                     allDone = true;
                 }
             }
-
+            /*If stuck and partner already left, mark as allDone*/
             else if(readyToLeave && partner == null)
             {
                 timer += Time.deltaTime;

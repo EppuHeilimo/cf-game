@@ -27,11 +27,16 @@ public class NPCManager : MonoBehaviour
     GameObject nursePrefab;
     [SerializeField]
     GameObject nurseWithTrolleyPrefab;
+
     Vector3 nurseSpawn2 = new Vector3(685, 0, -845);
     Vector3 nurseSpawn = new Vector3(733, 0, -832);
+
     List<KeyValuePair<GameObject, GameObject>> nurses = new List<KeyValuePair<GameObject, GameObject>>();
-    List<KeyValuePair<GameObject, GameObject>> doomednurses = new List<KeyValuePair<GameObject, GameObject>>();
+
+    /* does player have targetResponsibilityLevel amount of patients */
     bool responsibilityFulfilled = false;
+
+    /* Npc info from npc's who have left or died during the day */
     public List<NPCINFO> respNpcsWhoLeftOrDied = new List<NPCINFO>();
 
     public bool paused = false;
@@ -67,14 +72,13 @@ public class NPCManager : MonoBehaviour
     public static int MAX_NPCS_IN_WARD_AREA = 12;
     public int currentNpcsInWard = 0;
 
+    /* It's better to not give same patients same social id's*/
     List<string> usedIds; // IDs already used
 
     // for generating random problem to patient from database
     GameObject invObj;
     ItemDatabase database;
     ClockTime clock;
-
-    Queue<GameObject> docQueue = new Queue<GameObject>();
 
     public bool docBusy = false;
 
@@ -304,6 +308,7 @@ public class NPCManager : MonoBehaviour
         paused = true;
     }
 
+    /* end the current day, setup npc's for the next day and delete all dead / leaving npcs */
     public void nextDay()
     {
         responsibilityFulfilled = false;
@@ -505,6 +510,7 @@ public class NPCManager : MonoBehaviour
         return id;
     }
 
+    /* When npc passes out, fetch it*/
     public bool spawnNurseToFetchNPC(GameObject npc)
     {
         if(nurses.Count < 4)

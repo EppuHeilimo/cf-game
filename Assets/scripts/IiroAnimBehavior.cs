@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+/* Handles Iiro model's animations */
+
 public class IiroAnimBehavior : MonoBehaviour {
 
     // Use this for initialization
@@ -87,10 +89,7 @@ public class IiroAnimBehavior : MonoBehaviour {
         {
             agent.enabled = true;
             agent.Resume();
-        }
-
-
-            
+        }        
 
     }
 
@@ -115,12 +114,6 @@ public class IiroAnimBehavior : MonoBehaviour {
         animator.SetBool("fall", true);
     }
 
-    public void stopfall()
-    {
-        falling = false;
-        agent.enabled = true;
-        animator.SetBool("fall", false);
-    }
 
     public void sleep()
     {
@@ -129,12 +122,6 @@ public class IiroAnimBehavior : MonoBehaviour {
         animator.SetBool("sleep", true);
     }
 
-    public void stopSleep()
-    {
-        sleeping = false;
-        agent.enabled = true;
-        animator.SetBool("sleep", false);
-    }
 
     public void sit()
     {
@@ -143,12 +130,6 @@ public class IiroAnimBehavior : MonoBehaviour {
         animator.SetBool("sit", true);
     }
 
-    public void stopSit()
-    {
-        sitting = false;
-        agent.enabled = true;
-        animator.SetBool("sit", false);
-    }
 
     public void pickwithboth()
     {
@@ -157,12 +138,6 @@ public class IiroAnimBehavior : MonoBehaviour {
         animator.SetBool("pickupbothhands", true);
     }
 
-    public void stoppickwithboth()
-    {
-        pickingup = false;
-        agent.enabled = true;
-        animator.SetBool("pickupbothhands", false);
-    }
 
     public void pickfromfloor()
     {
@@ -171,12 +146,6 @@ public class IiroAnimBehavior : MonoBehaviour {
         animator.SetBool("pickupfloor", true);
     }
 
-    public void stoppickfromfloor()
-    {
-        pickingup = false;
-        agent.enabled = true;
-        animator.SetBool("pickupfloor", false);
-    }
 
     public void sitwithrotation()
     {
@@ -185,12 +154,6 @@ public class IiroAnimBehavior : MonoBehaviour {
         animator.SetBool("sitAndRotate", true);
     }
 
-    public void stopSitwithrotation()
-    {
-        sittingwithrotation = false;
-        agent.enabled = true;
-        animator.SetBool("sitAndRotate", false);
-    }
 
     public void pickup()
     {
@@ -199,12 +162,6 @@ public class IiroAnimBehavior : MonoBehaviour {
         animator.SetBool("pickup", true);
     }
 
-    public void stopPickup()
-    {
-        pickingup = false;
-        agent.enabled = true;
-        animator.SetBool("pickup", false);
-    }
 
     public void setWalkAnimSpeed(float speed)
     {

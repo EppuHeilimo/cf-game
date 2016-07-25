@@ -35,6 +35,7 @@ public class SkipTimeCanvas : MonoBehaviour {
         Init();
     }
 
+    /* Initialzies the canvas to use current information */
     public void Init()
     {
         warning.SetActive(false);
@@ -46,13 +47,14 @@ public class SkipTimeCanvas : MonoBehaviour {
 
         checkmeds();
 
+        /* Allow time skip only if all meds are given and the player actually has patients and current time isn't between midnight and 7*/
         if (!allMedsGiven && npcManager.responsibilityNpcs.Count > 0)
         {
             transform.FindChild("Background").FindChild("Text").gameObject.SetActive(false);
             warning.SetActive(true);
             warning.GetComponent<Text>().text = "You haven't administrated all the medicine yet!";
         }
-        else if(npcManager.responsibilityNpcs.Count == 0)
+        else if(npcManager.responsibilityNpcs.Count == 0 || (clock.currentHours > 0 && clock.currentHours < 7))
         {
             transform.FindChild("Background").FindChild("Text").gameObject.SetActive(false);
             warning.SetActive(true);
@@ -80,6 +82,7 @@ public class SkipTimeCanvas : MonoBehaviour {
         }
     }
 	
+    /* Allow timeskip only if all medicine are given */
     void checkmeds()
     {
         switch (daytime)
@@ -138,12 +141,31 @@ public class SkipTimeCanvas : MonoBehaviour {
                     }
                 }
                 break;
+            case ClockTime.DayTime.NIGHT:
+                foreach (GameObject go in npcManager.responsibilityNpcs)
+                {
+                    NPC npc = go.GetComponent<NPC>();
+                    for (int i = 0; i < npc.nightMed.Length; i++)
+                    {
+                        if (npc.nightMed[i].title != null && !npc.nightMed[i].isActive)
+                        {
+                            allMedsGiven = false;
+                            break;
+                        }
+                    }
+                    if (!allMedsGiven)
+                    {
+                        break;
+                    }
+                }
+                break;
         }
     }
 
 	// Update is called once per frame
 	void Update () {
 
+        /* If daytime has changed when player is at coffee machine, init again */
         if(daytime != clock.currentDayTime)
         {
             Init();
@@ -168,6 +190,9 @@ public class SkipTimeCanvas : MonoBehaviour {
                         break;
                     case ClockTime.DayTime.EVENING:
                         GameObject.FindGameObjectWithTag("Clock").GetComponent<ClockTime>().setTime(19, 59);
+                        break;
+                    case ClockTime.DayTime.NIGHT:
+                        GameObject.FindGameObjectWithTag("Clock").GetComponent<ClockTime>().setTime(21, 59);
                         break;
                 }
             }

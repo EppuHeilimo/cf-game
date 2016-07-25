@@ -2,7 +2,14 @@
 using UnityEngine.UI;
 using System.Collections;
 
+
+
+/*
+ * Handles all time related stuff
+ * 
+ */
 public class ClockTime : MonoBehaviour {
+    //current time in real time seconds
     float currentTime = 0.0f;
     public int currentHours;
     public int minutesfloored;
@@ -91,6 +98,7 @@ public class ClockTime : MonoBehaviour {
         
         if(!paused)
         {
+            //Do nothing if tutorial clock hits 12
             if(tutorial.tutorialOn && currentHours == 12 )
             {
 
@@ -178,6 +186,7 @@ public class ClockTime : MonoBehaviour {
         }
     }
 
+    /* Checks if some responsibility patient is still losing hp */
     public bool isStillLosingHP()
     {
         foreach(GameObject go in NPCManager.responsibilityNpcs)
@@ -237,7 +246,6 @@ public class ClockTime : MonoBehaviour {
                         }
                     }
                 }
-
             }
         }
         return false;
@@ -252,6 +260,7 @@ public class ClockTime : MonoBehaviour {
         return false;
     }
 
+    /* Called when shift is over */
     public void changeDay()
     {
         GameObject player = GameObject.FindGameObjectWithTag("Player");
@@ -270,6 +279,7 @@ public class ClockTime : MonoBehaviour {
         paused = true;
     }
 
+    /* Called when tutorial ends */
      public void startDayOneAfterTutorial()
     {
         GameObject player = GameObject.FindGameObjectWithTag("Player");
@@ -311,6 +321,7 @@ public class ClockTime : MonoBehaviour {
         currentTime = min * secToGameMin;
     }
 
+    /* Generates string from current time*/
     string getTimeString()
     {
         float minutesfloat = currentTime / secToGameMin;
@@ -345,6 +356,8 @@ public class ClockTime : MonoBehaviour {
         currentHours = hours;
         return ret;
     }
+
+    /* Checks patients medication and sets losinghp if med not given, randomizes medicine activity for those who are not players responsibility */
 
     void doMorningCheck()
     {

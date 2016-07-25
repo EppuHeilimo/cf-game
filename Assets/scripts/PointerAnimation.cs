@@ -15,6 +15,7 @@ public class PointerAnimation : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+        /* Use sin wave to animate the pointer */
         if (x > 10000.0f)
             x = 0.0f;
         x += Time.deltaTime * animSpeed;

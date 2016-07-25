@@ -29,6 +29,8 @@ public class DoorOpen : MonoBehaviour {
         }
         parent = transform.parent;
         defaultPos = parent.position;
+
+        /* Checks for door's rotation and sets the pivot point */
         if (approx(parent.rotation.eulerAngles.y, 0f, 0.1f))
         {
             pivot = new Vector3(defaultPos.x + 16, defaultPos.y, defaultPos.z + 16);
@@ -54,6 +56,8 @@ public class DoorOpen : MonoBehaviour {
 	// Update is called once per frame
 	void Update ()
     {
+
+        //Animate opening and closing
         if(isOpening && !isOpen)
         {
             currRotationY += Time.deltaTime * openspeed;

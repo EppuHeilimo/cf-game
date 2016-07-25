@@ -7,12 +7,14 @@ public class ScoringSystem : MonoBehaviour {
     public int score = 50;
     public int totalscore = 0;
     public int oldtotalscore = 0;
+    /* Scores gained by different events */
     int medinactivepunishment = -2;
     int respnpcleavinghospital = 10;
     int respnpcdeathpunishment = -25;
     public bool gameover = false;
     Tutorial tutorial;
 
+    /* Canvas bar which shows score */
     GameObject positivebar;
     Text percentage;
 	// Use this for initialization
@@ -22,6 +24,7 @@ public class ScoringSystem : MonoBehaviour {
         tutorial = GameObject.Find("Tutorial").GetComponent<Tutorial>();
     }
 
+    /* Adds given score to current score and ensures that it doesn't go over 100 or under 0 and ends the game if it goes to 0*/
     public void addToScore(int add)
     {
         if (tutorial.tutorialOn)
@@ -45,6 +48,7 @@ public class ScoringSystem : MonoBehaviour {
             if (score > 100)
                 score = 100;
         }
+        /* resize the positivebar according to score */
         positivebar.GetComponent<RectTransform>().sizeDelta = new Vector2(score * 4, 50.0f);
         percentage.text = score + "%";
     }

@@ -3,6 +3,8 @@ using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
 
+/* Computer behavior */
+
 public class Computer : MonoBehaviour {
 
     public GameObject computerCanvas;
@@ -31,6 +33,7 @@ public class Computer : MonoBehaviour {
 	    
 	}
 
+    /* Initialized computer, instantiates new computer canvas */
     public void StartComputer()
     {
         computerOn = true;
@@ -47,16 +50,6 @@ public class Computer : MonoBehaviour {
         {
             npcList.Add(go.GetComponent<NPC>());
         }
-        /*
-        foreach (NPC npc in npcList)
-        {
-            GameObject patient = Instantiate(patientInfoPrefab, Vector3.zero, Quaternion.identity) as GameObject;
-            patient.transform.FindChild("Image").GetComponent<Image>().sprite = npc.myHead2d;
-            patient.transform.FindChild("Name").GetComponent<Text>().text = npc.myName;
-            patient.transform.FindChild("ID").GetComponent<Text>().text = npc.myId;
-            patient.transform.SetParent(patientspanel.transform);
-            patients.Add(patient);
-        } */
     }
 
     public NPC NextPatient()

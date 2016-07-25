@@ -7,6 +7,7 @@ public class ItemContainer
 {
     public int ID;
     public List<Item> medicine = new List<Item>();
+    /* Sprite showed in inventory slot */
     public Sprite mySprite;
     
     public ItemContainer()

@@ -52,6 +52,11 @@ public class ObjectInteraction : MonoBehaviour {
         return currentChair;
     }
 
+    public GameObject getCurrentToilet()
+    {
+        return currentToilet;
+    }
+
     public GameObject getTarget()
     {
         return target;

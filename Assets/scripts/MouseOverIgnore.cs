@@ -3,6 +3,8 @@ using System.Collections;
 using UnityEngine.EventSystems;
 using System;
 
+/* Component used to ignore mouse over test in playercontrol */
+
 public class MouseOverIgnore : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler {
 
     public bool ignore = false;

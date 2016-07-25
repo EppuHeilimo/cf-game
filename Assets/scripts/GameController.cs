@@ -3,6 +3,8 @@ using System.Collections;
 
 public class GameController : MonoBehaviour {
 
+    /* Handles game flow, like changing day */
+
     public GameObject daychangeCanvasPrefab;
     public GameObject tutorialCompletePrefab;
     private GameObject daychangeCanvas; 

@@ -54,6 +54,7 @@ public class CameraMovement : MonoBehaviour {
         }
     }
 
+    /* Lock camera to player */
     public void lockToPlayer()
     {
 
@@ -62,6 +63,7 @@ public class CameraMovement : MonoBehaviour {
 
     }
 
+    /* Moves the camera to given transform for float time */
     public bool lockCameraToThisTransformForXTime(Transform t, float time)
     {
         if (!movingCamera)
@@ -75,6 +77,7 @@ public class CameraMovement : MonoBehaviour {
 
     }
 
+    /* Lock to given transform until locked to something else */
     public bool lockCameraToThisTransform(Transform t)
     {
         if(!movingCamera)
@@ -87,6 +90,7 @@ public class CameraMovement : MonoBehaviour {
 
     }
 
+    /* Change to different cameras */
     public void SwitchToCustomizeCamera()
     {
         gameObject.SetActive(false);

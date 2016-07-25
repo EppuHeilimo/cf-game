@@ -3,8 +3,28 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 
+/*
+ * NPC script includes behavior state machine for all patients.
+ * 
+ * NPC's change their state according to priorities given to tasks.
+ * There are 3 priorities that can be given, 1 - nothing else to do, 2 - has a need to do, 3 - do now.
+ * The states are in queue, thus they will be executed in first in first out order.
+ * 
+ * 
+ */
+
+
 public class NPC : MonoBehaviour
-{   
+{
+
+    public struct Medicine
+    {
+        public string title;
+        /* has this med been given on the right time */
+        public bool isActive;
+        public float dosage;
+    };
+
     /* states */
     public enum NPCState
     {
@@ -28,56 +48,81 @@ public class NPC : MonoBehaviour
     }
 
     /* basic stuff */
-    bool waitforanim = false;
     bool nursesDeployedForMe = false;
+    /* Lock state to the current */
     bool lockstate = false;
+    /* Should this npc skip next medcheck time */
     public bool skipNextMedCheck = false;
+    /* Pause update */
     public bool paused = false;
+    /* How active patient is, 1 - mostly sleeping, 2 - sleeping, sitting, 3 - running around the hospital */
     public int activityRate = 0;
+
     ClockTime clock;
     LineRenderer DebugPath;
+
+    /* Animation component */
     public IiroAnimBehavior anim;
+
+    /* Patients name */
     public string myName;
+
+    /* Patients social security number */
     public string myId;
     public int myGender; // 0 = female, 1 = male
-    public int myHp = 50;
+
+    /* Health */
+    public int myHp = 50;    
     int currentTaskPriority = 0;
+
+    /* 2D picture of the head patient has. (Exported with magical voxel) */
     public Sprite myHead2d;
     int prevTaskPriority = 0;
+    /* Did patient pass out */
     bool dead = false;
     /* Reference to player */
     private GameObject player;
+    /* The floating object on patient if he is player's responsibility */
     public GameObject responsibilityIndicator;
     public GameObject responsibilityIndicatorclone;
-    //has the npc visited the doctor
+    /* has the npc visited the doctor */
     public bool diagnosed = false;
-    //how tired the npc is
+    /* how tired the npc is */
     public float fatique = 0;
-    //float to indicate the need to go pee
+    /* float to indicate the need to go to wc */
     public float callofnature = 0;
     public float callofnaturetimer = 0;
     public float fatiquetimer = 0;
     public NPCState prevState;
+    /* Current state */
     public NPCState myState;
+    /* All states which are added, Int = Priority */
     public Dictionary<int, Queue<NPCState>> stateQueue;
     public GameObject myBed;
-    //how far from destination player can be to start the task
+    /* Use this to end current state completely */
     public bool taskCompleted = true;
+    /* Zone around the patient to recognize close objects */
     Dialog dialogZone;
     ObjectInteraction interactionComponent;
+    /* Manager to book and unbook objects */
     ObjectManager objectManager;
     public bool talking = false;
     public bool sleeping = false;
     private bool sitting = false;
     public bool cantFindBed = false;
+    /* Has the npc already queued toilet use in stateQueue */
     private bool wcqueued = false;
+    /* Has higher priority task been initiated and last state was important enough to remember (Priority 2) */
     bool prevStateUncompleted = false;
+    /* Is this patient players responsibility */
     public bool playersResponsibility = false;
+    /* Has the npc already queued sleeping in stateQueue */
     private bool sleepingqueued = false;
 
-    //If someone wants to talk with this npc
+    /* This npc was reguested to talk by someone else */
     private bool reguestedToTalk = false;
 
+    /* This npc reguested the talk with someone else */
     private bool wantsToTalk = false;
     ScoringSystem scoreSystem;
 
@@ -85,12 +130,7 @@ public class NPC : MonoBehaviour
     float deathTimer; // time without medicine
     const int LOSE_HP_TIME = 2; // lose one hitpoint every X seconds if there is no medicine active
 
-    public struct Medicine
-    {
-        public string title;
-        public bool isActive;
-        public float dosage;
-    };
+
     
     public Item[] myMedication; // all of this NPC's meds, usages etc.
     public string[] myProblems;
@@ -100,11 +140,7 @@ public class NPC : MonoBehaviour
     public Medicine[] afternoonMed = new Medicine[4];
     public Medicine[] eveningMed = new Medicine[4];
     public Medicine[] nightMed = new Medicine[4];
-    /* dosages */
-    public int morningDos;
-    public int afternoonDos;
-    public int eveningDos;
-    public int nightDos;
+
     /* if correct med is not active at the correct time of the day, start losing hp */
     public bool isLosingHp = false;
 
@@ -117,7 +153,6 @@ public class NPC : MonoBehaviour
     /* timing stuff */
     float timer; // time NPC has been in the current state
     const float RECEPTION_WAITING_TIME = 1.5f;
-    const float QUE_WAITING_TIME = 10f;
     const float IDLE_IN_THIS_PLACE_TIME = 5f;
     const float MAX_TIME_TALK_TO_OTHER = 10f;
     const int WALK_RADIUS = 500;
@@ -126,17 +161,11 @@ public class NPC : MonoBehaviour
     const float IN_WC = 5f;
     const float STAY_ON_FLOOR_ON_FALL = 10.0f;
 
-    //stuck testing
-    const float STUCK = 2f;
     //how long doctor will wait for patient
     const float DOC_WAIT_TIME = 10.0f;
     float doctimer = 0;
-    float stucktimer = 0f;
-    //current distance to destination
-    float currentdisttodest;
-    //distance to destination at last test
-    float lastdisttodest;
 
+    /* Remember old agent information before pausing it */
     Vector3 lastAgentVelocity = Vector3.zero;
     NavMeshPath lastAgentPath;
     bool agentPaused = false;
@@ -147,6 +176,7 @@ public class NPC : MonoBehaviour
     public AudioSource wrongSound;
     public AudioSource dieSound;
 
+    /* Points where npc's are allowed to die */
     Vector3[] deathpoints = {
         new Vector3(722, 0, -526),
         new Vector3(722, 0, -254),
@@ -199,38 +229,45 @@ public class NPC : MonoBehaviour
         agent = GetComponent<NavMeshAgent>();
         //Set npc speed randomly
         agent.speed = Random.Range(60f, 100f);
+        anim = GetComponent<IiroAnimBehavior>();
         //Set animation speed to match the walk speed.
-        GetComponent<IiroAnimBehavior>().setWalkAnimSpeed(agent.speed);
+        anim.setWalkAnimSpeed(agent.speed);
         npcManager = GameObject.Find("NPCManager").GetComponent<NPCManager>();
         dest = Vector3.zero;
         stateQueue.Add(1, new Queue<NPCState>());
         stateQueue.Add(2, new Queue<NPCState>());
         stateQueue.Add(3, new Queue<NPCState>());
-        addStateToQueue(2, NPCState.STATE_ARRIVED);
         interactionComponent = GetComponent<ObjectInteraction>();
-        lastdisttodest = 0;
         objectManager = GameObject.FindGameObjectWithTag("ObjectManager").GetComponent<ObjectManager>();
         clock = GameObject.FindGameObjectWithTag("Clock").GetComponent<ClockTime>();
-        anim = agent.GetComponent<IiroAnimBehavior>();
         scoreSystem = GameObject.FindGameObjectWithTag("ScoringSystem").GetComponent<ScoringSystem>();
         tutorial = GameObject.Find("Tutorial").GetComponent<Tutorial>();
+
+        /* Start by arriving */
+        addStateToQueue(2, NPCState.STATE_ARRIVED);
     }
 
     // Update is called once per frame
     void Update()
     {
-        if(paused || anim.waitforanim)
+        /* if paused or waiting for animation, pause agent */
+        if (paused || anim.waitforanim)
         {
             if(!agentPaused)
                 pause();
         }
-
-        if(!paused && !anim.waitforanim)
+        
+        if (!paused && !anim.waitforanim)
         {
+            
             if (agentPaused)
             {
+                /* Resumes agent with old information */
                 resume();
             }
+            /* Move responsibility indicator 
+             * TODO: Just make it patients child
+             */
             if (playersResponsibility)
             {
                 responsibilityIndicatorclone.transform.position = new Vector3(transform.position.x, transform.position.y + 64, transform.position.z);
@@ -249,6 +286,9 @@ public class NPC : MonoBehaviour
         }
     }
 
+    /*
+     * Pause agent and store old information
+    */
     void pause()
     {
         if(agent.enabled)
@@ -262,6 +302,9 @@ public class NPC : MonoBehaviour
         agentPaused = true;
     }
 
+    /*
+    * Resume agent from old information
+    */
     void resume()
     {
         if(agent.enabled)
@@ -338,41 +381,12 @@ public class NPC : MonoBehaviour
         }
     }
 
+    /*
+     * Check if the npc has any needs
+     * Wc, medicine, sleeping, talking
+     */
     void checkNeeds()
     {
-        //stuck test
-        stucktimer += Time.deltaTime;
-        //test every STUCK seconds if npc hasn't moved towards it's dest
-        /*
-        if (stucktimer > STUCK && dest != Vector3.zero && !arrivedToDestination(10.0f))
-        {
-            if(myState != NPCState.STATE_TALK_TO_PLAYER)
-            {
-                stucktimer = 0;
-                currentdisttodest = Vector3.Distance(transform.position, dest);
-                if (lastdisttodest == 0)
-                {
-                    lastdisttodest = currentdisttodest;
-                }
-                else
-                {
-                    float sub = currentdisttodest - lastdisttodest;
-                    if (Mathf.Abs(sub) < 40.0f)
-                    {
-                        if (myState != NPCState.STATE_TRY_UNSTUCK)
-                        {
-                            lastdisttodest = 0;
-                            addStateToQueue(3, NPCState.STATE_TRY_UNSTUCK);
-                        }
-                        else
-                        {
-                            dest = Vector3.zero;
-                        }
-                    }
-                    lastdisttodest = 0;
-                }
-            }
-        }*/
         GameObject targeter;
         targeter = dialogZone.getWhoIsTargetingMe();
         if (targeter != null && myState != NPCState.STATE_GO_TO_DOC && myState != NPCState.STATE_LEAVE_HOSPITAL)
@@ -448,6 +462,9 @@ public class NPC : MonoBehaviour
         }
     }
 
+    /*
+     * Random sitting
+     */
     void idleSit()
     {
         if (dest == Vector3.zero)
@@ -485,11 +502,11 @@ public class NPC : MonoBehaviour
                 agent.Stop();
                 if (interactionComponent.getCurrentChair().tag == "Chair2")
                 {
-                    agent.GetComponent<IiroAnimBehavior>().sitwithrotation();
+                    anim.sitwithrotation();
                 }
                 else
                 {
-                    agent.GetComponent<IiroAnimBehavior>().sit();
+                    anim.sit();
                 }
             }
         }
@@ -497,27 +514,15 @@ public class NPC : MonoBehaviour
         {
             timer += Time.deltaTime;
             if(timer > 2 * IDLE_IN_THIS_PLACE_TIME)
-            {
-                if(interactionComponent.getCurrentChair().tag == "Chair2")
-                {
-                    GetComponent<IiroAnimBehavior>().stopSitwithrotation();
-                }
-                else
-                {
-                    GetComponent<IiroAnimBehavior>().stopSit();
-                }
-                
+            {             
                 taskCompleted = true;
+                //unbook the used chair
                 if ((interactionComponent.getCurrentChair() != null))
                 {
                     objectManager.unbookObject(interactionComponent.getCurrentChair());
                     interactionComponent.setCurrentChair(null);
-                }
-                    
+                }  
                 sitting = false;
-                if (!agent.enabled)
-                    agent.enabled = true;
-                agent.Resume();
             }
         }
     }
@@ -558,19 +563,17 @@ public class NPC : MonoBehaviour
                     if (interactionComponent.RotateAwayFrom(interactionComponent.getTarget().transform))
                     {
                         if(!anim.sitting)
-                            agent.GetComponent<IiroAnimBehavior>().sit();
+                            anim.sit();
                         timer += Time.deltaTime;
                         if (timer > IN_WC)
                         {
-                            GetComponent<IiroAnimBehavior>().stopSit();
                             taskCompleted = true;
-                            if ((interactionComponent.getCurrentChair() != null))
+                            if ((interactionComponent.getCurrentToilet() != null))
                             {
-                                objectManager.unbookObject(interactionComponent.getCurrentChair());
-                                interactionComponent.setCurrentChair(null);
+                                objectManager.unbookObject(interactionComponent.getCurrentToilet());
+                                interactionComponent.setCurrentToilet(null);
                             }  
                             sitting = false;
-                            agent.Resume();
                             wcqueued = false;
                             callofnature = 0;
                         }
@@ -593,6 +596,7 @@ public class NPC : MonoBehaviour
         return false;
     }
 
+    /* Try unstucking with random moving */
     private void tryUnstuck()
     {
         agent.obstacleAvoidanceType = ObstacleAvoidanceType.NoObstacleAvoidance;
@@ -615,6 +619,9 @@ public class NPC : MonoBehaviour
         }
     }
 
+    /* Force patient to move to ward, so it doesn't hang out in
+     *  waiting room or doctor after being diagnozed
+     */
     private void goToWardArea()
     {
 
@@ -845,8 +852,8 @@ public class NPC : MonoBehaviour
 
         if (sleeping)
         {
-            if (!GetComponent<IiroAnimBehavior>().sleeping)
-                GetComponent<IiroAnimBehavior>().sleep();
+            if (!anim.sleeping)
+                anim.sleep();
             timer += Time.deltaTime;
 
             if (timer > SLEEP_TIME)
@@ -857,31 +864,19 @@ public class NPC : MonoBehaviour
                     //randomly wake some people up
                     if(activityRate == 3 && Random.Range(0, 100) > 90)
                     {
-                        //stop animation
-                        GetComponent<IiroAnimBehavior>().stopSleep();
                         sleeping = false;
                         taskCompleted = true;
-                        timer = 0;
+                        timer  = 0;
                         fatique = 0;
-                        //resume agent movement
-                        if (!agent.enabled)
-                            agent.enabled = true;
-                        agent.Resume();
                         sleepingqueued = false;
                     }
                 }
                 else
                 {
-                    //stop animation
-                    GetComponent<IiroAnimBehavior>().stopSleep();
                     sleeping = false;
                     taskCompleted = true;
                     timer = 0;
                     fatique = 0;
-                    //resume agent movement
-                    if (!agent.enabled)
-                        agent.enabled = true;
-                    agent.Resume();
                     sleepingqueued = false;
                 }
             }
@@ -922,8 +917,8 @@ public class NPC : MonoBehaviour
 
             if (sleeping)
             {
-                if (!GetComponent<IiroAnimBehavior>().sleeping)
-                    GetComponent<IiroAnimBehavior>().sleep();
+                if (!anim.sleeping)
+                    anim.sleep();
                 timer += Time.deltaTime;
                 if (timer > SLEEP_TIME * 2)
                 {
@@ -942,8 +937,8 @@ public class NPC : MonoBehaviour
             }
             if (sleeping)
             {
-                if (!GetComponent<IiroAnimBehavior>().sleeping)
-                    GetComponent<IiroAnimBehavior>().sleep();
+                if (!anim.sleeping)
+                    anim.sleep();
                 timer += Time.deltaTime;
                 if (timer > SLEEP_TIME * 2)
                 {
@@ -1019,7 +1014,7 @@ public class NPC : MonoBehaviour
                         //rotate to look away from the bed so animation will move the player on the bed
                         if (interactionComponent.RotateAwayFrom(interactionComponent.getTarget().transform))
                         {
-                            agent.GetComponent<IiroAnimBehavior>().sit();
+                            anim.sit();
                         }
                     }
 
@@ -1027,12 +1022,7 @@ public class NPC : MonoBehaviour
             }
         }
         else
-        {
-            if(sitting)
-            {
-                GetComponent<IiroAnimBehavior>().stopSit();
-            }
-           
+        {         
             taskCompleted = true;
             if((interactionComponent.getCurrentChair() != null))
             {
@@ -1095,7 +1085,7 @@ public class NPC : MonoBehaviour
             agent.Stop();
             if (interactionComponent != null && myBed != null)
                 interactionComponent.RotateAwayFromNOW(myBed.transform);
-            GetComponent<IiroAnimBehavior>().sleep();
+            anim.sleep();
             //reset queues
             stateQueue.Clear();
             stateQueue.Add(1, new Queue<NPCState>());
@@ -1116,6 +1106,7 @@ public class NPC : MonoBehaviour
         addStateToQueue(3, NPCState.STATE_SLEEP);
     }
 
+    /* Pass out */
     private void die()
     {
         lockstate = true;
@@ -1173,7 +1164,7 @@ public class NPC : MonoBehaviour
             if (!anim.falling)
             {
                 agent.Stop();
-                agent.GetComponent<IiroAnimBehavior>().fall();
+                anim.fall();
             }
         }
     }
@@ -1190,8 +1181,10 @@ public class NPC : MonoBehaviour
             interactionComponent.RotateTowards(player.transform);
         }
     }
+
     private void talkToNPC()
     {
+        /* If this npc was reguested to talk, just stop and rotate*/
         if(reguestedToTalk)
         {
             if (!talking)
@@ -1201,6 +1194,7 @@ public class NPC : MonoBehaviour
             }
             interactionComponent.RotateTowards(interactionComponent.getTarget().transform);
         }
+        /* Else if this npc wants to talk to someone else*/
         else
         {
             //mark this npc to be the talk reguester so it wont be reguestedtotalk by the target npc
@@ -1235,12 +1229,7 @@ public class NPC : MonoBehaviour
             }
         }
     }
-    private void resetStateVariables()
-    {
-        talking = false;
-        dest = Vector3.zero;
-        agent.Resume();
-    }
+
     public void setTarget(GameObject target)
     {
         interactionComponent.setTarget(target);
@@ -1305,7 +1294,7 @@ public class NPC : MonoBehaviour
         else return false;
     }
 
-    //checks if navmesh is within accuracy zone of his destination
+    //checks if navmeshagent is within accuracy zone of his destination
     private bool arrivedToDestination(float accuracy)
     {
         float dist = Vector3.Distance(agent.destination, transform.position);
@@ -1314,6 +1303,8 @@ public class NPC : MonoBehaviour
         else
             return false;
     }
+
+    /* Adds state to right priority queue, checks for duplicates */
     public void addStateToQueue(int priority, NPCState state)
     {
         Queue<NPCState> queue = new Queue<NPCState>();
@@ -1326,13 +1317,16 @@ public class NPC : MonoBehaviour
         
     }
 
-    void unbookAllMyObjects()
-    {
-        
-    }
 
-    //finds the highest priority task and selects it as current stage
-    //called only when task is completed
+    
+    /*
+     * Sets patient's state
+     * If task is completed, find highest priority task
+     * If task is completed and nothing is queued, set random idle task according to patients activityrate
+     * 
+     * if task isn't completed, checks if there's any higher priority tasks queued
+     * if found, saves old state and changes state, when the higher priority task is completed, checks if old state was uncompleted
+     */
     public void setMyStateFromQueue()
     {
         if(taskCompleted)
@@ -1550,6 +1544,7 @@ public class NPC : MonoBehaviour
         agent.SetDestination(temp);
     }
 
+    /* Returns random dosage found in Item */
     float getRandomDosage(Item medicine)
     {
         float ret = medicine.DefaultDosage;
@@ -1591,7 +1586,7 @@ public class NPC : MonoBehaviour
             skipNextMedCheck = true;
     }
 
-    // Init 1-4 random problems and their corresponding medicines
+    // Init 2-4 random problems and their corresponding medicines
     public void InitMedication(Item[] randMeds)
     {
 
@@ -1678,13 +1673,16 @@ public class NPC : MonoBehaviour
                 nightMed[3].title = null;
                 nightMed[3].dosage = 0;
             }
+            /* If this medication has proposed times per day amount in JSON */
             else if (myMedication[i].timesPerDay > 0)
             {
+                /* All day times */
                 List<int> daytimes = new List<int>();
                 daytimes.Add(0);
                 daytimes.Add(1);
                 daytimes.Add(2);
                 daytimes.Add(3);
+                /* Get random daytimes to give this medicine */
                 int[] rnddaytimes = new int[myMedication[i].timesPerDay];
                 int n = daytimes.Count;
                 //shuffle daytimes
@@ -1754,6 +1752,7 @@ public class NPC : MonoBehaviour
                     }
                 }
             }
+            /* If timesperday is 0, just randomize how many times it will be given in a day*/
             else
             {
                 List<int> daytimes = new List<int>();
@@ -1836,6 +1835,11 @@ public class NPC : MonoBehaviour
             }
         }
     }
+
+    /*
+     * Tries to find closest position in navmesh to move to if unsuccesfull just force setdestination 
+     * if agent isn't enabled, just remember the destination 
+    */
     public void moveTo(Vector3 dest)
     {
         if(agent.enabled)
@@ -1849,6 +1853,8 @@ public class NPC : MonoBehaviour
         this.dest = dest;
             
     }
+
+    /* Checks if medicine has been given for the current daytime, die if hp == 0, leave hospital if hp == 100 */
     void checkMed()
     {
         if(!paused)
@@ -1864,7 +1870,7 @@ public class NPC : MonoBehaviour
                 }
 
                 // check if medicine has been activated and stop losing hp if so
-                ClockTime.DayTime currTime = GameObject.FindGameObjectWithTag("Clock").GetComponent<ClockTime>().currentDayTime;
+                ClockTime.DayTime currTime = clock.currentDayTime;
                 int count = 0;
                 int count2 = 0;
                 // MORNING
@@ -2183,6 +2189,7 @@ public class NPC : MonoBehaviour
         return false;
     }
 
+    /* Draw line for patients path in unity if gizmos are selected */
     void OnDrawGizmosSelected()
     {
 

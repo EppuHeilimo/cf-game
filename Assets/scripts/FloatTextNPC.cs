@@ -38,10 +38,5 @@ public class FloatTextNPC : MonoBehaviour {
             floatingStrings.Add(text, positive);
     }
 
-
-
-
-
 }
 
-//Quaternion.Euler( new Vector3 (parentEuler.x - fixedRotation.x, parentEuler.y - fixedRotation.y, parentEuler.z - fixedRotation.z));
