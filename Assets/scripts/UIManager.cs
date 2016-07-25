@@ -20,53 +20,40 @@ public class UIManager : MonoBehaviour {
         gameOverCanvas.SetActive(false);
 	}
 
+    // gives item to NPC
+    // called when player clicks item in inventory
+    // medicines and dosages in the clicked item sent as parameters
     public bool giveMed(string[] med, float[] dosage)
     {
+        // check if player has a target
         target = player.GetComponent<PlayerControl>().getTarget();
         if (target == null)
             return false;
+        // target is NPC
         else if (target.tag == "NPC")
+            // give the item to the NPC, returns true if giving item succeeds
             return(target.GetComponent<NPC>().giveMed(med, dosage));
         return false;
     }
 
-    public void toggleInventory()
-    {
-        showInventory = !showInventory;
-        drawInventory(showInventory);
-    }
-
-    public void drawInventory(bool show)
-    {
-        inv.SetActive(show);
-    }
-
-    public void quitGame()
-    {
-        Application.Quit();
-    }
-
-    public void pauseGame()
-    {
-        paused = !paused;
-        pause(paused);
-    }
-
+    // pauses/unpauses all game logic
     public void pause(bool pause)
     {
+        // pause
         if (pause && !paused)
         {
-            NPCManager npcmanager = GameObject.FindGameObjectWithTag("NPCManager").GetComponent<NPCManager>();
-            
+            // pause NPCs
+            NPCManager npcmanager = GameObject.FindGameObjectWithTag("NPCManager").GetComponent<NPCManager>();          
             foreach (GameObject npc in npcmanager.npcList)
             {
                 if (npc != null)
                     npc.GetComponent<NPC>().paused = true;
             }
-            GameObject.FindGameObjectWithTag("Clock").GetComponent<ClockTime>().paused = true;
             npcmanager.paused = true;
-            //player.GetComponent<PlayerControl>().enabled = false;
+            // pause clock
+            GameObject.FindGameObjectWithTag("Clock").GetComponent<ClockTime>().paused = true;           
         }
+        // unpause
         else
         {
             NPCManager npcmanager = GameObject.FindGameObjectWithTag("NPCManager").GetComponent<NPCManager>();
@@ -77,10 +64,10 @@ public class UIManager : MonoBehaviour {
                     npc.GetComponent<NPC>().paused = false;
             }
             GameObject.FindGameObjectWithTag("Clock").GetComponent<ClockTime>().paused = false;
-            //player.GetComponent<PlayerControl>().enabled = true;
         }
     }
 
+    // displays game over screen with the player's score
     public void gameOver(int score)
     {
         gameOverCanvas.SetActive(true);      
@@ -88,16 +75,23 @@ public class UIManager : MonoBehaviour {
         Time.timeScale = 0;
     }
 
-    internal bool trashItem()
+    // removes item from inventory
+    // called when player clicks item in inventory
+    public bool trashItem()
     {
+        // check if player has a target
         target = player.GetComponent<PlayerControl>().getTarget();
         if (target == null)
             return false;
+        // target is trash can
         else if (target.tag == "TrashCan")
         {
+            // player is close enough to the trash can
             if(player.GetComponent<PlayerControl>().atTrashCan)
             {
+                // play item trashing sound
                 GetComponent<AudioSource>().Play();
+                // returns true if removing item succeeds
                 return true;
             }
         } 
