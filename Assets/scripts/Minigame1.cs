@@ -20,7 +20,7 @@ public class Minigame1 : MonoBehaviour {
     GameObject player;
     GameObject textBoxManager;
     GameObject npcManagerObj;
-    NPCManagerV2 npcManager;
+    NPCManager npcManager;
     List<GameObject> npcList;
     int currNpc;
     public bool kasiDesi;
@@ -77,7 +77,7 @@ public class Minigame1 : MonoBehaviour {
         player = GameObject.FindGameObjectWithTag("Player");
         textBoxManager = GameObject.FindGameObjectWithTag("TextBoxManager");
         npcManagerObj = GameObject.FindGameObjectWithTag("NPCManager");
-        npcManager = npcManagerObj.GetComponent<NPCManagerV2>();
+        npcManager = npcManagerObj.GetComponent<NPCManager>();
         mCamera = GameObject.Find("Main Camera").GetComponent<CameraMovement>();
         npcList = new List<GameObject>();        
     }
@@ -122,7 +122,7 @@ public class Minigame1 : MonoBehaviour {
             return;
         GameObject npcObj = npcList[currNpc];
         if (npcObj == null) return;
-        NPCV2 npc = npcObj.GetComponent<NPCV2>();
+        NPC npc = npcObj.GetComponent<NPC>();
         showMedCard(npc);   
     }
 
@@ -150,7 +150,7 @@ public class Minigame1 : MonoBehaviour {
         else
             currNpc = next;
 
-        NPCV2 npc = npcList[currNpc].GetComponent<NPCV2>();
+        NPC npc = npcList[currNpc].GetComponent<NPC>();
         if(npc != null)
         {
             showMedCard(npc);
@@ -167,7 +167,7 @@ public class Minigame1 : MonoBehaviour {
         else
             currNpc = prev;
 
-        NPCV2 npc = npcList[currNpc].GetComponent<NPCV2>();
+        NPC npc = npcList[currNpc].GetComponent<NPC>();
         if (npc != null)
         {
             showMedCard(npc);
@@ -186,7 +186,7 @@ public class Minigame1 : MonoBehaviour {
         spawnDrops = true;    
     }
 
-    public void showMedCard(NPCV2 npc)
+    public void showMedCard(NPC npc)
     {
         if(npcList.Count == 0)
         {

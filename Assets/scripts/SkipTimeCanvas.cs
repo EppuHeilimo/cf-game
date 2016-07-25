@@ -9,7 +9,7 @@ public class SkipTimeCanvas : MonoBehaviour {
     bool dimming = false;
     float timer = 0;
     Image black;
-    NPCManagerV2 npcManager;
+    NPCManager npcManager;
     bool allMedsGiven = true;
     GameObject morning;
     GameObject afternoon;
@@ -30,7 +30,7 @@ public class SkipTimeCanvas : MonoBehaviour {
         evening = transform.FindChild("Background").FindChild("Evening").gameObject;
         night = transform.FindChild("Background").FindChild("Night").gameObject;
         warning = transform.FindChild("Background").FindChild("Warning").gameObject;
-        npcManager = GameObject.FindGameObjectWithTag("NPCManager").GetComponent<NPCManagerV2>();
+        npcManager = GameObject.FindGameObjectWithTag("NPCManager").GetComponent<NPCManager>();
         clock = GameObject.FindGameObjectWithTag("Clock").GetComponent<ClockTime>();
         Init();
     }
@@ -87,7 +87,7 @@ public class SkipTimeCanvas : MonoBehaviour {
             case ClockTime.DayTime.MORNING:
                 foreach (GameObject go in npcManager.responsibilityNpcs)
                 {
-                    NPCV2 npc = go.GetComponent<NPCV2>();
+                    NPC npc = go.GetComponent<NPC>();
                     for(int i = 0; i < npc.morningMed.Length; i++)
                     {
                         if(npc.morningMed[i].title != null && !npc.morningMed[i].isActive)
@@ -105,7 +105,7 @@ public class SkipTimeCanvas : MonoBehaviour {
             case ClockTime.DayTime.AFTERNOON:
                 foreach (GameObject go in npcManager.responsibilityNpcs)
                 {
-                    NPCV2 npc = go.GetComponent<NPCV2>();
+                    NPC npc = go.GetComponent<NPC>();
                     for (int i = 0; i < npc.afternoonMed.Length; i++)
                     {
                         if (npc.afternoonMed[i].title != null && !npc.afternoonMed[i].isActive)
@@ -123,7 +123,7 @@ public class SkipTimeCanvas : MonoBehaviour {
             case ClockTime.DayTime.EVENING:
                 foreach (GameObject go in npcManager.responsibilityNpcs)
                 {
-                    NPCV2 npc = go.GetComponent<NPCV2>();
+                    NPC npc = go.GetComponent<NPC>();
                     for (int i = 0; i < npc.eveningMed.Length; i++)
                     {
                         if (npc.eveningMed[i].title != null && !npc.eveningMed[i].isActive)

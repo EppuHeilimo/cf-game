@@ -17,7 +17,7 @@ public struct NPCINFO
     }
 }
 
-public class NPCManagerV2 : MonoBehaviour
+public class NPCManager : MonoBehaviour
 {
     // serialized variable for linking to the prefab object
     [SerializeField]
@@ -102,7 +102,7 @@ public class NPCManagerV2 : MonoBehaviour
 
     public void deleteNpcFromList(GameObject go)
     {
-        if (go.GetComponent<NPCV2>().diagnosed)
+        if (go.GetComponent<NPC>().diagnosed)
             currentNpcsInWard--;
         npcList.Remove(go);
     }
@@ -196,7 +196,7 @@ public class NPCManagerV2 : MonoBehaviour
             myName = namePoolMale[nameIndex];
 
         GameObject newNpc = Instantiate(npcPrefab, spawnPoint, Quaternion.identity) as GameObject; // the method that copies the prefab object
-        newNpc.GetComponent<NPCV2>().Init(myName, myId, myGender); // initialize the npc
+        newNpc.GetComponent<NPC>().Init(myName, myId, myGender); // initialize the npc
 
         //change head according to gender
         string headname = "";
@@ -206,7 +206,7 @@ public class NPCManagerV2 : MonoBehaviour
             headname = newNpc.GetComponent<HeadChange>().ChangeHead(heads.headsMale);
 
         //set the file name of the 2d sprite of the head
-        newNpc.GetComponent<NPCV2>().myHead2d = Resources.Load<Sprite>("Sprites/heads/" + headname + ".2d");  
+        newNpc.GetComponent<NPC>().myHead2d = Resources.Load<Sprite>("Sprites/heads/" + headname + ".2d");  
         npcList.Add(newNpc);
         return newNpc;
     }
@@ -223,7 +223,7 @@ public class NPCManagerV2 : MonoBehaviour
             myName = namePoolMale[nameIndex];
 
         GameObject newNpc = Instantiate(npcPrefab, pos, Quaternion.identity) as GameObject; // the method that copies the prefab object
-        newNpc.GetComponent<NPCV2>().Init(myName, myId, myGender); // initialize the npc
+        newNpc.GetComponent<NPC>().Init(myName, myId, myGender); // initialize the npc
 
         //change head according to gender
         string headname = "";
@@ -233,7 +233,7 @@ public class NPCManagerV2 : MonoBehaviour
             headname = newNpc.GetComponent<HeadChange>().ChangeHead(heads.headsMale);
 
         //set the file name of the 2d sprite of the head
-        newNpc.GetComponent<NPCV2>().myHead2d = Resources.Load<Sprite>("Sprites/heads/" + headname + ".2d");
+        newNpc.GetComponent<NPC>().myHead2d = Resources.Load<Sprite>("Sprites/heads/" + headname + ".2d");
         npcList.Add(newNpc);
         return newNpc;
     }
@@ -248,8 +248,8 @@ public class NPCManagerV2 : MonoBehaviour
 
     public void removeNpcFromPlayersResponsibilities(GameObject go)
     {
-        if (go.GetComponent<NPCV2>().responsibilityIndicator != null)
-            Destroy(go.GetComponent<NPCV2>().responsibilityIndicatorclone);
+        if (go.GetComponent<NPC>().responsibilityIndicator != null)
+            Destroy(go.GetComponent<NPC>().responsibilityIndicatorclone);
         responsibilityNpcs.Remove(go);
     }
 
@@ -275,14 +275,14 @@ public class NPCManagerV2 : MonoBehaviour
         GameObject[] npcs = npcList.ToArray();
         for (int i = 0; i < npcs.Length; i++)
         {
-            if (npcs[i].GetComponent<NPCV2>().playersResponsibility)
+            if (npcs[i].GetComponent<NPC>().playersResponsibility)
             {
                 removeNpcFromPlayersResponsibilities(npcs[i]);
             }
-            if (npcs[i].GetComponent<NPCV2>().myBed != null)
-                GameObject.FindGameObjectWithTag("ObjectManager").GetComponent<ObjectManager>().unbookObject(npcList[i].GetComponent<NPCV2>().myBed);
-            if (npcs[i].GetComponent<NPCV2>().getTarget() != null)
-                GameObject.FindGameObjectWithTag("ObjectManager").GetComponent<ObjectManager>().unbookObject(npcList[i].GetComponent<NPCV2>().getTarget());
+            if (npcs[i].GetComponent<NPC>().myBed != null)
+                GameObject.FindGameObjectWithTag("ObjectManager").GetComponent<ObjectManager>().unbookObject(npcList[i].GetComponent<NPC>().myBed);
+            if (npcs[i].GetComponent<NPC>().getTarget() != null)
+                GameObject.FindGameObjectWithTag("ObjectManager").GetComponent<ObjectManager>().unbookObject(npcList[i].GetComponent<NPC>().getTarget());
 
             npcList.Remove(npcs[i]);
             Destroy(npcs[i]);
@@ -310,8 +310,8 @@ public class NPCManagerV2 : MonoBehaviour
         GameObject[] npcs = npcList.ToArray();
         for (int i = 0; i < npcs.Length; i++)
         {
-            NPCV2 npc = npcs[i].GetComponent<NPCV2>();
-            if (!npc.diagnosed || npc.myState == NPCV2.NPCState.STATE_DEAD || npc.myState == NPCV2.NPCState.STATE_LEAVE_HOSPITAL)
+            NPC npc = npcs[i].GetComponent<NPC>();
+            if (!npc.diagnosed || npc.myState == NPC.NPCState.STATE_DEAD || npc.myState == NPC.NPCState.STATE_LEAVE_HOSPITAL)
             {
                 if (npc.getTarget() != null)
                 {
@@ -334,7 +334,7 @@ public class NPCManagerV2 : MonoBehaviour
                 {
                     npc.anim.stopWaitForAnim();
                 }
-                npc.addStateToQueue(3, NPCV2.NPCState.STATE_DAY_CHANGE);
+                npc.addStateToQueue(3, NPC.NPCState.STATE_DAY_CHANGE);
                 npc.taskCompleted = true;
             }
             
@@ -368,7 +368,7 @@ public class NPCManagerV2 : MonoBehaviour
         paused = false;
         for (int i = 0; i < npcList.Count; i++)
         {
-            NPCV2 npc = npcList[i].GetComponent<NPCV2>();
+            NPC npc = npcList[i].GetComponent<NPC>();
             npc.stopDayReset();
         }
         
@@ -386,7 +386,7 @@ public class NPCManagerV2 : MonoBehaviour
             int i = 0;
             foreach (GameObject go in npcList)
             {
-                NPCV2 npc = go.GetComponent<NPCV2>();
+                NPC npc = go.GetComponent<NPC>();
                 if (npc.diagnosed && !npc.playersResponsibility)
                 {
                     npc.addNpcToResponsibilities();

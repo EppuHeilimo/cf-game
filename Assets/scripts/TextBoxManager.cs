@@ -52,7 +52,7 @@ public class TextBoxManager : MonoBehaviour {
         DisableTextBox();
     }
 
-    public void EnableTextBoxNotDiagnozed(NPCV2 npc)
+    public void EnableTextBoxNotDiagnozed(NPC npc)
     {
         myNameText.text = npc.myName;
         myIdText.text = npc.myId;
@@ -64,7 +64,7 @@ public class TextBoxManager : MonoBehaviour {
         MyImage.GetComponent<Image>().sprite = npc.myHead2d;
     }
 
-    public void EnableTextBox(NPCV2 npc)
+    public void EnableTextBox(NPC npc)
     {
         myNameText.text = npc.myName;
         myIdText.text = npc.myId;

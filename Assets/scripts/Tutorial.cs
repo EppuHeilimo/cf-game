@@ -179,7 +179,7 @@ public class Tutorial : MonoBehaviour {
                 case TutorialState.STATE_TARGET_PRACTICE_4:
                     // check if player has targeted the patient
                     GameObject tp = GameObject.FindGameObjectWithTag("TargetPanel");
-                    if (tp != null && tutorialNPC.GetComponent<NPCV2>().diagnosed)
+                    if (tp != null && tutorialNPC.GetComponent<NPC>().diagnosed)
                     {
                         ChangeState(TutorialState.STATE_TARGET_PRACTICE_5);
                     }
@@ -234,11 +234,11 @@ public class Tutorial : MonoBehaviour {
 
                 case TutorialState.STATE_MINIGAME_PRACTICE_6:
                     // check if medicine given to the patient
-                    if (tutorialNPC.GetComponent<NPCV2>().morningMed[0].isActive)
+                    if (tutorialNPC.GetComponent<NPC>().morningMed[0].isActive)
                     {
                         ChangeState(TutorialState.STATE_ENDING_GOOD_1);
                     }
-                    else if (tutorialNPC.GetComponent<NPCV2>().myHp < 50)
+                    else if (tutorialNPC.GetComponent<NPC>().myHp < 50)
                     {
                         ChangeState(TutorialState.STATE_ENDING_BAD_1);
                     }
@@ -251,7 +251,7 @@ public class Tutorial : MonoBehaviour {
 
                 case TutorialState.STATE_ENDING_BAD_1:
                     // check if medicine given to the patient
-                    if (tutorialNPC.GetComponent<NPCV2>().morningMed[0].isActive)
+                    if (tutorialNPC.GetComponent<NPC>().morningMed[0].isActive)
                     {
                         ChangeState(TutorialState.STATE_ENDING_GOOD_1);
                     }
@@ -586,7 +586,7 @@ public class Tutorial : MonoBehaviour {
 
     void ShowNPC()
     {
-        tutorialNPC = GameObject.Find("NPCManager").GetComponent<NPCManagerV2>().spawnTutorialGuy();
+        tutorialNPC = GameObject.Find("NPCManager").GetComponent<NPCManager>().spawnTutorialGuy();
         mCamera.lockCameraToThisTransformForXTime(tutorialNPC.transform, 15f);
     }
 

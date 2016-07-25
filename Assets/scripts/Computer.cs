@@ -15,15 +15,15 @@ public class Computer : MonoBehaviour {
 
     List<GameObject> patients = new List<GameObject>();
 
-    NPCManagerV2 npcmanager;
-    List<NPCV2> npcList = new List<NPCV2>();
+    NPCManager npcmanager;
+    List<NPC> npcList = new List<NPC>();
     int currentnpc;
     public bool computerOn;
     public bool scheduleOn;
 
 	// Use this for initialization
 	void Start () {
-        npcmanager = GameObject.FindGameObjectWithTag("NPCManager").GetComponent<NPCManagerV2>();    
+        npcmanager = GameObject.FindGameObjectWithTag("NPCManager").GetComponent<NPCManager>();    
 	}
 	
 	// Update is called once per frame
@@ -45,10 +45,10 @@ public class Computer : MonoBehaviour {
         npcList.Clear();
         foreach (GameObject go in npcmanager.responsibilityNpcs)
         {
-            npcList.Add(go.GetComponent<NPCV2>());
+            npcList.Add(go.GetComponent<NPC>());
         }
         /*
-        foreach (NPCV2 npc in npcList)
+        foreach (NPC npc in npcList)
         {
             GameObject patient = Instantiate(patientInfoPrefab, Vector3.zero, Quaternion.identity) as GameObject;
             patient.transform.FindChild("Image").GetComponent<Image>().sprite = npc.myHead2d;
@@ -59,9 +59,9 @@ public class Computer : MonoBehaviour {
         } */
     }
 
-    public NPCV2 NextPatient()
+    public NPC NextPatient()
     {
-        NPCV2 nextnpc;
+        NPC nextnpc;
         int next = currentnpc + 1;
         if(next > npcList.Count - 1)
         {
@@ -78,9 +78,9 @@ public class Computer : MonoBehaviour {
         return nextnpc;
     }
 
-    public NPCV2 PrevPatient()
+    public NPC PrevPatient()
     {
-        NPCV2 prevnpc;
+        NPC prevnpc;
         int prev = currentnpc - 1;
         if (prev < 0)
         {
@@ -99,7 +99,7 @@ public class Computer : MonoBehaviour {
 
 
 
-    private void setPatientActive(NPCV2 npc)
+    private void setPatientActive(NPC npc)
     {
         patientpanel.transform.FindChild("Image").GetComponent<Image>().sprite = npc.myHead2d;
         patientpanel.transform.FindChild("Name").GetComponent<Text>().text = npc.myName;
@@ -114,9 +114,9 @@ public class Computer : MonoBehaviour {
         moveWindowToFront(taskWindow.transform);
     }
 
-    public NPCV2 openDBWindow()
+    public NPC openDBWindow()
     {
-        NPCV2 ret = null;
+        NPC ret = null;
         databaseWindow.SetActive(true);
         moveWindowToFront(databaseWindow.transform);
         if(npcList.Count > 0)

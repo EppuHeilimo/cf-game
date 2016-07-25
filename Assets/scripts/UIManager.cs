@@ -26,7 +26,7 @@ public class UIManager : MonoBehaviour {
         if (target == null)
             return false;
         else if (target.tag == "NPC")
-            return(target.GetComponent<NPCV2>().giveMed(med, dosage));
+            return(target.GetComponent<NPC>().giveMed(med, dosage));
         return false;
     }
 
@@ -56,12 +56,12 @@ public class UIManager : MonoBehaviour {
     {
         if (pause && !paused)
         {
-            NPCManagerV2 npcmanager = GameObject.FindGameObjectWithTag("NPCManager").GetComponent<NPCManagerV2>();
+            NPCManager npcmanager = GameObject.FindGameObjectWithTag("NPCManager").GetComponent<NPCManager>();
             
             foreach (GameObject npc in npcmanager.npcList)
             {
                 if (npc != null)
-                    npc.GetComponent<NPCV2>().paused = true;
+                    npc.GetComponent<NPC>().paused = true;
             }
             GameObject.FindGameObjectWithTag("Clock").GetComponent<ClockTime>().paused = true;
             npcmanager.paused = true;
@@ -69,12 +69,12 @@ public class UIManager : MonoBehaviour {
         }
         else
         {
-            NPCManagerV2 npcmanager = GameObject.FindGameObjectWithTag("NPCManager").GetComponent<NPCManagerV2>();
+            NPCManager npcmanager = GameObject.FindGameObjectWithTag("NPCManager").GetComponent<NPCManager>();
             npcmanager.paused = false;
             foreach (GameObject npc in npcmanager.npcList)
             {
                 if (npc != null)
-                    npc.GetComponent<NPCV2>().paused = false;
+                    npc.GetComponent<NPC>().paused = false;
             }
             GameObject.FindGameObjectWithTag("Clock").GetComponent<ClockTime>().paused = false;
             //player.GetComponent<PlayerControl>().enabled = true;

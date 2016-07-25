@@ -6,7 +6,7 @@ public class DayChangeCanvas : MonoBehaviour {
     public GameObject patientprefab;
     int day = 1;
     List<GameObject> mynpcs;
-    NPCManagerV2 npcmanager;
+    NPCManager npcmanager;
     int score = 50;
     int speed = 5;
     int totalscore = 0;
@@ -23,9 +23,9 @@ public class DayChangeCanvas : MonoBehaviour {
     // Use this for initialization
     void Start () {
         day = GameObject.FindGameObjectWithTag("Clock").GetComponent<ClockTime>().day;
-        mynpcs = GameObject.FindGameObjectWithTag("NPCManager").GetComponent<NPCManagerV2>().responsibilityNpcs;
+        mynpcs = GameObject.FindGameObjectWithTag("NPCManager").GetComponent<NPCManager>().responsibilityNpcs;
         score = GameObject.FindGameObjectWithTag("ScoringSystem").GetComponent<ScoringSystem>().score;
-        npcmanager = GameObject.FindGameObjectWithTag("NPCManager").GetComponent<NPCManagerV2>();
+        npcmanager = GameObject.FindGameObjectWithTag("NPCManager").GetComponent<NPCManager>();
         performancepanel = transform.FindChild("Performance").FindChild("ScoreBar");
         totalscoretextpanel = transform.FindChild("Footer").FindChild("Score");
         totalscore = GameObject.FindGameObjectWithTag("ScoringSystem").GetComponent<ScoringSystem>().totalscore;
@@ -41,8 +41,8 @@ public class DayChangeCanvas : MonoBehaviour {
             foreach(GameObject npc in mynpcs)
             {
                 GameObject patient = Instantiate(patientprefab, Vector3.zero, Quaternion.identity) as GameObject;
-                patient.transform.FindChild("Image").GetComponent<Image>().sprite = npc.GetComponent<NPCV2>().myHead2d;
-                patient.transform.FindChild("Name").GetComponent<Text>().text = npc.GetComponent<NPCV2>().myName;
+                patient.transform.FindChild("Image").GetComponent<Image>().sprite = npc.GetComponent<NPC>().myHead2d;
+                patient.transform.FindChild("Name").GetComponent<Text>().text = npc.GetComponent<NPC>().myName;
                 patient.transform.SetParent(patientspanel);
                 patientpanels.Add(patient);
             }

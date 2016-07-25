@@ -72,7 +72,7 @@ public class ClockTime : MonoBehaviour {
 
     public DayTime currentDayTime;
 
-    NPCManagerV2 NPCManager;
+    NPCManager NPCManager;
 
     // Use this for initialization
     void Start () {
@@ -81,7 +81,7 @@ public class ClockTime : MonoBehaviour {
         textref = GetComponent<Text>();
         currentText = textref.text;
         GameObject NPCManagerObj = GameObject.Find("NPCManager");
-        NPCManager = NPCManagerObj.GetComponent<NPCManagerV2>();
+        NPCManager = NPCManagerObj.GetComponent<NPCManager>();
         shift = 0;
         tutorial = GameObject.Find("Tutorial").GetComponent<Tutorial>();
     }
@@ -182,8 +182,8 @@ public class ClockTime : MonoBehaviour {
     {
         foreach(GameObject go in NPCManager.responsibilityNpcs)
         {
-            NPCV2 npc = go.GetComponent<NPCV2>();
-            if(npc.myState != NPCV2.NPCState.STATE_DEAD || npc.myState != NPCV2.NPCState.STATE_LEAVE_HOSPITAL)
+            NPC npc = go.GetComponent<NPC>();
+            if(npc.myState != NPC.NPCState.STATE_DEAD || npc.myState != NPC.NPCState.STATE_LEAVE_HOSPITAL)
             {
                 if(currentDayTime == DayTime.MORNING)
                 {
@@ -257,7 +257,7 @@ public class ClockTime : MonoBehaviour {
         GameObject player = GameObject.FindGameObjectWithTag("Player");
         player.GetComponent<PlayerControl>().resetPlayerPosition();
         player.GetComponent<PlayerControl>().enabled = false;
-        GameObject.FindGameObjectWithTag("NPCManager").GetComponent<NPCManagerV2>().nextDay();
+        GameObject.FindGameObjectWithTag("NPCManager").GetComponent<NPCManager>().nextDay();
         currentTime = 0;
         currentHours = 0;
         startHourInSeconds = 0;
@@ -275,7 +275,7 @@ public class ClockTime : MonoBehaviour {
         GameObject player = GameObject.FindGameObjectWithTag("Player");
         player.GetComponent<PlayerControl>().resetPlayerPosition();
         player.GetComponent<PlayerControl>().enabled = false;
-        GameObject.FindGameObjectWithTag("NPCManager").GetComponent<NPCManagerV2>().dayOneAfterTutorial();
+        GameObject.FindGameObjectWithTag("NPCManager").GetComponent<NPCManager>().dayOneAfterTutorial();
         currentTime = 0;
         currentHours = 0;
         startHourInSeconds = 0;
@@ -290,7 +290,7 @@ public class ClockTime : MonoBehaviour {
 
     public void resumeAfterTutorial()
     {
-        GameObject.FindGameObjectWithTag("NPCManager").GetComponent<NPCManagerV2>().resumeAfterTutorial();
+        GameObject.FindGameObjectWithTag("NPCManager").GetComponent<NPCManager>().resumeAfterTutorial();
         paused = false;
         day++;
         resetMeds();
@@ -298,7 +298,7 @@ public class ClockTime : MonoBehaviour {
 
     public void resumeAfterDayChange()
     {
-        GameObject.FindGameObjectWithTag("NPCManager").GetComponent<NPCManagerV2>().nextDayResume();
+        GameObject.FindGameObjectWithTag("NPCManager").GetComponent<NPCManager>().nextDayResume();
         paused = false;
         day++;
         resetMeds();
@@ -353,7 +353,7 @@ public class ClockTime : MonoBehaviour {
         {
             if (npcObj != null)
             { 
-                NPCV2 npc = npcObj.GetComponent<NPCV2>();
+                NPC npc = npcObj.GetComponent<NPC>();
                 if(npc.diagnosed)
                 {
                     if(npc.skipNextMedCheck)
@@ -395,7 +395,7 @@ public class ClockTime : MonoBehaviour {
         {
             if (npcObj != null)
             {
-                NPCV2 npc = npcObj.GetComponent<NPCV2>();
+                NPC npc = npcObj.GetComponent<NPC>();
                 if (npc.diagnosed)
                 {
                     if (npc.skipNextMedCheck)
@@ -437,7 +437,7 @@ public class ClockTime : MonoBehaviour {
         {
             if (npcObj != null)
             {
-                NPCV2 npc = npcObj.GetComponent<NPCV2>();
+                NPC npc = npcObj.GetComponent<NPC>();
                 if (npc.diagnosed)
                 {
                     if (npc.skipNextMedCheck)
@@ -479,7 +479,7 @@ public class ClockTime : MonoBehaviour {
         {
             if (npcObj != null)
             {
-                NPCV2 npc = npcObj.GetComponent<NPCV2>();
+                NPC npc = npcObj.GetComponent<NPC>();
                 if (npc.diagnosed)
                 {
                     if (npc.skipNextMedCheck)
@@ -521,7 +521,7 @@ public class ClockTime : MonoBehaviour {
         {
             if (npcObj != null)
             {
-                npcObj.GetComponent<NPCV2>().isLosingHp = false;
+                npcObj.GetComponent<NPC>().isLosingHp = false;
             }
         }
     }
@@ -533,8 +533,8 @@ public class ClockTime : MonoBehaviour {
         {
             if (npcObj != null)
             {
-                npcObj.GetComponent<NPCV2>().disableAllMeds();
-                npcObj.GetComponent<NPCV2>().isLosingHp = false;
+                npcObj.GetComponent<NPC>().disableAllMeds();
+                npcObj.GetComponent<NPC>().isLosingHp = false;
             }
         }
     }

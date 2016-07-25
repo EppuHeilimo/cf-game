@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 
-public class NPCV2 : MonoBehaviour
+public class NPC : MonoBehaviour
 {   
     /* states */
     public enum NPCState
@@ -63,7 +63,7 @@ public class NPCV2 : MonoBehaviour
     public GameObject myBed;
     //how far from destination player can be to start the task
     public bool taskCompleted = true;
-    DialogV2 dialogZone;
+    Dialog dialogZone;
     ObjectInteraction interactionComponent;
     ObjectManager objectManager;
     public bool talking = false;
@@ -111,7 +111,7 @@ public class NPCV2 : MonoBehaviour
     /* position stuff */
     public Vector3 dest; // current destination position
     NavMeshAgent agent;
-    NPCManagerV2 npcManager;
+    NPCManager npcManager;
     Vector3 receptionPos = new Vector3(47, 4, 125); // position of reception
 
     /* timing stuff */
@@ -201,7 +201,7 @@ public class NPCV2 : MonoBehaviour
         agent.speed = Random.Range(60f, 100f);
         //Set animation speed to match the walk speed.
         GetComponent<IiroAnimBehavior>().setWalkAnimSpeed(agent.speed);
-        npcManager = GameObject.Find("NPCManager").GetComponent<NPCManagerV2>();
+        npcManager = GameObject.Find("NPCManager").GetComponent<NPCManager>();
         dest = Vector3.zero;
         stateQueue.Add(1, new Queue<NPCState>());
         stateQueue.Add(2, new Queue<NPCState>());
@@ -698,7 +698,7 @@ public class NPCV2 : MonoBehaviour
                     else
                     {
                         int r = Random.Range(1, 10);
-                        if (r > 1 && npcManager.currentNpcsInWard < NPCManagerV2.MAX_NPCS_IN_WARD_AREA)
+                        if (r > 1 && npcManager.currentNpcsInWard < NPCManager.MAX_NPCS_IN_WARD_AREA)
                         {
                             // Randomize 2-4 DIFFERENT problems for the NPC
                             int numProblems = UnityEngine.Random.Range(2, 5);
@@ -1207,7 +1207,7 @@ public class NPCV2 : MonoBehaviour
             wantsToTalk = true;
             GameObject target = interactionComponent.getTarget();
             //check that the target is actually capable of talking
-            if (target == null || target.tag != "NPC" || !target.GetComponent<NPCV2>().isIdle() || target.GetComponent<NPCV2>().dead || target.GetComponent<NPCV2>().sleeping || target.GetComponent<NPCV2>().sitting)
+            if (target == null || target.tag != "NPC" || !target.GetComponent<NPC>().isIdle() || target.GetComponent<NPC>().dead || target.GetComponent<NPC>().sleeping || target.GetComponent<NPC>().sitting)
             {
                 findOtherIdleNPC();
             }
@@ -1275,7 +1275,7 @@ public class NPCV2 : MonoBehaviour
         {
             if (npc.gameObject != gameObject)
             {
-                NPCV2 script = npc.GetComponent<NPCV2>();
+                NPC script = npc.GetComponent<NPC>();
                 if (script.isIdle() && !script.sitting && !script.sleeping)
                 {
                     if(!script.talking)
@@ -2170,7 +2170,7 @@ public class NPCV2 : MonoBehaviour
     //Can't init at start, because children should be initiated first
     public void initChild()
     {
-        dialogZone = transform.FindChild("ContactZone").GetComponent<DialogV2>();
+        dialogZone = transform.FindChild("ContactZone").GetComponent<Dialog>();
     }
 
     private bool approx(float a, float b, float accuracy)

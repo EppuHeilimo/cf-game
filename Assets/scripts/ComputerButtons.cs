@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class ComputerButtons : MonoBehaviour {
 
-    NPCV2 npc;
+    NPC npc;
 
     public Text patientInfo = null;
     public Text med1 = null;

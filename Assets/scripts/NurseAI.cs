@@ -18,13 +18,13 @@ public class NurseAI : MonoBehaviour {
     bool readyForLift = false;
     public NurseAI partner;
     float timer = 0;
-    NPCManagerV2 npcManager;
+    NPCManager npcManager;
     Vector3 startPos;
 
 	// Use this for initialization
 	void Start ()
     {
-        npcManager = GameObject.FindGameObjectWithTag("NPCManager").GetComponent<NPCManagerV2>();
+        npcManager = GameObject.FindGameObjectWithTag("NPCManager").GetComponent<NPCManager>();
         startPos = transform.position;
     }
 	

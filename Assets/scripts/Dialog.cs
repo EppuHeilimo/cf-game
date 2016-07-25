@@ -2,11 +2,11 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class DialogV2 : MonoBehaviour
+public class Dialog : MonoBehaviour
 {
 
     TextBoxManager textBoxManager;
-    NPCV2 parent;
+    NPC parent;
     public bool playerInZone = false;
     public bool npcInZone = false;
     Dictionary<GameObject, float> timers = new Dictionary<GameObject, float>();
@@ -16,7 +16,7 @@ public class DialogV2 : MonoBehaviour
     void Start()
     {
         textBoxManager = FindObjectOfType<TextBoxManager>();
-        parent = transform.parent.GetComponent<NPCV2>();
+        parent = transform.parent.GetComponent<NPC>();
         parent.initChild();
     }
 
@@ -53,7 +53,7 @@ public class DialogV2 : MonoBehaviour
         }
         else if (other.tag == "NPC")
         {
-            target = other.GetComponent<NPCV2>().getTarget();
+            target = other.GetComponent<NPC>().getTarget();
             if (target == transform.parent.gameObject)
             {
                 WhoIsTargetingMe = other.gameObject;
@@ -95,8 +95,8 @@ public class DialogV2 : MonoBehaviour
         }
         else if(other.tag == "NPC" && other.gameObject == WhoIsTargetingMe)
         {
-            NPCV2 npc = other.GetComponent<NPCV2>();
-            if(npc.myState == NPCV2.NPCState.STATE_DEAD)
+            NPC npc = other.GetComponent<NPC>();
+            if(npc.myState == NPC.NPCState.STATE_DEAD)
             {
                 WhoIsTargetingMe = null;
             } 
@@ -123,7 +123,7 @@ public class DialogV2 : MonoBehaviour
         }
         else if (other.tag == "NPC" && other.gameObject == WhoIsTargetingMe)
         {
-            target = other.GetComponent<NPCV2>().getTarget();
+            target = other.GetComponent<NPC>().getTarget();
             if (target == transform.parent.gameObject)
             {
                 WhoIsTargetingMe = null;
