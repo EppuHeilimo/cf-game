@@ -69,15 +69,20 @@ public class Inventory : MonoBehaviour {
             {
                 items[i].ID = i;
                 foundEmptySlot = true;
+                // iterate through the item's medicines
                 for (int j = 0; j < itemsToAdd.Length; j++)
                 {
                     items[i].medicine.Add(itemsToAdd[j]);
                 }
+
+                // create new item gameobject
                 GameObject itemObj = Instantiate(inventoryItem);
                 itemObj.GetComponent<ItemData>().item = items[i];
                 itemObj.GetComponent<ItemData>().slot = i;
+
                 // make the object child of the corresponding slot
                 itemObj.transform.SetParent(slots[i].transform);
+
                 // UI stuff
                 itemObj.transform.localScale = Vector3.one;
                 itemObj.GetComponent<RectTransform>().sizeDelta = Vector2.zero;
@@ -86,12 +91,14 @@ public class Inventory : MonoBehaviour {
                 break;
             }
         }
+        // inventory full
         if (!foundEmptySlot)
         {
             GameObject.FindGameObjectWithTag("Player").GetComponent<FloatTextNPC>().addFloatText("Inventory is full!", false);
         }
     }
 
+    // removes item from inventory with the given ID
     public void RemoveItem(int id)
     {
         for (int i = 0; i < items.Count; i++)
@@ -108,6 +115,7 @@ public class Inventory : MonoBehaviour {
         }
     }
 
+    // removes all items from inventory
     public void ResetInventory()
     {
         for (int i = 0; i < items.Count; i++)

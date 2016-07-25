@@ -27,15 +27,19 @@ public class BigMedCont : MonoBehaviour
         this.medName = medName;
         this.defaultDosage = defaultDosage;
         this.canSplit = canSplit;
+        
+        // load container sprite specific to this medicine
         Sprite medSprite = Resources.Load<Sprite>("Sprites/Meds/" + medName);
         if (medSprite == null)
-            medSprite = Resources.Load<Sprite>("Sprites/Meds/null");
+            medSprite = Resources.Load<Sprite>("Sprites/Meds/null"); // sprite not found in the folder
         SpriteRenderer sRenderer = gameObject.GetComponent<SpriteRenderer>();
         sRenderer.sprite = medSprite;
-        transform.localScale = new Vector3(0.2f, 0.2f, 0f); //scale sprite smaller
+        transform.localScale = new Vector3(0.2f, 0.2f, 0f); // scale sprite smaller
+
+        // load pill sprite specific to this medicine
         pillSprite = Resources.Load<Sprite>("Sprites/Meds/" + medName + "_tab");
         if (pillSprite == null)
-            pillSprite = Resources.Load<Sprite>("Sprites/Meds/null_tab");
+            pillSprite = Resources.Load<Sprite>("Sprites/Meds/null_tab"); // sprite not found in the folder
         spawnPill();
         GameObject.FindGameObjectWithTag("Pill").GetComponent<Pill>().Init(this.medName, this.defaultDosage, pillSprite, canSplit, transform.position);
         spawnPills = true;
@@ -46,7 +50,7 @@ public class BigMedCont : MonoBehaviour
     {
         if (spawnPills)
             spawnPill();
-        if (spawnPills && Input.GetKeyDown("space"))
+        if (spawnPills && Input.GetKeyDown("space")) // reset pill while it's flying with space
             destroyPill();
     }
 
@@ -54,7 +58,7 @@ public class BigMedCont : MonoBehaviour
     {
         if (spawnPills)
         {
-            destroyPill();
+            destroyPill(); // reset pill while it's flying by tapping the container (for mobile devices)
         }
     }
 
