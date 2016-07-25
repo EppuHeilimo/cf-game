@@ -15,6 +15,7 @@ public class Tooltip : MonoBehaviour {
 
     void Update()
     {
+        // display tooltip at mouse/touch position when active
         if (tooltip.activeSelf)
         {
             if (Application.platform == RuntimePlatform.Android)

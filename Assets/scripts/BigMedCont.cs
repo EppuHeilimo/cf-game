@@ -5,6 +5,7 @@ using System;
 using UnityEngine.UI;
 using Assets.Scripts;
 
+/* the big medicine container used in the slingshot minigame */
 public class BigMedCont : MonoBehaviour
 {
     public string medName;
@@ -14,12 +15,12 @@ public class BigMedCont : MonoBehaviour
     GameObject minigameObj;
     Sprite pillSprite;
     public bool spawnPills;
-    GameManager gameManager;
+    MinigameManager gameManager;
 
     void Start()
     {
         minigameObj = GameObject.Find("Minigame1");
-        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
+        gameManager = GameObject.Find("MinigameManager").GetComponent<MinigameManager>();
     }
 
     public void Init(string medName, int defaultDosage, int canSplit)

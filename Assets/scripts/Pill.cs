@@ -6,7 +6,6 @@ using Assets.Scripts;
 public static class Constants
 {
     public static readonly float MinVelocity = 0.05f;
-
     /// <summary>
     /// The collider of the pill is bigger when on idle state
     /// This will make it easier for the user to tap on it
@@ -40,11 +39,11 @@ public class Pill : MonoBehaviour
         this.medName = medName;
         this.dosage = dosage;
         this.canSplit = canSplit;
-        //transform.position = pos - new Vector3(2,2,0);
         gameObject.GetComponent<SpriteRenderer>().sprite = pillSprite;
+        // if this pill can be split, load the sprite for half a tab
         if (canSplit != 0)
             pillSpriteHalf = Resources.Load<Sprite>("Sprites/Meds/" + medName + "_tab_half");
-        transform.localScale = new Vector3(0.1f, 0.1f, 0f); //scale sprite smaller
+        transform.localScale = new Vector3(0.1f, 0.1f, 0f); // scale sprite smaller
         Time.timeScale = 1.0f;
         Time.fixedDeltaTime = 0.02F * Time.timeScale;
         GetComponent<CircleCollider2D>().radius = Constants.PillColliderRadiusBig;
@@ -58,8 +57,10 @@ public class Pill : MonoBehaviour
 
     void OnCollisionEnter2D(Collision2D coll)
     {
+        // ignore collision between pills
         if (coll.gameObject.tag == "Pill" || coll.gameObject.tag == "disabledPill")
             Physics2D.IgnoreCollision(coll.gameObject.GetComponent<CircleCollider2D>(), GetComponent<CircleCollider2D>());
+        // stop slowmo if hit the ground
         if (coll.gameObject.tag == "Ground")
         {
             Time.timeScale = 1.0f;
@@ -67,6 +68,7 @@ public class Pill : MonoBehaviour
         }
     }
 
+    // called when pill enters split trigger
     public void splitPill(bool b)
     {
         pillSplitOn = b;
@@ -74,12 +76,12 @@ public class Pill : MonoBehaviour
 
     void FixedUpdate()
     {
-        //if we've thrown the pill and its not inside a cup (tag has not been changed)
-        //and its speed is very small
+        // if we've thrown the pill and it's not inside a cup (tag has not been changed)
+        // and it's speed is very small
         if (State == PillState.Thrown && gameObject.tag == "Pill" &&
             GetComponent<Rigidbody2D>().velocity.sqrMagnitude <= Constants.MinVelocity)
         {
-            //destroy the pill after 1 second
+            // destroy the pill after 1 second
             StartCoroutine(DestroyAfter(1));
         }
     }
@@ -91,22 +93,23 @@ public class Pill : MonoBehaviour
             Destroy(gameObject);
     }
 
+    // called when pill is thrown
     public void OnThrow()
     {
-        //play the sound
+        // play the sound
         throwSound.Play();
-        //show the trail renderer
+        // show the trail renderer
         GetComponent<TrailRenderer>().enabled = true;
-        //allow for gravity forces
+        // allow for gravity forces
         GetComponent<Rigidbody2D>().isKinematic = false;
-        //make the collider normal size
+        // make the collider normal size
         GetComponent<CircleCollider2D>().radius = Constants.PillColliderRadiusNormal;
         State = PillState.Thrown;
     }
 
     void OnMouseDown()
     {
-        //split the pill's dosage in half and change the sprite if clicked during slow motion
+        // split the pill's dosage in half and change the sprite if clicked during slow motion
         if (pillSplitOn)
         {
             if (!splitted)

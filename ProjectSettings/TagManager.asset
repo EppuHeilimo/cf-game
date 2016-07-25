@@ -57,7 +57,7 @@ TagManager:
   - StartTutYes
   - StartTutNo
   - MenuButtons
-  - TutorialStuff
+  - TutorialUI
   - CoffeeMachine
   - Slider
   - Toggle

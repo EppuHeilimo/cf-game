@@ -2,6 +2,7 @@
 using System.Collections;
 using UnityEngine.UI;
 
+/* handles hand disinfectant animations */
 public class KasiDesi : MonoBehaviour {
 
     Image image;

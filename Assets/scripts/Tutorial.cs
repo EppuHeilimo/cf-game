@@ -102,7 +102,7 @@ public class Tutorial : MonoBehaviour {
     void Start () {     
         tutCanvas = transform.GetChild(0).gameObject;
         nextBtn = GameObject.Find("TutorialNextBtn");
-        uiElements = GameObject.FindGameObjectsWithTag("uiElements");
+        uiElements = GameObject.FindGameObjectsWithTag("TutorialUI");
         // save the tutorial UI elements original positions
         for (int i = 0; i < uiElements.Length; i++)
             uiElementsOrigPos[i] = uiElements[i].GetComponent<RectTransform>().position;

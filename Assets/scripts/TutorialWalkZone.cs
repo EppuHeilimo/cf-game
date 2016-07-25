@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+/*  trigger zone at the reception for tutorial */
 public class TutorialWalkZone : MonoBehaviour {
 
     bool reached;

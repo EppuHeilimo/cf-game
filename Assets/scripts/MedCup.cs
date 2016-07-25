@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 
+/* medicine cups in the slingshot minigame */
 public class MedCup : MonoBehaviour {
 
     public class Med
@@ -27,6 +28,7 @@ public class MedCup : MonoBehaviour {
 
     void OnTriggerEnter2D(Collider2D other)
     {
+        // pill enters the trigger, add the pill to this cup
         if (other.gameObject.tag == "Pill")
         {
             if (isColliding) return;
@@ -51,6 +53,8 @@ public class MedCup : MonoBehaviour {
         isColliding = false;
     }
 
+    // adds medicine to this cup
+    // if duplicate -> add up dosage
     public void Add(Med m)
     {
         lastMed = m;
@@ -73,6 +77,7 @@ public class MedCup : MonoBehaviour {
         }
     }
 
+    // remove all meds in this cup
     public void Reset()
     {
         medsInThisCup.Clear();
@@ -80,6 +85,7 @@ public class MedCup : MonoBehaviour {
         UpdateText();
     }
 
+    // remove last pill added to this cup
     public void DeleteLast()
     {
         if (lastMed == null)
@@ -105,6 +111,7 @@ public class MedCup : MonoBehaviour {
         }
     }
 
+    // destroys all pill gameobjects in this cup
     public void DestroyPills()
     {
         foreach (GameObject pill in pills)
@@ -113,6 +120,7 @@ public class MedCup : MonoBehaviour {
         pills.Clear();
     }
 
+    // updates the text of medicines in this cup when new one added/removed
     void UpdateText()
     {
         medsInThisCupTxt = transform.GetChild(0).GetChild(1).GetComponent<Text>();

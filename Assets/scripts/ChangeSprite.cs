@@ -2,9 +2,9 @@
 using System.Collections;
 using UnityEngine.UI;
 
+/* changes the icon next to the clock depending on the current daytime */
 public class ChangeSprite : MonoBehaviour
 {
-    // changes the icon next to the clock depending on the current daytime
     ClockTime.DayTime currentDayTime;
     Sprite[] dayTimeIcons = new Sprite[4];
 
