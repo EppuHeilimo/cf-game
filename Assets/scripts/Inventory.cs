@@ -11,7 +11,7 @@ public class ItemContainer
     
     public ItemContainer()
     {
-        ID = -1;
+        ID = -1; // item's ID -1 = empty item
     }
 }
 
@@ -43,6 +43,7 @@ public class Inventory : MonoBehaviour {
 
     }
 
+    // called after playing minigame to add the medicine cups to player's inventory
     public void AddItems(List<MedCup.Med> itemsInCup, int cupNum)
     {
         Item[] itemsToAdd = new Item[itemsInCup.Count];
@@ -50,11 +51,16 @@ public class Inventory : MonoBehaviour {
         foreach (MedCup.Med m in itemsInCup)
         {
             Item newItem = new Item();
+            // create a new clone of the medicine found in database
             newItem = (Item)database.FetchItemByTitle(m.name).Clone();
+            // set the clone's dosage
             newItem.currentDosage = m.dosage;
+            // add the medicine to the item
             itemsToAdd[i] = newItem;
             i++;
         }
+
+        // iterate through player's inventory to find empty slot
         bool foundEmptySlot = false;
         for (i = 0; i < items.Count; i++)
         {
@@ -72,7 +78,7 @@ public class Inventory : MonoBehaviour {
                 itemObj.GetComponent<ItemData>().slot = i;
                 // make the object child of the corresponding slot
                 itemObj.transform.SetParent(slots[i].transform);
-                //itemObj.transform.position = slots[i].transform.position;
+                // UI stuff
                 itemObj.transform.localScale = Vector3.one;
                 itemObj.GetComponent<RectTransform>().sizeDelta = Vector2.zero;
                 itemObj.GetComponent<RectTransform>().anchoredPosition = Vector2.zero;

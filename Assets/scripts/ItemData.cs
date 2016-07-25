@@ -3,13 +3,12 @@ using System.Collections;
 using UnityEngine.EventSystems;
 using System;
 
-public class ItemData : MonoBehaviour,/* IBeginDragHandler,  IDragHandler, IEndDragHandler,*/ IPointerDownHandler, IPointerEnterHandler, IPointerExitHandler {
+public class ItemData : MonoBehaviour, IPointerDownHandler, IPointerEnterHandler, IPointerExitHandler {
+
     public ItemContainer item;
     public int slot;
 
-    float taptimer = 0;
     bool tapped = false;
-    const float DOUBLE_TAP_TIME = 1f;
 
     Inventory inv;
     Tooltip tooltip;
@@ -22,43 +21,22 @@ public class ItemData : MonoBehaviour,/* IBeginDragHandler,  IDragHandler, IEndD
         uiManager = GameObject.Find("UIManager").GetComponent<UIManager>();
         tooltip = inv.GetComponent<Tooltip>();
     }
-    /*
-    public void OnBeginDrag(PointerEventData eventData)
-    {
-        if (item != null)
-        {
-            this.transform.SetParent(this.transform.parent.parent);
-            GetComponent<CanvasGroup>().blocksRaycasts = false;
-        }
-    }
-    
-    public void OnDrag(PointerEventData eventData)
-    {
-        
-        if (item != null)
-        {
-            this.transform.position = eventData.position - offset;
-        }
-    }
 
-    public void OnEndDrag(PointerEventData eventData)
-    {
-        this.transform.SetParent(inv.slots[slot].transform);
-        this.transform.position = inv.slots[slot].transform.position;
-        GetComponent<CanvasGroup>().blocksRaycasts = true;
-    }
-    */
+    // player clicks item in inventory
     public void OnPointerDown(PointerEventData eventData)
     {
+        // Android
         if (Application.platform == RuntimePlatform.Android)
         {
             if (item != null)
             {
+                // first tap, show item's tooltip
                 if(!tapped)
                 {
                     tapped = true;
                     tooltip.Activate(item);
                 }
+                // 2nd tap
                 else
                 {
                     tapped = false;
@@ -68,7 +46,8 @@ public class ItemData : MonoBehaviour,/* IBeginDragHandler,  IDragHandler, IEndD
                         Touch touch = Input.GetTouch(i);
                         if (touch.phase == TouchPhase.Began)
                         {
-                            // remove medicine from inventory if giving it succeeds
+                            // iterate through the tapped item's medicines + dosages
+                            // and save them to arrays
                             string[] titles = new string[item.medicine.Count];
                             float[] dosages = new float[item.medicine.Count];
                             int j = 0;
@@ -79,6 +58,9 @@ public class ItemData : MonoBehaviour,/* IBeginDragHandler,  IDragHandler, IEndD
                                 j++;
                             }
 
+                            // pass the saved arrays to UIManager
+                            // try giving item to NPC first, then try trashing it
+                            // both return true if they succeed -> remove item from inventory
                             if (uiManager.giveMed(titles, dosages))
                             {
                                 inv.RemoveItem(item.ID);
@@ -96,6 +78,7 @@ public class ItemData : MonoBehaviour,/* IBeginDragHandler,  IDragHandler, IEndD
                 }
             }
         }
+        // same for PC, but without the mobile tapping stuff
         else
         {
             if (item != null)
@@ -109,7 +92,7 @@ public class ItemData : MonoBehaviour,/* IBeginDragHandler,  IDragHandler, IEndD
                     dosages[j] = it.currentDosage;
                     j++;
                 }
-                // remove medicine from inventory if giving it succeeds
+
                 if (uiManager.giveMed(titles, dosages))
                 {
                     inv.RemoveItem(item.ID);
@@ -121,7 +104,8 @@ public class ItemData : MonoBehaviour,/* IBeginDragHandler,  IDragHandler, IEndD
                     tooltip.Deactivate();
                 }
                 else
-                { 
+                {
+                    // show tooltip above mouse cursor's position
                     offset = eventData.position - new Vector2(this.transform.position.x, this.transform.position.y);
                     this.transform.position = eventData.position - offset;
                 }
@@ -129,6 +113,7 @@ public class ItemData : MonoBehaviour,/* IBeginDragHandler,  IDragHandler, IEndD
         }
     }
 
+    // show/hide tooltip on mouse cursor hover/unhover
     public void OnPointerEnter(PointerEventData eventData)
     {
         tooltip.Activate(item);
