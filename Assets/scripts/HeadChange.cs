@@ -4,6 +4,8 @@ using System.Collections.Generic;
 
 public class HeadChange : MonoBehaviour {
 
+    /* returns random heads name */
+
     public string ChangeHead(List<GameObject> heads)
     {
         int rand = Random.Range(0, heads.Count - 1);

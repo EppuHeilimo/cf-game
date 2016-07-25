@@ -64,6 +64,10 @@ public class TextBoxManager : MonoBehaviour {
         MyImage.GetComponent<Image>().sprite = npc.myHead2d;
     }
 
+    /* Warning: the next function is insanely badly made and should be redone, good luck understanding it
+     * Enables patient's information on canvas
+     * Sets up the medication card
+    */
     public void EnableTextBox(NPC npc)
     {
         myNameText.text = npc.myName;

@@ -3,6 +3,8 @@ using System.Collections;
 using UnityEngine.UI;
 
 
+/* Functions for computer canvas (Needs seperate script from computer since instantiated prefabs don't preserve given scripts) */
+
 public class ComputerButtons : MonoBehaviour {
 
     NPC npc;

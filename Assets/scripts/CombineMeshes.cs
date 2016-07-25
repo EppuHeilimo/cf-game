@@ -2,6 +2,18 @@
 using System.Collections;
 [RequireComponent(typeof(MeshFilter))]
 [RequireComponent(typeof(MeshRenderer))]
+
+/*
+ * Combines children's meshes to one mesh.
+ * Give this component to parent and set texture
+ * removes all the old meshes
+ * 
+ * Gives significant performance boost.
+ * 
+ * DON'T USE IF MESHES REQUIRE INDIVIDUAL FUNCTIONS LIKE TARGETING
+ * 
+ */
+
 public class CombineMeshes : MonoBehaviour
 {
 

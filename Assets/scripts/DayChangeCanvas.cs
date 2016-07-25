@@ -2,12 +2,16 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
+
+/* Canvas which is instantiated when day changes */
+
 public class DayChangeCanvas : MonoBehaviour {
     public GameObject patientprefab;
     int day = 1;
     List<GameObject> mynpcs;
     NPCManager npcmanager;
     int score = 50;
+    /* Score count speed */
     int speed = 5;
     int totalscore = 0;
     int oldtotalscore = 0;
@@ -38,6 +42,8 @@ public class DayChangeCanvas : MonoBehaviour {
         {
             initialized = true;
             patientspanel = transform.FindChild("PatientPanel").FindChild("Patients");
+
+            /* Show your patients */
             foreach(GameObject npc in mynpcs)
             {
                 GameObject patient = Instantiate(patientprefab, Vector3.zero, Quaternion.identity) as GameObject;
@@ -46,6 +52,7 @@ public class DayChangeCanvas : MonoBehaviour {
                 patient.transform.SetParent(patientspanel);
                 patientpanels.Add(patient);
             }
+            /* Show npc's who left or died during the day */
             foreach(NPCINFO npc in npcmanager.respNpcsWhoLeftOrDied)
             {
                 GameObject patient = Instantiate(patientprefab, Vector3.zero, Quaternion.identity) as GameObject;

@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 
+/* Floating text system */
+
 public class FloatTextCanvas : MonoBehaviour {
     public GameObject FloatTextGO;
     List<GameObject> floatingtexts = new List<GameObject>();

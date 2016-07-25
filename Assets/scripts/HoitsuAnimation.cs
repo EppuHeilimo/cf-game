@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+/* The nurse with the trolley needs seperate animation from other npcs */
+
 public class HoitsuAnimation : MonoBehaviour {
 
     Animator anim;

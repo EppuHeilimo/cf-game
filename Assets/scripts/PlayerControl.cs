@@ -4,12 +4,16 @@ using System.Collections.Generic;
 
 public class PlayerControl : MonoBehaviour {
 
+    /* Coffee machine canvas */
     public GameObject TimeSkipPrefab;
 
     NavMeshAgent agent;
     GameObject target;
+
+    /* Arrow prefab */
     public GameObject moveindicator;
     GameObject indicator;
+
     ObjectInteraction interaction;
     ObjectManager objManager;
     IiroAnimBehavior anim;
@@ -19,6 +23,7 @@ public class PlayerControl : MonoBehaviour {
 
     Profile profile;
 
+    /*Game objects which have mouseoverignore script attached, check if they should be ignored on raycast*/
     MouseOverIgnore[] mouseOverIgnoreGos;
 
     bool sitting = false;
@@ -43,7 +48,7 @@ public class PlayerControl : MonoBehaviour {
         tooltip = GameObject.Find("Inventory").GetComponent<Tooltip>();
         defaultPosition = transform.position;
     }
-
+    /*Load saved profile*/
     public void loadProfile()
     {
         profile = GameObject.Find("SavedData").GetComponent<SavedData>().getProfile();
@@ -132,12 +137,14 @@ public class PlayerControl : MonoBehaviour {
                     if(interaction.RotateTowards(target.transform))
                     {
                         anim.pickup();
+                        //TODO, actually pickup something
                         disableTarget();
                     }
                 }
             }
         }
 
+        /* If target is double clicked, walk to it and at destination do what ever needs to be done*/
         if(movingToTarget)
         {
             if (arrivedToDestination(10.0f) && target != null)
@@ -239,6 +246,7 @@ public class PlayerControl : MonoBehaviour {
                 }
             }  
         }
+
         handleInput();
     }
 
@@ -262,10 +270,7 @@ public class PlayerControl : MonoBehaviour {
 
     void handleInput()
     {
-        if(Input.GetKeyDown(KeyCode.Escape))
-        {
-            disableTarget();
-        }
+
         if (Input.GetKeyDown(KeyCode.O))
         {
             Time.timeScale += 0.5f;
@@ -290,7 +295,7 @@ public class PlayerControl : MonoBehaviour {
             }
             
             RaycastHit hit2;
-            //Layer mask
+            //Layer masks
             LayerMask layerMask = (1 << 8) | (1 << 11);
             LayerMask layerMaskNpc = (1 << 9) | (1 << 10);
             Ray ray = new Ray();
@@ -519,6 +524,8 @@ public class PlayerControl : MonoBehaviour {
             return false;
         }
     }
+
+    /* clears outline and nullifies target */
     void disableTarget()
     {
         if (target != null)
@@ -585,6 +592,7 @@ public class PlayerControl : MonoBehaviour {
         indicator = (GameObject)Instantiate(moveindicator, pos, new Quaternion(0, 0, 0, 0));
     }
 
+    /* Changes shader used for one the gameobjects mesh */
     void outlineOnlyParent(Transform gameobject, Shader shader)
     {
         Renderer renderer = gameobject.GetComponent<Renderer>();
@@ -599,6 +607,7 @@ public class PlayerControl : MonoBehaviour {
         }
     }
 
+    /* changes all meshes shaders in gameobjects children */
     void outlineGameObjectRecursive(Transform gameobject, Shader shader)
     {
         foreach (Transform child in gameobject)

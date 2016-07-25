@@ -1,14 +1,17 @@
 ﻿using UnityEngine;
 using System.Collections;
-
 using UnityEngine.UI;
+
 
 public class CustomizeCharacter : MonoBehaviour {
 
+    /* Rotation sensitivity */
     float sensitivity = 0.4f;
     Vector3 rotation = new Vector3(0, 0, 0);
+    /* Where the mouse is atm */
     Vector3 mouseReference;
     Vector2 touchReference;
+    /* How much it moved since last check */
     Vector3 mouseOffset;
     bool isRotating = false;
     Touch touch;
@@ -16,6 +19,7 @@ public class CustomizeCharacter : MonoBehaviour {
     Heads heads;
     SavedData savedData;
 
+    /* Name not given warning */
     GameObject warning;
     bool warningenabled = false;
     float timer = 0;

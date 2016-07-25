@@ -11,6 +11,7 @@ public class SlidingDoors : MonoBehaviour {
     Vector3[] targetPos = new Vector3[2];
     // Use this for initialization
     void Start() {
+        /* Initializes doors to work with 0 or 90 world rotation */
         if (Mathf.Approximately(transform.rotation.y, 0.0f))
         {
             doors[0] = transform.FindChild("door 1");
@@ -81,6 +82,7 @@ public class SlidingDoors : MonoBehaviour {
             isOpen = true;
         }
     }
+
     void OnTriggerExit(Collider other)
     {
         triggerObjectsInArea--;

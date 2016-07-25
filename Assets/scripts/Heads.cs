@@ -3,6 +3,8 @@ using System.Collections;
 using UnityEngine.UI;
 using System.Collections.Generic;
 
+/* Loads head assets */
+
 public class Heads : MonoBehaviour {
 
     public List<GameObject> headsMale = new List<GameObject>();
