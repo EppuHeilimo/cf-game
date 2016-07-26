@@ -5,7 +5,9 @@ using System.Collections.Generic;
 using System.IO;
 using System;
 
+/* item database loaded from external JSON-file via LitJSON library */
 public class ItemDatabase : MonoBehaviour {
+
     public List<Item> database = new List<Item>();
     JsonData itemData;
 
@@ -120,6 +122,7 @@ public class Item : ICloneable
         this.ID = -1;
     }
 
+    // creates clone of the item in database
     public object Clone()
     {
         return this.MemberwiseClone();

@@ -4,6 +4,7 @@ using System.Collections;
 
 public class Tutorial : MonoBehaviour {
 
+    // the tutorial is made with state machine
     public enum TutorialState
     {
         STATE_START = 0,
@@ -83,31 +84,32 @@ public class Tutorial : MonoBehaviour {
     public Toggle toggle;
     public Toggle toggleMenu;
 
-    /* position stuff */
-    GameObject[] tutorialStuff;
-    Vector3[] tutorialStuffOrigPos = new Vector3[3];    
-    enum TutStuffPos
+    string notificationMsg;
+    float notificationTime;
+
+    /* UI elements position stuff */
+    GameObject[] uiElements;
+    Vector3[] uiElementsOrigPos = new Vector3[3];    
+    enum uiElementsPos
     {
         ORIG = 0,
         MINIGAME,
         DOSING
     }
-    TutStuffPos currPos;
-
-    string notificationMsg;
-    float notificationTime;
+    uiElementsPos currPos;
 
     // Use this for initialization
     void Start () {     
         tutCanvas = transform.GetChild(0).gameObject;
         nextBtn = GameObject.Find("TutorialNextBtn");
-        tutorialStuff = GameObject.FindGameObjectsWithTag("TutorialStuff");
-        for (int i = 0; i < tutorialStuff.Length; i++)
-            tutorialStuffOrigPos[i] = tutorialStuff[i].GetComponent<RectTransform>().position;
-        currPos = TutStuffPos.ORIG;
+        uiElements = GameObject.FindGameObjectsWithTag("TutorialUI");
+        // save the tutorial UI elements original positions
+        for (int i = 0; i < uiElements.Length; i++)
+            uiElementsOrigPos[i] = uiElements[i].GetComponent<RectTransform>().position;
+        currPos = uiElementsPos.ORIG;
         mascot = GameObject.Find("Mascot").GetComponent<Mascot>();
         currentState = TutorialState.STATE_INACTIVE;
-        HidetutCanvas();
+        HideTutCanvas();
         walkHere.SetActive(false);
         minigame = GameObject.Find("Minigame1").GetComponent<Minigame1>();
     }
@@ -116,46 +118,50 @@ public class Tutorial : MonoBehaviour {
     void Update () {
         if (tutorialOn)
         {
+            // spent too long in one state, play the mascot's sleep animation
             timeSpentInThisState += Time.deltaTime;
             if (timeSpentInThisState >= GO_TO_SLEEP_TIME)
             {
                 mascot.ChangeState(Mascot.MascotState.STATE_SLEEP);
             }
 
+            // initialize new state if changed
             if (stateChanged)
             {
                 OnStateChange();
             }
 
+            // play mascot's talking animation if message is currently being typed
             if (mascot != null)
                 mascot.isTalking = typing;
 
-            // move tutorial stuff out of the way in minigame
+            // move tutorial UI-elements out of the way in minigame
             if (minigame.active && minigame.dosingActive)
             {
-                if (currPos != TutStuffPos.DOSING)
+                if (currPos != uiElementsPos.DOSING)
                 {
-                    MoveTutorialStuff(0, Screen.height / 2 - 60f);
-                    currPos = TutStuffPos.DOSING;
+                    MoveuiElements(0, Screen.height / 2 - 60f);
+                    currPos = uiElementsPos.DOSING;
                 }               
             }
             else if (minigame.active)
             {
-                if (currPos != TutStuffPos.MINIGAME)
+                if (currPos != uiElementsPos.MINIGAME)
                 {
-                    MoveTutorialStuff(-Screen.width / 2, -50f);
-                    currPos = TutStuffPos.MINIGAME;
+                    MoveuiElements(-Screen.width / 2, -50f);
+                    currPos = uiElementsPos.MINIGAME;
                 }
             }
             else
             {
-                if (currPos != TutStuffPos.ORIG)
+                if (currPos != uiElementsPos.ORIG)
                 {
-                    MoveTutorialStuff(0, 0);
-                    currPos = TutStuffPos.ORIG;
+                    MoveuiElements(0, 0);
+                    currPos = uiElementsPos.ORIG;
                 }
             }
 
+            // update stuff specific to the current state
             switch (currentState)
             {
                 case TutorialState.STATE_START:
@@ -238,6 +244,7 @@ public class Tutorial : MonoBehaviour {
                     {
                         ChangeState(TutorialState.STATE_ENDING_GOOD_1);
                     }
+                    // wrong medicine/dosage given
                     else if (tutorialNPC.GetComponent<NPC>().myHp < 50)
                     {
                         ChangeState(TutorialState.STATE_ENDING_BAD_1);
@@ -258,16 +265,19 @@ public class Tutorial : MonoBehaviour {
                     break;
 
                 case TutorialState.STATE_COMPUTER_PRACTICE:
+                    // check if computer turned on
                     if (computer.GetComponent<Computer>().computerOn)
                         ChangeState(TutorialState.STATE_COMPUTER_PRACTICE_1);
                     break;
 
                 case TutorialState.STATE_COMPUTER_PRACTICE_1:
+                    // check if schedule opened
                     if (computer.GetComponent<Computer>().scheduleOn)
                         ChangeState(TutorialState.STATE_COMPUTER_PRACTICE_2);
                     break;
 
                 case TutorialState.STATE_COMPUTER_PRACTICE_2:
+                    // check if computer turned off
                     if (!computer.GetComponent<Computer>().computerOn)
                         ChangeState(TutorialState.STATE_TRASH_PRACTICE);
                     break;
@@ -321,12 +331,14 @@ public class Tutorial : MonoBehaviour {
         }
 	}
 
+    // initialize new state
     void OnStateChange()
     {
         timeSpentInThisState = 0f;
         nextClicked = false;
         StopAllCoroutines();
         text.text = "";
+
         switch (currentState)
         {
             case TutorialState.STATE_START:
@@ -497,6 +509,7 @@ public class Tutorial : MonoBehaviour {
         stateChanged = false;
     }
 
+    // types the message letter by letter
     IEnumerator TypeText()
     {
         foreach (char letter in message.ToCharArray())
@@ -508,18 +521,20 @@ public class Tutorial : MonoBehaviour {
         }
     }
 
+    // start tutorial
     public void TutorialYesClicked()
     {
         startOptions.StartButtonClicked();
         showPanels.HideTutorialPanel();
         tutorialOn = true;
-        ShowtutCanvas();
+        ShowTutCanvas();
         StartCoroutine(ChangeState(TutorialState.STATE_START, 1f));
         GameObject.Find("Player").GetComponent<PlayerControl>().loadProfile();
         musicPauseSlider.value = musicOptionsSlider.value;
         toggle.isOn = toggleMenu.isOn;
     }
 
+    // skip tutorial
     public void TutorialNoClicked()
     {
         startOptions.StartButtonClicked();
@@ -534,7 +549,7 @@ public class Tutorial : MonoBehaviour {
     {     
         if (indicator != null)
             Destroy(indicator);
-        HidetutCanvas();
+        HideTutCanvas();
         tutorialOn = false;
         currentState = TutorialState.STATE_INACTIVE;
         GameObject.Find("Inventory").GetComponent<Inventory>().ResetInventory();
@@ -546,16 +561,17 @@ public class Tutorial : MonoBehaviour {
         GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>().endTutorial();
     }
 
-    public void ShowtutCanvas()
+    public void ShowTutCanvas()
     {
         tutCanvas.SetActive(true);
     }
 
-    public void HidetutCanvas()
+    public void HideTutCanvas()
     {
         tutCanvas.SetActive(false);
     }
 
+    // change state after delay
     IEnumerator ChangeState(TutorialState newState, float delayTime)
     {
         yield return new WaitForSeconds(delayTime);
@@ -563,12 +579,14 @@ public class Tutorial : MonoBehaviour {
         stateChanged = true;
     }
 
+    // change state instantly
     void ChangeState(TutorialState newState)
     {
         currentState = newState;
         stateChanged = true;
     }
         
+    // shows the path to the reception
     IEnumerator ShowPath()
     {
         yield return new WaitForSeconds(1f);
@@ -579,17 +597,20 @@ public class Tutorial : MonoBehaviour {
         indicator.transform.localScale = new Vector3(5, 5, 5);
     }
 
+    // called from the walkzone trigger once player has entered the reception zone
     public void ReachedWalkZone()
     {
         ChangeState(TutorialState.STATE_TARGET_PRACTICE_1);
     }
 
+    // spawn and show the tutorial NPC
     void ShowNPC()
     {
         tutorialNPC = GameObject.Find("NPCManager").GetComponent<NPCManager>().spawnTutorialGuy();
         mCamera.lockCameraToThisTransformForXTime(tutorialNPC.transform, 15f);
     }
 
+    // show different gameobjects
     void ShowMedCab()
     {
         medCab = GameObject.FindGameObjectWithTag("MedCabinet");
@@ -640,23 +661,26 @@ public class Tutorial : MonoBehaviour {
         nextClicked = true;
     }
 
+    // called when pill has been split in the minigame
     public void PillSplitted()
     {
         if (currentState == TutorialState.STATE_MINIGAME_PRACTICE_SPLITTING_2)
             ChangeState(TutorialState.STATE_MINIGAME_PRACTICE_SPLITTING_3);
     }
 
-    void MoveTutorialStuff(float x, float y) // how much to move stuff in x- and y-direction
+    // moves the tutorial UI-elements in x- and y-direction from the original position
+    void MoveuiElements(float x, float y)
     {
-        for (int i = 0; i < tutorialStuff.Length; i++)
-            tutorialStuff[i].GetComponent<RectTransform>().position = new Vector3(tutorialStuffOrigPos[i].x + x, tutorialStuffOrigPos[i].y + y, tutorialStuffOrigPos[i].z);
+        for (int i = 0; i < uiElements.Length; i++)
+            uiElements[i].GetComponent<RectTransform>().position = new Vector3(uiElementsOrigPos[i].x + x, uiElementsOrigPos[i].y + y, uiElementsOrigPos[i].z);
     }
 
+    // display the mascot to show a message for a given time, and if the mascot animation should be angry or not
     public void ShowNotification(string msg, float time, bool angry)
     {
         if (currentState != TutorialState.STATE_SHOW_NOTIFICATION)
         { 
-            ShowtutCanvas();
+            ShowTutCanvas();
             nextBtn.SetActive(false);
             notificationMsg = msg;
             notificationTime = time;
@@ -675,7 +699,7 @@ public class Tutorial : MonoBehaviour {
 
     public void HideNotification()
     {
-        HidetutCanvas();
+        HideTutCanvas();
         notificationMsg = "";
         notificationTime = 0f;
         ChangeState(TutorialState.STATE_INACTIVE);

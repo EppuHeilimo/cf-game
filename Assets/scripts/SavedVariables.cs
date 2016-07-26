@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+/* use this to save variables when scene is reloaded */
 public class SavedVariables : MonoBehaviour {
 
     public float sliderValue;

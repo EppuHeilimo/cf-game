@@ -2,6 +2,7 @@
 using System.Collections;
 using UnityEngine.UI;
 
+/* the falling items used in the main menu */
 public class FallingItem : MonoBehaviour {
 
     public Transform fallEnd;
@@ -23,6 +24,8 @@ public class FallingItem : MonoBehaviour {
         randSpeed = Random.Range(10, 15);
         randNumb = Random.Range(0, 4);
         randRotation = RandRotations[randNumb];
+
+        // tweening done with GoKit library
         var tween = Go.to(transform, randSpeed, new GoTweenConfig()
             .position(new Vector3(transform.position.x, fallEnd.position.y, transform.position.z))
             .rotation(new Vector3(0, 0, randRotation))

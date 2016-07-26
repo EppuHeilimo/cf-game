@@ -53,7 +53,7 @@ public class Minigame1 : MonoBehaviour {
     public Text night4 = null;
 
     CameraMovement mCamera;
-    GameManager gameManager;
+    MinigameManager gameManager;
 
     /* animation stuff */
     public GameObject kasDesObj;
@@ -63,7 +63,7 @@ public class Minigame1 : MonoBehaviour {
 
     void Start()
     {
-        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
+        gameManager = GameObject.Find("MinigameManager").GetComponent<MinigameManager>();
         invObj = GameObject.Find("Inventory");
         playerInv = invObj.GetComponent<Inventory>();
         database = invObj.GetComponent<ItemDatabase>();
@@ -86,6 +86,7 @@ public class Minigame1 : MonoBehaviour {
     {
         if (active)
         {
+            // disable hand disinfectant drops once animation finishes
             if (!kasDesAnim.IsPlaying("Drop") && spawnDrops)
             {
                 EnableDropsAnim(false);
@@ -139,7 +140,7 @@ public class Minigame1 : MonoBehaviour {
         EnableDropsAnim(true);
     }
 
-
+    // iterate through NPC medicine cards
     public void nextNPC()
     {
         int next = currNpc + 1;
@@ -174,7 +175,7 @@ public class Minigame1 : MonoBehaviour {
         }
     }
 
-
+    // called when hand disinfectant clicked
     public void kasiVitunDesi()
     {
         kasDesObj.GetComponent<KasiDesi>().StopBlinking();
@@ -186,6 +187,7 @@ public class Minigame1 : MonoBehaviour {
         spawnDrops = true;    
     }
 
+    // shows NPCs medicine cards, bad code...
     public void showMedCard(NPC npc)
     {
         if(npcList.Count == 0)
@@ -549,6 +551,7 @@ public class Minigame1 : MonoBehaviour {
         }
     }
 
+    // the slingshot game
     public void startDosingGame(string medName, int defaultDosage, int canSplit)
     {
         dosingActive = true;
@@ -580,6 +583,7 @@ public class Minigame1 : MonoBehaviour {
         minigameCanvas2.SetActive(false);
     }
 
+    // add items to player's inventory from the medicine cups after quitting the minigame
     public void AddCupsToInv()
     {
         GameObject morningCupObj = GameObject.FindGameObjectWithTag("morningCup");
@@ -606,12 +610,14 @@ public class Minigame1 : MonoBehaviour {
         if (nightCup.medsInThisCup.Count > 0)
             playerInv.AddItems(nightCup.medsInThisCup, 3);
 
+        // clear all medicine cups in minigame
         morningCup.Reset();
         afternoonCup.Reset();
         eveningCup.Reset();
         nightCup.Reset();
     }
 
+    // enable/disable drops for the hand disinfectant animation
     void EnableDropsAnim(bool enable)
     {
         foreach (GameObject d in drops)

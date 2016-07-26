@@ -4,15 +4,16 @@ using UnityEngine.UI;
 
 public class Mascot : MonoBehaviour {
 
+    // the mascot is made with state machine
     public enum MascotState
     {
         STATE_NORMAL = 0,
         STATE_ANGRY,
         STATE_SLEEP
     }
-
-    public Sprite[] sprites = new Sprite[3];
     public MascotState currentState;
+
+    public Sprite[] sprites = new Sprite[3];   
     public bool isTalking;
     public Animator anim;
     float delay = 3f;
@@ -27,6 +28,7 @@ public class Mascot : MonoBehaviour {
 
     void Update()
     {
+        // play mascot animation specific to the current state
         switch (currentState)
         {
             case MascotState.STATE_NORMAL:
@@ -69,9 +71,7 @@ public class Mascot : MonoBehaviour {
                 }
                 else
                 {
-
-                        anim.Play("MascotSleep");
-
+                    anim.Play("MascotSleep");
                 }
                 break;
         }     

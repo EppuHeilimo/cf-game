@@ -98,7 +98,7 @@ public class SlingShot : MonoBehaviour {
                     float distance = Vector3.Distance(SlingshotMiddleVector, PillToThrow.transform.position);
                     SetSlingshotLineRenderersActive(false);
                     slingshotState = SlingshotState.PillFlying;
-                    ThrowBird(distance);
+                    ThrowPill(distance);
                 }
                 break;
             case SlingshotState.PillFlying:
@@ -111,12 +111,12 @@ public class SlingShot : MonoBehaviour {
         }
     }
 
-    private void ThrowBird(float distance)
+    private void ThrowPill(float distance)
     {
         //get velocity
         Vector3 velocity = SlingshotMiddleVector - PillToThrow.transform.position;
-        PillToThrow.GetComponent<Pill>().OnThrow(); //make the pill aware of it
-        //old and alternative way
+        PillToThrow.GetComponent<Pill>().OnThrow(); //make the pill aware that it has been thrown
+        // set the force
         PillToThrow.GetComponent<Rigidbody2D>().AddForce
            (new Vector2(v2.x, v2.y) * ThrowSpeed * distance * 300 * Time.deltaTime);
         //set the velocity

@@ -14,12 +14,15 @@ public class MedContainer : MonoBehaviour {
         minigame = minigameObj.GetComponent<Minigame1>();
     }
 
+    // called when medicine clicked in the cabinet
     public void clicked()
     {
+        // check if hand disinfectant used
         if (!minigame.kasiDesi)
         {
             minigame.kasDesObj.GetComponent<KasiDesi>().StartBlinking();
         }
+        // start the slingshot game
         else
         {
             minigame.startDosingGame(medName, defaultDos, canSplit);

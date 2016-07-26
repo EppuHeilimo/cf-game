@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 
+/* list all the items found from the database in the medicine cabinet */
 public class MedCabInventory : MonoBehaviour {
 
     GameObject slotPanel;

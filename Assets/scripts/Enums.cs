@@ -3,8 +3,8 @@ using System.Collections;
 
 namespace Assets.Scripts
 {
-    //enums for the state of the slingshot, the 
-    //state of the game and the state of the bird
+    // enums for the state of the slingshot, the 
+    // state of the game and the state of the pill
     public enum SlingshotState
     {
         Inactive,

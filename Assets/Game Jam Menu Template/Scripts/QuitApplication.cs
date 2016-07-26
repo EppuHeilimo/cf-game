@@ -25,12 +25,14 @@ public class QuitApplication : MonoBehaviour {
         GameObject menu = GameObject.Find("Menu");
         if (menu != null)
         {
+            // save the sound options values before destroying menu
             GameObject.Find("DontDestroy").GetComponent<SavedVariables>().SaveValues(slider.value, toggle.isOn);
             if (menu.GetComponent<Pause>() != null)
                 menu.GetComponent<Pause>().UnPause();
 
             Destroy(menu);
         }
+        // reload the whole scene
         Scene scene = SceneManager.GetActiveScene();
         SceneManager.LoadScene(scene.name);
     }
