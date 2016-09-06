@@ -1,5 +1,4 @@
-# Challenge Factory 2016 - Pelit
+# Challenge Factory 2016 - Games
 
-Tämä on repositorio CF2016 pelinkehittäjille.
 
-[Mene tästä suoraan wikiin!](https://github.com/JAMK-IT/cf-game/wiki)
+[To wiki!](https://github.com/JAMK-IT/cf-game/wiki)
